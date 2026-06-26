@@ -312,6 +312,51 @@ export type Database = {
           },
         ]
       }
+      inquiries: {
+        Row: {
+          budget_range: string | null
+          company: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          location: string | null
+          message: string
+          phone: string | null
+          project_type: string | null
+          status: Database["public"]["Enums"]["inquiry_status"]
+          type: Database["public"]["Enums"]["inquiry_type"]
+        }
+        Insert: {
+          budget_range?: string | null
+          company?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          location?: string | null
+          message: string
+          phone?: string | null
+          project_type?: string | null
+          status?: Database["public"]["Enums"]["inquiry_status"]
+          type?: Database["public"]["Enums"]["inquiry_type"]
+        }
+        Update: {
+          budget_range?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          location?: string | null
+          message?: string
+          phone?: string | null
+          project_type?: string | null
+          status?: Database["public"]["Enums"]["inquiry_status"]
+          type?: Database["public"]["Enums"]["inquiry_type"]
+        }
+        Relationships: []
+      }
       inventory_items: {
         Row: {
           category: string | null
@@ -821,6 +866,8 @@ export type Database = {
         | "assigned"
         | "maintenance"
         | "out_of_service"
+      inquiry_status: "new" | "in_review" | "responded" | "closed"
+      inquiry_type: "quote" | "contact"
       invoice_status: "draft" | "pending" | "paid" | "overdue"
       po_status: "draft" | "pending" | "approved" | "received" | "cancelled"
       priority_level: "low" | "medium" | "high" | "urgent"
@@ -978,6 +1025,8 @@ export const Constants = {
         "maintenance",
         "out_of_service",
       ],
+      inquiry_status: ["new", "in_review", "responded", "closed"],
+      inquiry_type: ["quote", "contact"],
       invoice_status: ["draft", "pending", "paid", "overdue"],
       po_status: ["draft", "pending", "approved", "received", "cancelled"],
       priority_level: ["low", "medium", "high", "urgent"],
