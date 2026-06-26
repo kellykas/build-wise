@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/app/procurement")({
         { key: "request_date", label: "Requested" },
         { key: "total_amount", label: "Amount", render: (r: { total_amount: number }) => `$${Number(r.total_amount).toLocaleString()}` },
         { key: "status", label: "Status", render: (r: { status: string }) => <Badge variant="secondary">{r.status}</Badge> },
-      ] satisfies Column<{ id: string; total_amount: number; status: string }>[]}
+      ]}
     />
   ),
 });

@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/app/clients")({
         { key: "company", label: "Company" },
         { key: "email", label: "Email" },
         { key: "phone", label: "Phone" },
-      ] satisfies Column<{ id: string }>[]}
+      ]}
     />
   ),
 });

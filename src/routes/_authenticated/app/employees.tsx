@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/app/employees")({
         { key: "position", label: "Position" },
         { key: "department", label: "Department" },
         { key: "salary", label: "Salary", render: (r: { salary: number }) => `$${Number(r.salary).toLocaleString()}` },
-      ] satisfies Column<{ id: string; salary: number }>[]}
+      ]}
     />
   ),
 });

@@ -37,7 +37,7 @@ function AttendancePage() {
           { key: "clock_in", label: "Clock in", render: (r: { clock_in: string }) => new Date(r.clock_in).toLocaleString() },
           { key: "clock_out", label: "Clock out", render: (r: { clock_out: string | null }) => r.clock_out ? new Date(r.clock_out).toLocaleString() : "—" },
           { key: "notes", label: "Notes" },
-        ] satisfies Column<{ id: string; clock_in: string; clock_out: string | null }>[]}
+        ]}
       />
     </div>
   );

@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/app/documents")({
         { key: "mime_type", label: "Type" },
         { key: "size_bytes", label: "Size", render: (r: { size_bytes: number }) => `${Math.round(Number(r.size_bytes) / 1024)} KB` },
         { key: "created_at", label: "Uploaded", render: (r: { created_at: string }) => new Date(r.created_at).toLocaleDateString() },
-      ] satisfies Column<{ id: string; size_bytes: number; created_at: string }>[]}
+      ]}
     />
   ),
 });

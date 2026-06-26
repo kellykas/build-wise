@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/app/suppliers")({
         { key: "email", label: "Email" },
         { key: "phone", label: "Phone" },
         { key: "rating", label: "Rating", render: (r: { rating: number }) => `${Number(r.rating).toFixed(1)} / 5` },
-      ] satisfies Column<{ id: string; rating: number }>[]}
+      ]}
     />
   ),
 });

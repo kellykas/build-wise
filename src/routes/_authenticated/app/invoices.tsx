@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_authenticated/app/invoices")({
         { key: "due_date", label: "Due" },
         { key: "amount", label: "Amount", render: (r: { amount: number }) => `$${Number(r.amount).toLocaleString()}` },
         { key: "status", label: "Status", render: (r: { status: string }) => <Badge className={tone[r.status] ?? ""}>{r.status}</Badge> },
-      ] satisfies Column<{ id: string; amount: number; status: string }>[]}
+      ]}
     />
   ),
 });

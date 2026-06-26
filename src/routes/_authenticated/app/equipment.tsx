@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_authenticated/app/equipment")({
         { key: "serial_number", label: "Serial #" },
         { key: "status", label: "Status", render: (r: { status: string }) => <Badge className={tone[r.status] ?? ""}>{r.status.replace("_", " ")}</Badge> },
         { key: "next_maintenance", label: "Next service" },
-      ] satisfies Column<{ id: string; status: string }>[]}
+      ]}
     />
   ),
 });

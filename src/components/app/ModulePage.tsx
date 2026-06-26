@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Plus, Inbox } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export type Column<T> = { key: keyof T | string; label: string; render?: (row: T) => ReactNode };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Column<T = any> = { key: string; label: string; render?: (row: T) => ReactNode };
 
 export function ModulePage<T extends { id: string }>({
   title, description, table, columns, onNew, icon,
