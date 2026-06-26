@@ -15,7 +15,7 @@ export function ModulePage<T extends { id: string }>({
   title: string;
   description: string;
   table: string;
-  columns: Column<T>[];
+  columns: Column[];
   onNew?: () => void;
   icon?: ReactNode;
 }) {
