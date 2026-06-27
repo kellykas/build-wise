@@ -146,7 +146,12 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Input placeholder="Search projects, tasks, clients…" className="pl-9" />
           </div>
           <div className="flex-1 md:hidden" />
-          <Button variant="ghost" size="icon"><Bell className="h-4 w-4" /></Button>
+          <Button variant="ghost" size="icon" className="relative" onClick={() => navigate({ to: "/app/notifications" })}>
+            <Bell className="h-4 w-4" />
+            {(unreadCount ?? 0) > 0 && (
+              <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px]" variant="destructive">{unreadCount}</Badge>
+            )}
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="gap-2 px-2">
