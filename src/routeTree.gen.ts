@@ -37,6 +37,7 @@ import { Route as AuthenticatedAppCalendarRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAppAttendanceRouteImport } from './routes/_authenticated/app/attendance'
 import { Route as AuthenticatedAppTasksIndexRouteImport } from './routes/_authenticated/app/tasks.index'
 import { Route as AuthenticatedAppRequisitionsIndexRouteImport } from './routes/_authenticated/app/requisitions.index'
+import { Route as AuthenticatedAppTasksUrgentRouteImport } from './routes/_authenticated/app/tasks.urgent'
 import { Route as AuthenticatedAppTasksSupervisionRouteImport } from './routes/_authenticated/app/tasks.supervision'
 import { Route as AuthenticatedAppTasksExecutionRouteImport } from './routes/_authenticated/app/tasks.execution'
 import { Route as AuthenticatedAppTasksApprovalRouteImport } from './routes/_authenticated/app/tasks.approval'
@@ -197,6 +198,12 @@ const AuthenticatedAppRequisitionsIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedAppRequisitionsRoute,
   } as any)
+const AuthenticatedAppTasksUrgentRoute =
+  AuthenticatedAppTasksUrgentRouteImport.update({
+    id: '/urgent',
+    path: '/urgent',
+    getParentRoute: () => AuthenticatedAppTasksRoute,
+  } as any)
 const AuthenticatedAppTasksSupervisionRoute =
   AuthenticatedAppTasksSupervisionRouteImport.update({
     id: '/supervision',
@@ -252,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/app/tasks/approval': typeof AuthenticatedAppTasksApprovalRoute
   '/app/tasks/execution': typeof AuthenticatedAppTasksExecutionRoute
   '/app/tasks/supervision': typeof AuthenticatedAppTasksSupervisionRoute
+  '/app/tasks/urgent': typeof AuthenticatedAppTasksUrgentRoute
   '/app/requisitions/': typeof AuthenticatedAppRequisitionsIndexRoute
   '/app/tasks/': typeof AuthenticatedAppTasksIndexRoute
 }
@@ -282,6 +290,7 @@ export interface FileRoutesByTo {
   '/app/tasks/approval': typeof AuthenticatedAppTasksApprovalRoute
   '/app/tasks/execution': typeof AuthenticatedAppTasksExecutionRoute
   '/app/tasks/supervision': typeof AuthenticatedAppTasksSupervisionRoute
+  '/app/tasks/urgent': typeof AuthenticatedAppTasksUrgentRoute
   '/app/requisitions': typeof AuthenticatedAppRequisitionsIndexRoute
   '/app/tasks': typeof AuthenticatedAppTasksIndexRoute
 }
@@ -317,6 +326,7 @@ export interface FileRoutesById {
   '/_authenticated/app/tasks/approval': typeof AuthenticatedAppTasksApprovalRoute
   '/_authenticated/app/tasks/execution': typeof AuthenticatedAppTasksExecutionRoute
   '/_authenticated/app/tasks/supervision': typeof AuthenticatedAppTasksSupervisionRoute
+  '/_authenticated/app/tasks/urgent': typeof AuthenticatedAppTasksUrgentRoute
   '/_authenticated/app/requisitions/': typeof AuthenticatedAppRequisitionsIndexRoute
   '/_authenticated/app/tasks/': typeof AuthenticatedAppTasksIndexRoute
 }
@@ -352,6 +362,7 @@ export interface FileRouteTypes {
     | '/app/tasks/approval'
     | '/app/tasks/execution'
     | '/app/tasks/supervision'
+    | '/app/tasks/urgent'
     | '/app/requisitions/'
     | '/app/tasks/'
   fileRoutesByTo: FileRoutesByTo
@@ -382,6 +393,7 @@ export interface FileRouteTypes {
     | '/app/tasks/approval'
     | '/app/tasks/execution'
     | '/app/tasks/supervision'
+    | '/app/tasks/urgent'
     | '/app/requisitions'
     | '/app/tasks'
   id:
@@ -416,6 +428,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/tasks/approval'
     | '/_authenticated/app/tasks/execution'
     | '/_authenticated/app/tasks/supervision'
+    | '/_authenticated/app/tasks/urgent'
     | '/_authenticated/app/requisitions/'
     | '/_authenticated/app/tasks/'
   fileRoutesById: FileRoutesById
@@ -628,6 +641,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppRequisitionsIndexRouteImport
       parentRoute: typeof AuthenticatedAppRequisitionsRoute
     }
+    '/_authenticated/app/tasks/urgent': {
+      id: '/_authenticated/app/tasks/urgent'
+      path: '/urgent'
+      fullPath: '/app/tasks/urgent'
+      preLoaderRoute: typeof AuthenticatedAppTasksUrgentRouteImport
+      parentRoute: typeof AuthenticatedAppTasksRoute
+    }
     '/_authenticated/app/tasks/supervision': {
       id: '/_authenticated/app/tasks/supervision'
       path: '/supervision'
@@ -680,6 +700,7 @@ interface AuthenticatedAppTasksRouteChildren {
   AuthenticatedAppTasksApprovalRoute: typeof AuthenticatedAppTasksApprovalRoute
   AuthenticatedAppTasksExecutionRoute: typeof AuthenticatedAppTasksExecutionRoute
   AuthenticatedAppTasksSupervisionRoute: typeof AuthenticatedAppTasksSupervisionRoute
+  AuthenticatedAppTasksUrgentRoute: typeof AuthenticatedAppTasksUrgentRoute
   AuthenticatedAppTasksIndexRoute: typeof AuthenticatedAppTasksIndexRoute
 }
 
@@ -687,6 +708,7 @@ const AuthenticatedAppTasksRouteChildren: AuthenticatedAppTasksRouteChildren = {
   AuthenticatedAppTasksApprovalRoute: AuthenticatedAppTasksApprovalRoute,
   AuthenticatedAppTasksExecutionRoute: AuthenticatedAppTasksExecutionRoute,
   AuthenticatedAppTasksSupervisionRoute: AuthenticatedAppTasksSupervisionRoute,
+  AuthenticatedAppTasksUrgentRoute: AuthenticatedAppTasksUrgentRoute,
   AuthenticatedAppTasksIndexRoute: AuthenticatedAppTasksIndexRoute,
 }
 
