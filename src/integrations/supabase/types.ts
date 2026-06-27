@@ -357,6 +357,67 @@ export type Database = {
         }
         Relationships: []
       }
+      internal_notifications: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          link: string | null
+          message: string | null
+          read_at: string | null
+          recipient_id: string
+          sender_id: string | null
+          title: string
+          type: Database["public"]["Enums"]["internal_notification_type"]
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          link?: string | null
+          message?: string | null
+          read_at?: string | null
+          recipient_id: string
+          sender_id?: string | null
+          title: string
+          type?: Database["public"]["Enums"]["internal_notification_type"]
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          link?: string | null
+          message?: string | null
+          read_at?: string | null
+          recipient_id?: string
+          sender_id?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["internal_notification_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "internal_notifications_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "internal_notifications_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "internal_notifications_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inventory_items: {
         Row: {
           category: string | null
@@ -698,6 +759,243 @@ export type Database = {
           },
         ]
       }
+      requisition_disbursements: {
+        Row: {
+          amount: number
+          beneficiary: string | null
+          besoin: string | null
+          company_id: string
+          created_at: string
+          id: string
+          line_id: string | null
+          notes: string | null
+          operation: string | null
+          paid_at: string
+          paid_by: string | null
+          quantity: number | null
+          requisition_id: string
+        }
+        Insert: {
+          amount?: number
+          beneficiary?: string | null
+          besoin?: string | null
+          company_id: string
+          created_at?: string
+          id?: string
+          line_id?: string | null
+          notes?: string | null
+          operation?: string | null
+          paid_at?: string
+          paid_by?: string | null
+          quantity?: number | null
+          requisition_id: string
+        }
+        Update: {
+          amount?: number
+          beneficiary?: string | null
+          besoin?: string | null
+          company_id?: string
+          created_at?: string
+          id?: string
+          line_id?: string | null
+          notes?: string | null
+          operation?: string | null
+          paid_at?: string
+          paid_by?: string | null
+          quantity?: number | null
+          requisition_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "requisition_disbursements_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requisition_disbursements_line_id_fkey"
+            columns: ["line_id"]
+            isOneToOne: false
+            referencedRelation: "requisition_lines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requisition_disbursements_paid_by_fkey"
+            columns: ["paid_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requisition_disbursements_requisition_id_fkey"
+            columns: ["requisition_id"]
+            isOneToOne: false
+            referencedRelation: "requisitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      requisition_lines: {
+        Row: {
+          besoin: string
+          company_id: string
+          created_at: string
+          id: string
+          position: number
+          quantity: number
+          requisition_id: string
+          status: Database["public"]["Enums"]["requisition_line_status"]
+          unit: string | null
+          unit_price: number | null
+          updated_at: string
+        }
+        Insert: {
+          besoin: string
+          company_id: string
+          created_at?: string
+          id?: string
+          position?: number
+          quantity?: number
+          requisition_id: string
+          status?: Database["public"]["Enums"]["requisition_line_status"]
+          unit?: string | null
+          unit_price?: number | null
+          updated_at?: string
+        }
+        Update: {
+          besoin?: string
+          company_id?: string
+          created_at?: string
+          id?: string
+          position?: number
+          quantity?: number
+          requisition_id?: string
+          status?: Database["public"]["Enums"]["requisition_line_status"]
+          unit?: string | null
+          unit_price?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "requisition_lines_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requisition_lines_requisition_id_fkey"
+            columns: ["requisition_id"]
+            isOneToOne: false
+            referencedRelation: "requisitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      requisitions: {
+        Row: {
+          caissier_id: string | null
+          classeur: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          demandeur_id: string | null
+          id: string
+          notes: string | null
+          project_id: string | null
+          reference: string
+          stage: string | null
+          status: Database["public"]["Enums"]["requisition_status"]
+          tarificateur_id: string | null
+          title: string
+          total_amount: number
+          updated_at: string
+          validateur_id: string | null
+        }
+        Insert: {
+          caissier_id?: string | null
+          classeur?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          demandeur_id?: string | null
+          id?: string
+          notes?: string | null
+          project_id?: string | null
+          reference: string
+          stage?: string | null
+          status?: Database["public"]["Enums"]["requisition_status"]
+          tarificateur_id?: string | null
+          title: string
+          total_amount?: number
+          updated_at?: string
+          validateur_id?: string | null
+        }
+        Update: {
+          caissier_id?: string | null
+          classeur?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          demandeur_id?: string | null
+          id?: string
+          notes?: string | null
+          project_id?: string | null
+          reference?: string
+          stage?: string | null
+          status?: Database["public"]["Enums"]["requisition_status"]
+          tarificateur_id?: string | null
+          title?: string
+          total_amount?: number
+          updated_at?: string
+          validateur_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "requisitions_caissier_id_fkey"
+            columns: ["caissier_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requisitions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requisitions_demandeur_id_fkey"
+            columns: ["demandeur_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requisitions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requisitions_tarificateur_id_fkey"
+            columns: ["tarificateur_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requisitions_validateur_id_fkey"
+            columns: ["validateur_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppliers: {
         Row: {
           address: string | null
@@ -741,6 +1039,55 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_assignments: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["task_role"]
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["task_role"]
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["task_role"]
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_assignments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_assignments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -868,6 +1215,12 @@ export type Database = {
         | "out_of_service"
       inquiry_status: "new" | "in_review" | "responded" | "closed"
       inquiry_type: "quote" | "contact"
+      internal_notification_type:
+        | "info"
+        | "task"
+        | "requisition"
+        | "approval"
+        | "urgent"
       invoice_status: "draft" | "pending" | "paid" | "overdue"
       po_status: "draft" | "pending" | "approved" | "received" | "cancelled"
       priority_level: "low" | "medium" | "high" | "urgent"
@@ -878,6 +1231,19 @@ export type Database = {
         | "on_hold"
         | "completed"
         | "cancelled"
+      requisition_line_status:
+        | "pending"
+        | "priced"
+        | "validated"
+        | "disbursed"
+        | "rejected"
+      requisition_status:
+        | "draft"
+        | "pending_pricing"
+        | "in_progress"
+        | "closed"
+        | "rejected"
+      task_role: "executor" | "supervisor" | "approver"
       task_status: "pending" | "in_progress" | "completed" | "overdue"
     }
     CompositeTypes: {
@@ -1027,6 +1393,13 @@ export const Constants = {
       ],
       inquiry_status: ["new", "in_review", "responded", "closed"],
       inquiry_type: ["quote", "contact"],
+      internal_notification_type: [
+        "info",
+        "task",
+        "requisition",
+        "approval",
+        "urgent",
+      ],
       invoice_status: ["draft", "pending", "paid", "overdue"],
       po_status: ["draft", "pending", "approved", "received", "cancelled"],
       priority_level: ["low", "medium", "high", "urgent"],
@@ -1038,6 +1411,21 @@ export const Constants = {
         "completed",
         "cancelled",
       ],
+      requisition_line_status: [
+        "pending",
+        "priced",
+        "validated",
+        "disbursed",
+        "rejected",
+      ],
+      requisition_status: [
+        "draft",
+        "pending_pricing",
+        "in_progress",
+        "closed",
+        "rejected",
+      ],
+      task_role: ["executor", "supervisor", "approver"],
       task_status: ["pending", "in_progress", "completed", "overdue"],
     },
   },
