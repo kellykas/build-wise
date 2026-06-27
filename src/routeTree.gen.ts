@@ -37,6 +37,7 @@ import { Route as AuthenticatedAppCalendarRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAppAttendanceRouteImport } from './routes/_authenticated/app/attendance'
 import { Route as AuthenticatedAppTasksIndexRouteImport } from './routes/_authenticated/app/tasks.index'
 import { Route as AuthenticatedAppRequisitionsIndexRouteImport } from './routes/_authenticated/app/requisitions.index'
+import { Route as AuthenticatedAppTasksSupervisionRouteImport } from './routes/_authenticated/app/tasks.supervision'
 import { Route as AuthenticatedAppTasksExecutionRouteImport } from './routes/_authenticated/app/tasks.execution'
 import { Route as AuthenticatedAppRequisitionsIdRouteImport } from './routes/_authenticated/app/requisitions.$id'
 
@@ -195,6 +196,12 @@ const AuthenticatedAppRequisitionsIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedAppRequisitionsRoute,
   } as any)
+const AuthenticatedAppTasksSupervisionRoute =
+  AuthenticatedAppTasksSupervisionRouteImport.update({
+    id: '/supervision',
+    path: '/supervision',
+    getParentRoute: () => AuthenticatedAppTasksRoute,
+  } as any)
 const AuthenticatedAppTasksExecutionRoute =
   AuthenticatedAppTasksExecutionRouteImport.update({
     id: '/execution',
@@ -236,6 +243,7 @@ export interface FileRoutesByFullPath {
   '/app/': typeof AuthenticatedAppIndexRoute
   '/app/requisitions/$id': typeof AuthenticatedAppRequisitionsIdRoute
   '/app/tasks/execution': typeof AuthenticatedAppTasksExecutionRoute
+  '/app/tasks/supervision': typeof AuthenticatedAppTasksSupervisionRoute
   '/app/requisitions/': typeof AuthenticatedAppRequisitionsIndexRoute
   '/app/tasks/': typeof AuthenticatedAppTasksIndexRoute
 }
@@ -264,6 +272,7 @@ export interface FileRoutesByTo {
   '/app': typeof AuthenticatedAppIndexRoute
   '/app/requisitions/$id': typeof AuthenticatedAppRequisitionsIdRoute
   '/app/tasks/execution': typeof AuthenticatedAppTasksExecutionRoute
+  '/app/tasks/supervision': typeof AuthenticatedAppTasksSupervisionRoute
   '/app/requisitions': typeof AuthenticatedAppRequisitionsIndexRoute
   '/app/tasks': typeof AuthenticatedAppTasksIndexRoute
 }
@@ -297,6 +306,7 @@ export interface FileRoutesById {
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/app/requisitions/$id': typeof AuthenticatedAppRequisitionsIdRoute
   '/_authenticated/app/tasks/execution': typeof AuthenticatedAppTasksExecutionRoute
+  '/_authenticated/app/tasks/supervision': typeof AuthenticatedAppTasksSupervisionRoute
   '/_authenticated/app/requisitions/': typeof AuthenticatedAppRequisitionsIndexRoute
   '/_authenticated/app/tasks/': typeof AuthenticatedAppTasksIndexRoute
 }
@@ -330,6 +340,7 @@ export interface FileRouteTypes {
     | '/app/'
     | '/app/requisitions/$id'
     | '/app/tasks/execution'
+    | '/app/tasks/supervision'
     | '/app/requisitions/'
     | '/app/tasks/'
   fileRoutesByTo: FileRoutesByTo
@@ -358,6 +369,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/app/requisitions/$id'
     | '/app/tasks/execution'
+    | '/app/tasks/supervision'
     | '/app/requisitions'
     | '/app/tasks'
   id:
@@ -390,6 +402,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/'
     | '/_authenticated/app/requisitions/$id'
     | '/_authenticated/app/tasks/execution'
+    | '/_authenticated/app/tasks/supervision'
     | '/_authenticated/app/requisitions/'
     | '/_authenticated/app/tasks/'
   fileRoutesById: FileRoutesById
@@ -602,6 +615,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppRequisitionsIndexRouteImport
       parentRoute: typeof AuthenticatedAppRequisitionsRoute
     }
+    '/_authenticated/app/tasks/supervision': {
+      id: '/_authenticated/app/tasks/supervision'
+      path: '/supervision'
+      fullPath: '/app/tasks/supervision'
+      preLoaderRoute: typeof AuthenticatedAppTasksSupervisionRouteImport
+      parentRoute: typeof AuthenticatedAppTasksRoute
+    }
     '/_authenticated/app/tasks/execution': {
       id: '/_authenticated/app/tasks/execution'
       path: '/execution'
@@ -638,11 +658,13 @@ const AuthenticatedAppRequisitionsRouteWithChildren =
 
 interface AuthenticatedAppTasksRouteChildren {
   AuthenticatedAppTasksExecutionRoute: typeof AuthenticatedAppTasksExecutionRoute
+  AuthenticatedAppTasksSupervisionRoute: typeof AuthenticatedAppTasksSupervisionRoute
   AuthenticatedAppTasksIndexRoute: typeof AuthenticatedAppTasksIndexRoute
 }
 
 const AuthenticatedAppTasksRouteChildren: AuthenticatedAppTasksRouteChildren = {
   AuthenticatedAppTasksExecutionRoute: AuthenticatedAppTasksExecutionRoute,
+  AuthenticatedAppTasksSupervisionRoute: AuthenticatedAppTasksSupervisionRoute,
   AuthenticatedAppTasksIndexRoute: AuthenticatedAppTasksIndexRoute,
 }
 
