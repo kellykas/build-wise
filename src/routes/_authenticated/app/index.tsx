@@ -84,7 +84,7 @@ function Dashboard() {
         supabase.from("employees").select("*", { count: "exact", head: true }),
         supabase.from("tasks").select("*", { count: "exact", head: true }).eq("priority", "urgent"),
         supabase.from("internal_notifications").select("*", { count: "exact", head: true }).eq("recipient_id", user!.id).is("read_at", null),
-        supabase.from("invoices").select("amount,status").in("status", ["sent", "overdue"]),
+        supabase.from("invoices").select("amount,status").in("status", ["pending", "overdue"]),
         supabase.from("requisitions").select("id,title,reference,total_amount,status").in("status", ["pending_pricing", "in_progress"]).order("created_at", { ascending: false }).limit(5),
       ]);
       const justifier = (invoices.data ?? []).reduce((s, r: any) => s + Number(r.amount || 0), 0);
