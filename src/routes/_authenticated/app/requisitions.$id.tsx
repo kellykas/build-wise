@@ -64,7 +64,7 @@ function RequisitionDetail() {
   });
 
   const updateReqStatus = useMutation({
-    mutationFn: async (status: string) => {
+    mutationFn: async (status: "draft" | "pending_pricing" | "in_progress" | "closed" | "rejected") => {
       const { error } = await supabase.from("requisitions").update({ status }).eq("id", id);
       if (error) throw error;
     },

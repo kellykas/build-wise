@@ -35,6 +35,7 @@ import { Route as AuthenticatedAppClientPortalRouteImport } from './routes/_auth
 import { Route as AuthenticatedAppCalendarRouteImport } from './routes/_authenticated/app/calendar'
 import { Route as AuthenticatedAppAttendanceRouteImport } from './routes/_authenticated/app/attendance'
 import { Route as AuthenticatedAppRequisitionsIndexRouteImport } from './routes/_authenticated/app/requisitions.index'
+import { Route as AuthenticatedAppRequisitionsIdRouteImport } from './routes/_authenticated/app/requisitions.$id'
 
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
@@ -180,6 +181,12 @@ const AuthenticatedAppRequisitionsIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedAppRequisitionsRoute,
   } as any)
+const AuthenticatedAppRequisitionsIdRoute =
+  AuthenticatedAppRequisitionsIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedAppRequisitionsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -206,6 +213,7 @@ export interface FileRoutesByFullPath {
   '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/suppliers': typeof AuthenticatedAppSuppliersRoute
   '/app/': typeof AuthenticatedAppIndexRoute
+  '/app/requisitions/$id': typeof AuthenticatedAppRequisitionsIdRoute
   '/app/requisitions/': typeof AuthenticatedAppRequisitionsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -231,6 +239,7 @@ export interface FileRoutesByTo {
   '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/suppliers': typeof AuthenticatedAppSuppliersRoute
   '/app': typeof AuthenticatedAppIndexRoute
+  '/app/requisitions/$id': typeof AuthenticatedAppRequisitionsIdRoute
   '/app/requisitions': typeof AuthenticatedAppRequisitionsIndexRoute
 }
 export interface FileRoutesById {
@@ -260,6 +269,7 @@ export interface FileRoutesById {
   '/_authenticated/app/settings': typeof AuthenticatedAppSettingsRoute
   '/_authenticated/app/suppliers': typeof AuthenticatedAppSuppliersRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
+  '/_authenticated/app/requisitions/$id': typeof AuthenticatedAppRequisitionsIdRoute
   '/_authenticated/app/requisitions/': typeof AuthenticatedAppRequisitionsIndexRoute
 }
 export interface FileRouteTypes {
@@ -289,6 +299,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/suppliers'
     | '/app/'
+    | '/app/requisitions/$id'
     | '/app/requisitions/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -314,6 +325,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/suppliers'
     | '/app'
+    | '/app/requisitions/$id'
     | '/app/requisitions'
   id:
     | '__root__'
@@ -342,6 +354,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/settings'
     | '/_authenticated/app/suppliers'
     | '/_authenticated/app/'
+    | '/_authenticated/app/requisitions/$id'
     | '/_authenticated/app/requisitions/'
   fileRoutesById: FileRoutesById
 }
@@ -539,15 +552,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppRequisitionsIndexRouteImport
       parentRoute: typeof AuthenticatedAppRequisitionsRoute
     }
+    '/_authenticated/app/requisitions/$id': {
+      id: '/_authenticated/app/requisitions/$id'
+      path: '/$id'
+      fullPath: '/app/requisitions/$id'
+      preLoaderRoute: typeof AuthenticatedAppRequisitionsIdRouteImport
+      parentRoute: typeof AuthenticatedAppRequisitionsRoute
+    }
   }
 }
 
 interface AuthenticatedAppRequisitionsRouteChildren {
+  AuthenticatedAppRequisitionsIdRoute: typeof AuthenticatedAppRequisitionsIdRoute
   AuthenticatedAppRequisitionsIndexRoute: typeof AuthenticatedAppRequisitionsIndexRoute
 }
 
 const AuthenticatedAppRequisitionsRouteChildren: AuthenticatedAppRequisitionsRouteChildren =
   {
+    AuthenticatedAppRequisitionsIdRoute: AuthenticatedAppRequisitionsIdRoute,
     AuthenticatedAppRequisitionsIndexRoute:
       AuthenticatedAppRequisitionsIndexRoute,
   }
