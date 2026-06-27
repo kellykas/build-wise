@@ -57,8 +57,9 @@ function NotificationsPage() {
     mutationFn: async () => {
       if (!profile?.company_id) throw new Error("No company");
       if (recipients.length === 0) throw new Error("Choisissez au moins un destinataire");
+      const companyId = profile.company_id;
       const rows = recipients.map((r) => ({
-        company_id: profile.company_id, sender_id: user!.id, recipient_id: r.id,
+        company_id: companyId, sender_id: user!.id, recipient_id: r.id,
         type: type as any, title, message: message || null, link: link || null,
       }));
       const { error } = await supabase.from("internal_notifications").insert(rows);
