@@ -1,10 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  ArrowUpRight, FolderKanban, Users, Receipt, Boxes, TrendingUp, AlertCircle,
+  ArrowUpRight, FolderKanban, Users, Receipt, FileSpreadsheet, TrendingUp, AlertCircle,
+  ClipboardList, CalendarDays, AlertTriangle, ClipboardCheck, Wallet, Bell,
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip,
@@ -24,77 +26,100 @@ const revenueData = [
   { m: "Jun", revenue: 218000, expenses: 138000 },
 ];
 const statusData = [
-  { name: "In Progress", value: 12, fill: "var(--chart-1)" },
-  { name: "Planning", value: 5, fill: "var(--chart-2)" },
-  { name: "On Hold", value: 2, fill: "var(--chart-4)" },
-  { name: "Completed", value: 18, fill: "var(--chart-3)" },
+  { name: "En cours", value: 12, fill: "var(--chart-1)" },
+  { name: "Planifié", value: 5, fill: "var(--chart-2)" },
+  { name: "En attente", value: 2, fill: "var(--chart-4)" },
+  { name: "Terminé", value: 18, fill: "var(--chart-3)" },
 ];
 const taskData = [
-  { d: "Mon", done: 12, open: 6 },
-  { d: "Tue", done: 16, open: 8 },
-  { d: "Wed", done: 14, open: 9 },
-  { d: "Thu", done: 20, open: 5 },
-  { d: "Fri", done: 18, open: 7 },
-  { d: "Sat", done: 8, open: 3 },
-  { d: "Sun", done: 4, open: 2 },
+  { d: "Lun", done: 12, open: 6 },
+  { d: "Mar", done: 16, open: 8 },
+  { d: "Mer", done: 14, open: 9 },
+  { d: "Jeu", done: 20, open: 5 },
+  { d: "Ven", done: 18, open: 7 },
+  { d: "Sam", done: 8, open: 3 },
+  { d: "Dim", done: 4, open: 2 },
 ];
 
-function Kpi({ icon: Icon, label, value, delta, tone = "primary" }: {
-  icon: typeof FolderKanban; label: string; value: string | number; delta?: string; tone?: "primary" | "accent" | "success" | "warning";
+function Kpi({ icon: Icon, label, value, to, tone = "primary" }: {
+  icon: typeof FolderKanban; label: string; value: string | number; to: string;
+  tone?: "primary" | "accent" | "success" | "warning" | "danger" | "muted";
 }) {
-  const toneCls = { primary: "bg-primary/10 text-primary", accent: "bg-accent/10 text-accent", success: "bg-success/10 text-success", warning: "bg-warning/15 text-warning" }[tone];
+  const toneCls: Record<string, string> = {
+    primary: "bg-primary/10 text-primary",
+    accent: "bg-accent/10 text-accent",
+    success: "bg-success/15 text-success",
+    warning: "bg-warning/15 text-warning",
+    danger: "bg-destructive/15 text-destructive",
+    muted: "bg-muted text-muted-foreground",
+  };
   return (
-    <Card>
-      <CardContent className="p-5">
-        <div className="flex items-start justify-between">
-          <div>
-            <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
-            <div className="mt-1 text-2xl font-bold">{value}</div>
-            {delta && <div className="mt-1 inline-flex items-center gap-1 text-xs text-success"><ArrowUpRight className="h-3 w-3" />{delta}</div>}
+    <Link to={to} className="group">
+      <Card className="transition-all hover:shadow-md hover:border-primary/30">
+        <CardContent className="p-5">
+          <div className="flex items-start justify-between">
+            <div>
+              <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
+              <div className="mt-1 text-3xl font-bold">{value}</div>
+              <div className="mt-2 inline-flex items-center gap-1 text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                Afficher plus <ArrowUpRight className="h-3 w-3" />
+              </div>
+            </div>
+            <span className={`grid h-10 w-10 place-items-center rounded-md ${toneCls[tone]}`}><Icon className="h-5 w-5" /></span>
           </div>
-          <span className={`grid h-10 w-10 place-items-center rounded-md ${toneCls}`}><Icon className="h-5 w-5" /></span>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }
 
 function Dashboard() {
+  const { user, profile } = useAuth();
   const { data: counts } = useQuery({
-    queryKey: ["dashboard-counts"],
+    queryKey: ["dashboard-counts", user?.id],
     queryFn: async () => {
-      const [proj, emp, inv, lowStock] = await Promise.all([
-        supabase.from("projects").select("*", { count: "exact", head: true }),
+      const [myTasks, reqs, emp, urgent, unread, invoices, requisitionsPending] = await Promise.all([
+        supabase.from("tasks").select("*", { count: "exact", head: true }).eq("assigned_to", user!.id).in("status", ["pending", "in_progress"]),
+        supabase.from("requisitions").select("*", { count: "exact", head: true }).eq("status", "in_progress"),
         supabase.from("employees").select("*", { count: "exact", head: true }),
-        supabase.from("invoices").select("amount"),
-        supabase.from("inventory_items").select("id, quantity, min_quantity"),
+        supabase.from("tasks").select("*", { count: "exact", head: true }).eq("priority", "urgent"),
+        supabase.from("internal_notifications").select("*", { count: "exact", head: true }).eq("recipient_id", user!.id).is("read_at", null),
+        supabase.from("invoices").select("amount,status").in("status", ["pending", "overdue"]),
+        supabase.from("requisitions").select("id,title,reference,total_amount,status").in("status", ["pending_pricing", "in_progress"]).order("created_at", { ascending: false }).limit(5),
       ]);
-      const invoiceTotal = (inv.data ?? []).reduce((s, r) => s + Number(r.amount || 0), 0);
-      const low = (lowStock.data ?? []).filter((r) => Number(r.quantity) <= Number(r.min_quantity)).length;
+      const justifier = (invoices.data ?? []).reduce((s, r: any) => s + Number(r.amount || 0), 0);
       return {
-        projects: proj.count ?? 0,
+        myTasks: myTasks.count ?? 0,
+        requisitions: reqs.count ?? 0,
         employees: emp.count ?? 0,
-        revenue: invoiceTotal,
-        lowStock: low,
+        urgent: urgent.count ?? 0,
+        unread: unread.count ?? 0,
+        justifier,
+        pendingReqs: requisitionsPending.data ?? [],
       };
     },
+    enabled: !!user,
   });
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-sm text-muted-foreground">Operations overview across all active projects.</p>
+          <h1 className="text-2xl font-bold tracking-tight">Tableau de bord</h1>
+          <p className="text-sm text-muted-foreground">Vue d'ensemble des opérations en cours.</p>
         </div>
-        <Badge variant="secondary" className="gap-1"><TrendingUp className="h-3 w-3" /> Live</Badge>
+        <Badge variant="secondary" className="gap-1"><TrendingUp className="h-3 w-3" /> En direct</Badge>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Kpi icon={FolderKanban} label="Projects" value={counts?.projects ?? 0} delta="+3 this month" tone="primary" />
-        <Kpi icon={Users} label="Employees" value={counts?.employees ?? 0} delta="+8 hired" tone="accent" />
-        <Kpi icon={Receipt} label="Invoiced" value={`$${(counts?.revenue ?? 0).toLocaleString()}`} delta="+12.4%" tone="success" />
-        <Kpi icon={Boxes} label="Low stock items" value={counts?.lowStock ?? 0} tone="warning" />
+        <Kpi icon={ClipboardList} label="Tâches à exécuter" value={counts?.myTasks ?? 0} to="/app/tasks/execution" tone="accent" />
+        <Kpi icon={FileSpreadsheet} label="États de besoin en cours" value={counts?.requisitions ?? 0} to="/app/requisitions" tone="success" />
+        <Kpi icon={Users} label="Membres de l'équipe" value={counts?.employees ?? 0} to="/app/employees" tone="primary" />
+        <Kpi icon={CalendarDays} label="Évènements prévus" value="—" to="/app/calendar" tone="muted" />
+        <Kpi icon={AlertTriangle} label="Urgences attendues" value={counts?.urgent ?? 0} to="/app/tasks/urgent" tone="warning" />
+        <Kpi icon={ClipboardCheck} label="Statut de présence" value="—" to="/app/attendance" tone="muted" />
+        <Kpi icon={Wallet} label="Finances à justifier" value={`$${(counts?.justifier ?? 0).toLocaleString()}`} to="/app/finance" tone="danger" />
+        <Kpi icon={Bell} label="Notifications" value={counts?.unread ?? 0} to="/app/notifications" tone="accent" />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
