@@ -20,6 +20,7 @@ import { Route as AuthenticatedAppRouteRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app/index'
 import { Route as AuthenticatedAppSuppliersRouteImport } from './routes/_authenticated/app/suppliers'
 import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app/settings'
+import { Route as AuthenticatedAppRequisitionsRouteImport } from './routes/_authenticated/app/requisitions'
 import { Route as AuthenticatedAppProjectsRouteImport } from './routes/_authenticated/app/projects'
 import { Route as AuthenticatedAppProcurementRouteImport } from './routes/_authenticated/app/procurement'
 import { Route as AuthenticatedAppOnboardingRouteImport } from './routes/_authenticated/app/onboarding'
@@ -88,6 +89,12 @@ const AuthenticatedAppSettingsRoute =
   AuthenticatedAppSettingsRouteImport.update({
     id: '/settings',
     path: '/settings',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppRequisitionsRoute =
+  AuthenticatedAppRequisitionsRouteImport.update({
+    id: '/requisitions',
+    path: '/requisitions',
     getParentRoute: () => AuthenticatedAppRouteRoute,
   } as any)
 const AuthenticatedAppProjectsRoute =
@@ -188,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/procurement': typeof AuthenticatedAppProcurementRoute
   '/app/projects': typeof AuthenticatedAppProjectsRoute
+  '/app/requisitions': typeof AuthenticatedAppRequisitionsRoute
   '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/suppliers': typeof AuthenticatedAppSuppliersRoute
   '/app/': typeof AuthenticatedAppIndexRoute
@@ -212,6 +220,7 @@ export interface FileRoutesByTo {
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/procurement': typeof AuthenticatedAppProcurementRoute
   '/app/projects': typeof AuthenticatedAppProjectsRoute
+  '/app/requisitions': typeof AuthenticatedAppRequisitionsRoute
   '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/suppliers': typeof AuthenticatedAppSuppliersRoute
   '/app': typeof AuthenticatedAppIndexRoute
@@ -239,6 +248,7 @@ export interface FileRoutesById {
   '/_authenticated/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/_authenticated/app/procurement': typeof AuthenticatedAppProcurementRoute
   '/_authenticated/app/projects': typeof AuthenticatedAppProjectsRoute
+  '/_authenticated/app/requisitions': typeof AuthenticatedAppRequisitionsRoute
   '/_authenticated/app/settings': typeof AuthenticatedAppSettingsRoute
   '/_authenticated/app/suppliers': typeof AuthenticatedAppSuppliersRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
@@ -266,6 +276,7 @@ export interface FileRouteTypes {
     | '/app/onboarding'
     | '/app/procurement'
     | '/app/projects'
+    | '/app/requisitions'
     | '/app/settings'
     | '/app/suppliers'
     | '/app/'
@@ -290,6 +301,7 @@ export interface FileRouteTypes {
     | '/app/onboarding'
     | '/app/procurement'
     | '/app/projects'
+    | '/app/requisitions'
     | '/app/settings'
     | '/app/suppliers'
     | '/app'
@@ -316,6 +328,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/onboarding'
     | '/_authenticated/app/procurement'
     | '/_authenticated/app/projects'
+    | '/_authenticated/app/requisitions'
     | '/_authenticated/app/settings'
     | '/_authenticated/app/suppliers'
     | '/_authenticated/app/'
@@ -408,6 +421,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/app/settings'
       preLoaderRoute: typeof AuthenticatedAppSettingsRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/requisitions': {
+      id: '/_authenticated/app/requisitions'
+      path: '/requisitions'
+      fullPath: '/app/requisitions'
+      preLoaderRoute: typeof AuthenticatedAppRequisitionsRouteImport
       parentRoute: typeof AuthenticatedAppRouteRoute
     }
     '/_authenticated/app/projects': {
@@ -518,6 +538,7 @@ interface AuthenticatedAppRouteRouteChildren {
   AuthenticatedAppOnboardingRoute: typeof AuthenticatedAppOnboardingRoute
   AuthenticatedAppProcurementRoute: typeof AuthenticatedAppProcurementRoute
   AuthenticatedAppProjectsRoute: typeof AuthenticatedAppProjectsRoute
+  AuthenticatedAppRequisitionsRoute: typeof AuthenticatedAppRequisitionsRoute
   AuthenticatedAppSettingsRoute: typeof AuthenticatedAppSettingsRoute
   AuthenticatedAppSuppliersRoute: typeof AuthenticatedAppSuppliersRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
@@ -537,6 +558,7 @@ const AuthenticatedAppRouteRouteChildren: AuthenticatedAppRouteRouteChildren = {
   AuthenticatedAppOnboardingRoute: AuthenticatedAppOnboardingRoute,
   AuthenticatedAppProcurementRoute: AuthenticatedAppProcurementRoute,
   AuthenticatedAppProjectsRoute: AuthenticatedAppProjectsRoute,
+  AuthenticatedAppRequisitionsRoute: AuthenticatedAppRequisitionsRoute,
   AuthenticatedAppSettingsRoute: AuthenticatedAppSettingsRoute,
   AuthenticatedAppSuppliersRoute: AuthenticatedAppSuppliersRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
