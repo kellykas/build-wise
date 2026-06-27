@@ -92,6 +92,19 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { profile, user, signOut } = useAuth();
   const navigate = useNavigate();
   const initials = (profile?.full_name || user?.email || "U").slice(0, 2).toUpperCase();
+  const { data: unreadCount } = useQuery({
+    queryKey: ["unread-notifs", user?.id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("internal_notifications")
+        .select("*", { count: "exact", head: true })
+        .eq("recipient_id", user!.id)
+        .is("read_at", null);
+      return count ?? 0;
+    },
+    enabled: !!user,
+    refetchInterval: 30_000,
+  });
 
   return (
     <SidebarProvider>
