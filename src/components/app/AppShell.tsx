@@ -1,8 +1,10 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, FolderKanban, ClipboardList, Users, UserCog, ClipboardCheck,
   Truck, ShoppingCart, Boxes, Wrench, Receipt, Wallet, FileText, CalendarDays,
-  Settings, Bell, Search, ChevronDown, LogOut, HardHat, Building2
+  Settings, Bell, Search, ChevronDown, LogOut, HardHat, Building2, FileSpreadsheet,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -17,53 +19,56 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import type { ReactNode } from "react";
 
 const groups = [
   {
     label: "Workspace",
     items: [
-      { to: "/app", label: "Dashboard", icon: LayoutDashboard, exact: true },
-      { to: "/app/calendar", label: "Calendar", icon: CalendarDays },
+      { to: "/app", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
+      { to: "/app/notifications", label: "Notifications", icon: Bell },
+      { to: "/app/calendar", label: "Agenda", icon: CalendarDays },
     ],
   },
   {
-    label: "Operations",
+    label: "Opérations",
     items: [
-      { to: "/app/projects", label: "Projects", icon: FolderKanban },
-      { to: "/app/tasks", label: "Tasks", icon: ClipboardList },
+      { to: "/app/projects", label: "Projets", icon: FolderKanban },
+      { to: "/app/tasks", label: "Tâches", icon: ClipboardList },
+      { to: "/app/requisitions", label: "États de besoin", icon: FileSpreadsheet },
       { to: "/app/clients", label: "Clients", icon: Users },
-      { to: "/app/client-portal", label: "Client Portal", icon: Building2 },
+      { to: "/app/client-portal", label: "Portail Client", icon: Building2 },
     ],
   },
   {
-    label: "People",
+    label: "Ressources Humaines",
     items: [
-      { to: "/app/employees", label: "Employees", icon: UserCog },
-      { to: "/app/attendance", label: "Attendance", icon: ClipboardCheck },
+      { to: "/app/employees", label: "Employés", icon: UserCog },
+      { to: "/app/attendance", label: "Présence", icon: ClipboardCheck },
     ],
   },
   {
-    label: "Supply Chain",
+    label: "Chaîne d'approvisionnement",
     items: [
-      { to: "/app/suppliers", label: "Suppliers", icon: Truck },
-      { to: "/app/procurement", label: "Procurement", icon: ShoppingCart },
-      { to: "/app/inventory", label: "Inventory", icon: Boxes },
-      { to: "/app/equipment", label: "Equipment", icon: Wrench },
+      { to: "/app/suppliers", label: "Fournisseurs", icon: Truck },
+      { to: "/app/procurement", label: "Achats", icon: ShoppingCart },
+      { to: "/app/inventory", label: "Stock", icon: Boxes },
+      { to: "/app/equipment", label: "Équipement", icon: Wrench },
     ],
   },
   {
     label: "Finance",
     items: [
-      { to: "/app/invoices", label: "Invoices", icon: Receipt },
-      { to: "/app/finance", label: "Finance", icon: Wallet },
+      { to: "/app/invoices", label: "Factures", icon: Receipt },
+      { to: "/app/finance", label: "Trésorerie", icon: Wallet },
     ],
   },
   {
-    label: "Library",
+    label: "Bibliothèque",
     items: [
       { to: "/app/documents", label: "Documents", icon: FileText },
-      { to: "/app/settings", label: "Settings", icon: Settings },
+      { to: "/app/settings", label: "Paramètres", icon: Settings },
     ],
   },
 ] as const;
