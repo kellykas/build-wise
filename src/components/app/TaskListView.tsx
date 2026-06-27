@@ -19,13 +19,13 @@ const priorityTone: Record<string, "neutral" | "warning" | "danger" | "info"> = 
 
 export function TaskListView({ queryKey, filter, emptyText }: {
   queryKey: string;
-  filter: (q: ReturnType<typeof supabase.from<"tasks">>) => any;
+  filter: (q: any) => any;
   emptyText: string;
 }) {
   const { data, isLoading } = useQuery({
     queryKey: ["tasks", queryKey],
     queryFn: async () => {
-      const { data, error } = await filter(supabase.from("tasks")).select("id,name,status,priority,due_date,assigned_to,project_id").order("due_date", { ascending: true, nullsFirst: false }).limit(100);
+      const { data, error } = await filter(supabase.from("tasks").select("id,name,status,priority,due_date,assigned_to,project_id")).order("due_date", { ascending: true, nullsFirst: false }).limit(100);
       if (error) throw error;
       return (data ?? []) as Task[];
     },
