@@ -24,6 +24,7 @@ import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAppRequisitionsRouteImport } from './routes/_authenticated/app/requisitions'
 import { Route as AuthenticatedAppProjectsRouteImport } from './routes/_authenticated/app/projects'
 import { Route as AuthenticatedAppProcurementRouteImport } from './routes/_authenticated/app/procurement'
+import { Route as AuthenticatedAppPayrollRouteImport } from './routes/_authenticated/app/payroll'
 import { Route as AuthenticatedAppOnboardingRouteImport } from './routes/_authenticated/app/onboarding'
 import { Route as AuthenticatedAppNotificationsRouteImport } from './routes/_authenticated/app/notifications'
 import { Route as AuthenticatedAppInvoicesRouteImport } from './routes/_authenticated/app/invoices'
@@ -125,6 +126,11 @@ const AuthenticatedAppProcurementRoute =
     path: '/procurement',
     getParentRoute: () => AuthenticatedAppRouteRoute,
   } as any)
+const AuthenticatedAppPayrollRoute = AuthenticatedAppPayrollRouteImport.update({
+  id: '/payroll',
+  path: '/payroll',
+  getParentRoute: () => AuthenticatedAppRouteRoute,
+} as any)
 const AuthenticatedAppOnboardingRoute =
   AuthenticatedAppOnboardingRouteImport.update({
     id: '/onboarding',
@@ -270,6 +276,7 @@ export interface FileRoutesByFullPath {
   '/app/invoices': typeof AuthenticatedAppInvoicesRoute
   '/app/notifications': typeof AuthenticatedAppNotificationsRoute
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
+  '/app/payroll': typeof AuthenticatedAppPayrollRoute
   '/app/procurement': typeof AuthenticatedAppProcurementRoute
   '/app/projects': typeof AuthenticatedAppProjectsRouteWithChildren
   '/app/requisitions': typeof AuthenticatedAppRequisitionsRouteWithChildren
@@ -306,6 +313,7 @@ export interface FileRoutesByTo {
   '/app/invoices': typeof AuthenticatedAppInvoicesRoute
   '/app/notifications': typeof AuthenticatedAppNotificationsRoute
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
+  '/app/payroll': typeof AuthenticatedAppPayrollRoute
   '/app/procurement': typeof AuthenticatedAppProcurementRoute
   '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/suppliers': typeof AuthenticatedAppSuppliersRoute
@@ -342,6 +350,7 @@ export interface FileRoutesById {
   '/_authenticated/app/invoices': typeof AuthenticatedAppInvoicesRoute
   '/_authenticated/app/notifications': typeof AuthenticatedAppNotificationsRoute
   '/_authenticated/app/onboarding': typeof AuthenticatedAppOnboardingRoute
+  '/_authenticated/app/payroll': typeof AuthenticatedAppPayrollRoute
   '/_authenticated/app/procurement': typeof AuthenticatedAppProcurementRoute
   '/_authenticated/app/projects': typeof AuthenticatedAppProjectsRouteWithChildren
   '/_authenticated/app/requisitions': typeof AuthenticatedAppRequisitionsRouteWithChildren
@@ -381,6 +390,7 @@ export interface FileRouteTypes {
     | '/app/invoices'
     | '/app/notifications'
     | '/app/onboarding'
+    | '/app/payroll'
     | '/app/procurement'
     | '/app/projects'
     | '/app/requisitions'
@@ -417,6 +427,7 @@ export interface FileRouteTypes {
     | '/app/invoices'
     | '/app/notifications'
     | '/app/onboarding'
+    | '/app/payroll'
     | '/app/procurement'
     | '/app/settings'
     | '/app/suppliers'
@@ -452,6 +463,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/invoices'
     | '/_authenticated/app/notifications'
     | '/_authenticated/app/onboarding'
+    | '/_authenticated/app/payroll'
     | '/_authenticated/app/procurement'
     | '/_authenticated/app/projects'
     | '/_authenticated/app/requisitions'
@@ -585,6 +597,13 @@ declare module '@tanstack/react-router' {
       path: '/procurement'
       fullPath: '/app/procurement'
       preLoaderRoute: typeof AuthenticatedAppProcurementRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/payroll': {
+      id: '/_authenticated/app/payroll'
+      path: '/payroll'
+      fullPath: '/app/payroll'
+      preLoaderRoute: typeof AuthenticatedAppPayrollRouteImport
       parentRoute: typeof AuthenticatedAppRouteRoute
     }
     '/_authenticated/app/onboarding': {
@@ -804,6 +823,7 @@ interface AuthenticatedAppRouteRouteChildren {
   AuthenticatedAppInvoicesRoute: typeof AuthenticatedAppInvoicesRoute
   AuthenticatedAppNotificationsRoute: typeof AuthenticatedAppNotificationsRoute
   AuthenticatedAppOnboardingRoute: typeof AuthenticatedAppOnboardingRoute
+  AuthenticatedAppPayrollRoute: typeof AuthenticatedAppPayrollRoute
   AuthenticatedAppProcurementRoute: typeof AuthenticatedAppProcurementRoute
   AuthenticatedAppProjectsRoute: typeof AuthenticatedAppProjectsRouteWithChildren
   AuthenticatedAppRequisitionsRoute: typeof AuthenticatedAppRequisitionsRouteWithChildren
@@ -826,6 +846,7 @@ const AuthenticatedAppRouteRouteChildren: AuthenticatedAppRouteRouteChildren = {
   AuthenticatedAppInvoicesRoute: AuthenticatedAppInvoicesRoute,
   AuthenticatedAppNotificationsRoute: AuthenticatedAppNotificationsRoute,
   AuthenticatedAppOnboardingRoute: AuthenticatedAppOnboardingRoute,
+  AuthenticatedAppPayrollRoute: AuthenticatedAppPayrollRoute,
   AuthenticatedAppProcurementRoute: AuthenticatedAppProcurementRoute,
   AuthenticatedAppProjectsRoute: AuthenticatedAppProjectsRouteWithChildren,
   AuthenticatedAppRequisitionsRoute:
