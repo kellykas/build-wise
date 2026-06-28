@@ -156,7 +156,7 @@ function ProjectDetail() {
             <Card>
               <CardHeader><CardTitle className="text-base">Invoices ({invoices?.length ?? 0})</CardTitle></CardHeader>
               <CardContent className="space-y-2">
-                {(invoices ?? []).slice(0, 5).map((i: { id: string; invoice_number: string; amount: number; status: string }) => (
+                {((invoices ?? []) as Array<{ id: string; invoice_number: string | null; amount: number; status: string }>).slice(0, 5).map((i) => (
                   <div key={i.id} className="flex justify-between text-sm"><span>{i.invoice_number}</span><span>${Number(i.amount).toLocaleString()} · {i.status}</span></div>
                 ))}
                 {(invoices?.length ?? 0) === 0 && <div className="text-sm text-muted-foreground">None.</div>}
@@ -165,7 +165,7 @@ function ProjectDetail() {
             <Card>
               <CardHeader><CardTitle className="text-base">Purchase orders ({pos?.length ?? 0})</CardTitle></CardHeader>
               <CardContent className="space-y-2">
-                {(pos ?? []).slice(0, 5).map((p: { id: string; po_number: string; total_amount: number; status: string }) => (
+                {((pos ?? []) as Array<{ id: string; po_number: string | null; total_amount: number | null; status: string }>).slice(0, 5).map((p) => (
                   <div key={p.id} className="flex justify-between text-sm"><span>{p.po_number}</span><span>${Number(p.total_amount).toLocaleString()} · {p.status}</span></div>
                 ))}
                 {(pos?.length ?? 0) === 0 && <div className="text-sm text-muted-foreground">None.</div>}
