@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export type Column<T = any> = { key: string; label: string; render?: (row: T) => ReactNode };
 
 export function ModulePage<T extends { id: string }>({
-  title, description, table, columns, onNew, icon,
+  title, description, table, columns, onNew, icon, onRowClick, select,
 }: {
   title: string;
   description: string;
@@ -18,11 +18,13 @@ export function ModulePage<T extends { id: string }>({
   columns: Column[];
   onNew?: () => void;
   icon?: ReactNode;
+  onRowClick?: (row: T) => void;
+  select?: string;
 }) {
   const { data, isLoading } = useQuery({
     queryKey: ["module", table],
     queryFn: async () => {
-      const { data, error } = await supabase.from(table as never).select("*").order("created_at", { ascending: false }).limit(50);
+      const { data, error } = await supabase.from(table as never).select(select ?? "*").order("created_at", { ascending: false }).limit(100);
       if (error) throw error;
       return (data ?? []) as T[];
     },
@@ -67,7 +69,11 @@ export function ModulePage<T extends { id: string }>({
                 </thead>
                 <tbody>
                   {data!.map((row) => (
-                    <tr key={row.id} className="border-b border-border last:border-b-0 hover:bg-muted/30">
+                    <tr
+                      key={row.id}
+                      onClick={onRowClick ? () => onRowClick(row) : undefined}
+                      className={`border-b border-border last:border-b-0 hover:bg-muted/30 ${onRowClick ? "cursor-pointer" : ""}`}
+                    >
                       {columns.map((c) => (
                         <td key={String(c.key)} className="px-4 py-3">
                           {c.render ? c.render(row) : String((row as Record<string, unknown>)[c.key as string] ?? "—")}
