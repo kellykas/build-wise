@@ -8,7 +8,9 @@ type Profile = {
   full_name: string | null;
   email: string | null;
   avatar_url: string | null;
+  phone: string | null;
 };
+
 
 type AuthCtx = {
   user: User | null;
@@ -29,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loadProfile = async (uid: string) => {
     const { data } = await supabase
       .from("profiles")
-      .select("id, company_id, full_name, email, avatar_url")
+      .select("id, company_id, full_name, email, avatar_url, phone")
       .eq("id", uid)
       .maybeSingle();
     setProfile(data as Profile | null);
