@@ -41,7 +41,7 @@ function ProcurementPage() {
       const po = (await supabase.from("purchase_orders").select("total_amount, po_number, project_id, company_id").eq("id", id).single()).data;
       if (po) await supabase.from("transactions").insert({
         company_id: po.company_id, type: "expense", category: "Procurement",
-        amount: po.total_amount, description: `PO ${po.po_number}`, purchase_order_id: id, project_id: po.project_id,
+        amount: Number(po.total_amount ?? 0), description: `PO ${po.po_number}`, purchase_order_id: id, project_id: po.project_id,
       });
     }
     qc.invalidateQueries({ queryKey: ["module", "purchase_orders"] });
