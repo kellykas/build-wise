@@ -81,7 +81,7 @@ function PaymentDialog({ inv, onClose }: { inv: Inv | null; onClose: () => void 
     const amt = Number(amount);
     if (!amt || amt <= 0) return toast.error("Enter an amount");
     const newPaid = Number(inv.paid_amount || 0) + amt;
-    const status = newPaid >= Number(inv.amount) ? "paid" : "sent";
+    const status: "paid" | "pending" = newPaid >= Number(inv.amount) ? "paid" : "pending";
     await supabase.from("invoices").update({ paid_amount: newPaid, status }).eq("id", inv.id);
     if (profile?.company_id) {
       await supabase.from("transactions").insert({
