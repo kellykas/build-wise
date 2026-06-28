@@ -46,6 +46,7 @@ const groups = [
     items: [
       { to: "/app/employees", label: "Employés", icon: UserCog },
       { to: "/app/attendance", label: "Présence", icon: ClipboardCheck },
+      { to: "/app/payroll", label: "Paie", icon: ClipboardCheck },
     ],
   },
   {

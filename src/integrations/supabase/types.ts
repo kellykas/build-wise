@@ -14,30 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
+      agenda_events: {
+        Row: {
+          attendees: Json | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          end_time: string | null
+          event_date: string
+          id: string
+          location: string | null
+          project_id: string | null
+          start_time: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          attendees?: Json | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_time?: string | null
+          event_date: string
+          id?: string
+          location?: string | null
+          project_id?: string | null
+          start_time?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          attendees?: Json | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_time?: string | null
+          event_date?: string
+          id?: string
+          location?: string | null
+          project_id?: string | null
+          start_time?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agenda_events_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agenda_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       attendance: {
         Row: {
           clock_in: string
           clock_out: string | null
           company_id: string
           employee_id: string | null
+          hours_worked: number
           id: string
           notes: string | null
+          work_date: string
         }
         Insert: {
           clock_in?: string
           clock_out?: string | null
           company_id: string
           employee_id?: string | null
+          hours_worked?: number
           id?: string
           notes?: string | null
+          work_date?: string
         }
         Update: {
           clock_in?: string
           clock_out?: string | null
           company_id?: string
           employee_id?: string | null
+          hours_worked?: number
           id?: string
           notes?: string | null
+          work_date?: string
         }
         Relationships: [
           {
@@ -204,6 +273,7 @@ export type Database = {
       }
       employees: {
         Row: {
+          bank_account: string | null
           company_id: string
           created_at: string
           department: string | null
@@ -211,14 +281,17 @@ export type Database = {
           employee_number: string | null
           employment_date: string | null
           full_name: string
+          hourly_rate: number
           id: string
           phone: string | null
           position: string | null
           salary: number | null
+          status: string
           updated_at: string
           user_id: string | null
         }
         Insert: {
+          bank_account?: string | null
           company_id: string
           created_at?: string
           department?: string | null
@@ -226,14 +299,17 @@ export type Database = {
           employee_number?: string | null
           employment_date?: string | null
           full_name: string
+          hourly_rate?: number
           id?: string
           phone?: string | null
           position?: string | null
           salary?: number | null
+          status?: string
           updated_at?: string
           user_id?: string | null
         }
         Update: {
+          bank_account?: string | null
           company_id?: string
           created_at?: string
           department?: string | null
@@ -241,10 +317,12 @@ export type Database = {
           employee_number?: string | null
           employment_date?: string | null
           full_name?: string
+          hourly_rate?: number
           id?: string
           phone?: string | null
           position?: string | null
           salary?: number | null
+          status?: string
           updated_at?: string
           user_id?: string | null
         }
@@ -429,6 +507,7 @@ export type Database = {
           name: string
           quantity: number
           sku: string | null
+          status: string
           unit: string | null
           unit_cost: number
           updated_at: string
@@ -443,6 +522,7 @@ export type Database = {
           name: string
           quantity?: number
           sku?: string | null
+          status?: string
           unit?: string | null
           unit_cost?: number
           updated_at?: string
@@ -457,6 +537,7 @@ export type Database = {
           name?: string
           quantity?: number
           sku?: string | null
+          status?: string
           unit?: string | null
           unit_cost?: number
           updated_at?: string
@@ -482,6 +563,7 @@ export type Database = {
           invoice_number: string | null
           issue_date: string | null
           notes: string | null
+          paid_amount: number
           project_id: string | null
           status: Database["public"]["Enums"]["invoice_status"]
           tax: number
@@ -497,6 +579,7 @@ export type Database = {
           invoice_number?: string | null
           issue_date?: string | null
           notes?: string | null
+          paid_amount?: number
           project_id?: string | null
           status?: Database["public"]["Enums"]["invoice_status"]
           tax?: number
@@ -512,6 +595,7 @@ export type Database = {
           invoice_number?: string | null
           issue_date?: string | null
           notes?: string | null
+          paid_amount?: number
           project_id?: string | null
           status?: Database["public"]["Enums"]["invoice_status"]
           tax?: number
@@ -578,6 +662,134 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payroll_rules: {
+        Row: {
+          absence_deduction_per_day: number
+          company_id: string
+          created_at: string
+          currency: string
+          id: string
+          late_penalty_per_hour: number
+          overtime_multiplier: number
+          standard_hours_per_day: number
+          tax_rate: number
+          updated_at: string
+          working_days_per_month: number
+        }
+        Insert: {
+          absence_deduction_per_day?: number
+          company_id: string
+          created_at?: string
+          currency?: string
+          id?: string
+          late_penalty_per_hour?: number
+          overtime_multiplier?: number
+          standard_hours_per_day?: number
+          tax_rate?: number
+          updated_at?: string
+          working_days_per_month?: number
+        }
+        Update: {
+          absence_deduction_per_day?: number
+          company_id?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          late_penalty_per_hour?: number
+          overtime_multiplier?: number
+          standard_hours_per_day?: number
+          tax_rate?: number
+          updated_at?: string
+          working_days_per_month?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payroll_rules_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payslips: {
+        Row: {
+          base_salary: number
+          bonus: number
+          company_id: string
+          created_at: string
+          deductions: number
+          employee_id: string
+          hours_worked: number
+          id: string
+          net_pay: number
+          notes: string | null
+          overtime_hours: number
+          overtime_pay: number
+          paid_at: string | null
+          period_month: number
+          period_year: number
+          status: string
+          tax: number
+          updated_at: string
+        }
+        Insert: {
+          base_salary?: number
+          bonus?: number
+          company_id: string
+          created_at?: string
+          deductions?: number
+          employee_id: string
+          hours_worked?: number
+          id?: string
+          net_pay?: number
+          notes?: string | null
+          overtime_hours?: number
+          overtime_pay?: number
+          paid_at?: string | null
+          period_month: number
+          period_year: number
+          status?: string
+          tax?: number
+          updated_at?: string
+        }
+        Update: {
+          base_salary?: number
+          bonus?: number
+          company_id?: string
+          created_at?: string
+          deductions?: number
+          employee_id?: string
+          hours_worked?: number
+          id?: string
+          net_pay?: number
+          notes?: string | null
+          overtime_hours?: number
+          overtime_pay?: number
+          paid_at?: string | null
+          period_month?: number
+          period_year?: number
+          status?: string
+          tax?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payslips_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payslips_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
             referencedColumns: ["id"]
           },
         ]
@@ -697,12 +909,15 @@ export type Database = {
       }
       purchase_orders: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
           company_id: string
           created_at: string
           id: string
           items: Json
           po_number: string | null
           project_id: string | null
+          rejection_reason: string | null
           request_date: string | null
           status: Database["public"]["Enums"]["po_status"]
           supplier_id: string | null
@@ -710,12 +925,15 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
           company_id: string
           created_at?: string
           id?: string
           items?: Json
           po_number?: string | null
           project_id?: string | null
+          rejection_reason?: string | null
           request_date?: string | null
           status?: Database["public"]["Enums"]["po_status"]
           supplier_id?: string | null
@@ -723,12 +941,15 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
           company_id?: string
           created_at?: string
           id?: string
           items?: Json
           po_number?: string | null
           project_id?: string | null
+          rejection_reason?: string | null
           request_date?: string | null
           status?: Database["public"]["Enums"]["po_status"]
           supplier_id?: string | null
@@ -1102,6 +1323,7 @@ export type Database = {
           id: string
           name: string
           priority: Database["public"]["Enums"]["priority_level"]
+          progress: number
           project_id: string | null
           status: Database["public"]["Enums"]["task_status"]
           updated_at: string
@@ -1115,6 +1337,7 @@ export type Database = {
           id?: string
           name: string
           priority?: Database["public"]["Enums"]["priority_level"]
+          progress?: number
           project_id?: string | null
           status?: Database["public"]["Enums"]["task_status"]
           updated_at?: string
@@ -1128,6 +1351,7 @@ export type Database = {
           id?: string
           name?: string
           priority?: Database["public"]["Enums"]["priority_level"]
+          progress?: number
           project_id?: string | null
           status?: Database["public"]["Enums"]["task_status"]
           updated_at?: string
@@ -1145,6 +1369,96 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transactions: {
+        Row: {
+          amount: number
+          category: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          invoice_id: string | null
+          payslip_id: string | null
+          project_id: string | null
+          purchase_order_id: string | null
+          reference: string | null
+          transaction_date: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          category?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          invoice_id?: string | null
+          payslip_id?: string | null
+          project_id?: string | null
+          purchase_order_id?: string | null
+          reference?: string | null
+          transaction_date?: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          invoice_id?: string | null
+          payslip_id?: string | null
+          project_id?: string | null
+          purchase_order_id?: string | null
+          reference?: string | null
+          transaction_date?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_payslip_id_fkey"
+            columns: ["payslip_id"]
+            isOneToOne: false
+            referencedRelation: "payslips"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_purchase_order_id_fkey"
+            columns: ["purchase_order_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_orders"
             referencedColumns: ["id"]
           },
         ]

@@ -1,84 +1,81 @@
-## What I see in the reference (sigop.fr)
 
-The portal centers on three flows we don't yet have in BuildFlow:
+# Full edit, detail & workflow pass across BuildFlow ERP
 
-1. **Etats de besoin** — internal purchase-requisition workflow with a 4-role chain: **Demandeur → Tarificateur → Validateur → Décaisseur (Caisse)**, status tabs (`À compléter`, `À traiter`, `Encours`, `Cloturés`), line items (besoin / unité / quantité / état), fund disbursement history, and a printable A4 voucher with company letterhead.
-2. **Tasks workspace** — split into sub-modules: **Mes tâches, Exécution, Supervision, Approbation, Urgences**, each with its own list + detail pane.
-3. **Notification interne** — in-app notifications targeted at specific recipients with a Destinataire / Historique split.
+This turns every module from a read-only list into a working operational tool. All writes go through Supabase with RLS, and the dashboard re-reads the same tables so changes propagate everywhere automatically.
 
-Plus a refreshed dashboard with the KPI tiles that link into these flows (Tâches à exécuter, États de besoin encours, Membres de mon équipe, Évenements prévus, Urgences attendues, Statut de présence, Finances à justifier, Transactions à confirmer).
+## 1. Projects — detail page + inline editing
+- New route `app/projects/$id` with tabs: **Overview, Tasks, Documents, Invoices, Team, Activity**.
+- Inline-editable fields: name, status, priority, budget, progress (slider), start/end dates, location, description, client.
+- Status pill is a dropdown that updates `projects.status` immediately.
+- Right rail: KPIs (spent vs budget, % tasks done, days remaining), recent activity.
+- "Delete project" with confirmation; soft-archive option.
 
-We will build all of this — but cleaner, denser, and more modern than the reference (proper typography, real status pills, no neon flat blocks, keyboard-friendly, dark-mode native, printable voucher).
+## 2. Agenda (Calendar) — day & future view
+- Replace stub with a real calendar:
+  - **Today** panel listing every task `due_date = today` + meetings/site visits.
+  - **Upcoming** list grouped by day (next 14 days).
+  - Month grid (shadcn Calendar) with dots on days that have items.
+- "+ New event" dialog → writes to a new `agenda_events` table (title, date, time, location, project_id, attendees, notes), editable & deletable.
+- Clicking a task on the agenda opens it in the task drawer.
 
-## Plan
+## 3. Tasks — modify, assign, track progress
+- Click any task → side drawer with edit form: name, description, status, priority, assignee (employee picker), project, due date, **progress %** slider, checklist.
+- Drag-and-drop between Kanban columns updates `status` live.
+- Assigning writes to `task_assignments`; bell notifies assignee.
+- Progress shows in project KPI automatically.
 
-### 1. Database (one migration)
+## 4. Employees — full CRUD
+- Row click → edit dialog: all fields (name, email, phone, position, department, salary, hire date, status, hourly rate).
+- "+ New employee", delete with confirm.
+- Bulk actions: deactivate / change department.
 
-New enums & tables, all multi-tenant (`company_id`) with RLS + GRANTs:
+## 5. Attendance + Payroll + Payslips
+- New table `payroll_rules` (overtime multiplier, standard hours/day, late penalty, absence deduction, currency).
+- Attendance page: every active employee listed for the selected date with **Clock in / Clock out** buttons (super_admin can do it on their behalf); auto-computes hours worked.
+- New module **Payroll**:
+  - Period selector (month).
+  - Generates `payslips` per employee from attendance × rules (base salary, hours worked, overtime, deductions, net pay).
+  - Edit individual payslip lines (bonus, deduction).
+  - Mark **Paid** → posts an expense to Finance.
+  - Download / print payslip view.
+- Settings → editable payroll rules.
 
-- `requisition_status` enum: `draft` (À compléter), `pending_pricing` (À traiter), `in_progress` (Encours), `closed` (Cloturés), `rejected`.
-- `requisition_line_status` enum: `pending`, `priced`, `validated`, `disbursed`, `rejected`.
-- `requisitions` — title, project_id, stage (e.g. "Carrelage"), folder/classeur, demandeur_id, tarificateur_id, validateur_id, caissier_id, status, total_amount, notes.
-- `requisition_lines` — requisition_id, besoin (label), unit, quantity, unit_price, status, validated_at, etc.
-- `requisition_disbursements` — line_id, amount, beneficiary, paid_by, date, notes (the "Historique de décaissement").
-- `internal_notifications` extension on existing `notifications` — add `recipient_user_id`, `type` (info/task/requisition/approval), `link`, `read_at`. (Existing `notifications` becomes the broadcast feed; per-user inbox uses these fields.)
-- `task_role` enum + `task_assignments` (executor / supervisor / approver) so Tasks can be split into Exécution / Supervision / Approbation views off the existing `tasks` table.
+## 6. Procurement — approval workflow
+- PO detail drawer with line items, supplier, total.
+- Status transitions: `draft → pending → approved / rejected → ordered → received`.
+- Only `super_admin` / `company_owner` / `finance_manager` see Approve/Reject buttons.
+- Approval writes `approved_by`, `approved_at`; approved POs feed Finance expenses.
 
-RLS scoped to `current_company_id()`; sensitive transitions (validate, disburse) gated by helper functions `can_price()`, `can_validate()`, `can_disburse()` reading `user_roles`.
+## 7. Stock / Equipment / Invoices — editable
+- Row click → edit dialog for every field.
+- Status dropdowns inline (in stock / low / out, available / in use / maintenance, draft / sent / paid / overdue).
+- Invoices: record payment dialog → updates `paid_amount`, auto-flips to paid; feeds Finance income.
 
-### 2. New module: Etats de besoin (`/app/requisitions`)
+## 8. Finance — full ledger
+- New tables: `transactions` (type: income | expense, source, amount, date, category, project_id, reference), `payments`, `credits`.
+- Tabs: **Overview, Income, Expenses, Invoices, Payments, Credits**.
+- Add / edit / delete transactions; auto-entries from invoice payments and approved POs.
+- KPIs (revenue, expenses, profit, AR, AP) recompute from `transactions` + invoices.
+- All dashboard cards read the same source → stays in sync.
 
-- **List page** with the 4 status tabs as a segmented control, search by title, filter by date, "Classeurs" side panel.
-- **New requisition dialog** — title, project, stage, classeur, assign tarificateur / validateur / caissier from employees.
-- **Detail page** `/app/requisitions/$id`:
-  - Left: header card (status banner: yellow "pas encore validé", red "pas appuré dans sa totalité", green "complètement appuré"), line-items table with inline "Action" dropdown (Set price, Validate, Reject, Disburse — visible per role), "Sortie des fonds" button, "Ajouter un besoin" for draft state, disbursement history table.
-  - Right: sticky voucher preview (Projet, Étape, Date, Classeur, n°, Demandeur, Tarificateur, Validateur, Caisse) styled like the printed form.
-- **Print view** `/app/requisitions/$id/print` — clean A4 layout with company letterhead block, opens browser print dialog. CSS `@media print`.
+## 9. Parameters (Settings) — users & roles
+- **Users tab** (super_admin only):
+  - List every profile in the company with their roles.
+  - "+ Invite user" (email + role) → uses Supabase admin API via a protected server fn.
+  - Change role, deactivate, delete.
+- **My profile tab** (everyone):
+  - Edit name, phone, avatar, locale — but NOT role.
+- **Payroll rules tab**, **Company info tab**.
 
-### 3. Tasks workspace upgrade
+## 10. Realtime sync
+- Subscribe dashboard + agenda + finance to Supabase realtime channels on `projects`, `tasks`, `invoices`, `transactions`, `attendance` → instant refresh anywhere.
 
-Restructure `/app/tasks` as a layout with sub-routes:
-- `/app/tasks` — Mes tâches (assigned to me)
-- `/app/tasks/execution` — tasks where I'm executor
-- `/app/tasks/supervision` — tasks I supervise (with Exécutants + Exécution columns)
-- `/app/tasks/approval` — tasks awaiting my approval
-- `/app/tasks/urgent` — priority = urgent across the company
+---
 
-Master-detail layout (list on the left, detail pane on the right) instead of the current Kanban-only view. Kanban stays available as a toggle on Supervision.
+## Technical notes
+- Migration adds: `agenda_events`, `payroll_rules`, `payslips`, `payslip_lines`, `transactions`, `payments`, `credits`; adds `approved_by`, `approved_at`, `rejected_reason` to `purchase_orders`; adds `paid_amount` to `invoices`. All with GRANTs + RLS scoped by `current_company_id()`.
+- Reusable `EditDialog` + `InlineStatusSelect` + `DetailDrawer` components keep code DRY.
+- User invitation server fn uses `requireSupabaseAuth` + `has_role('super_admin')` then `supabaseAdmin.auth.admin.inviteUserByEmail`.
+- Dashboard queries switched to live tables (no mock numbers) so every edit is reflected.
 
-### 4. Notification interne (`/app/notifications`)
-
-- Composer card: type selector (Info, Task assignment, Requisition update, Approval request), title, message, recipients (multi-select employees), optional link.
-- Right pane tabs: **Destinataires** (with read/unread state per recipient) and **Historique** (sent log).
-- Top-bar bell badge wired to unread `internal_notifications` for the current user.
-
-### 5. Dashboard refresh
-
-Replace current tiles with 8 KPI cards matching the reference set, each linking to its module:
-Tâches à exécuter • États de besoin en cours • Membres de mon équipe • Évènements prévus • Urgences • Statut de présence • Finances à justifier • Transactions à confirmer.
-Keep the charts row, add three list cards underneath: **Finances à justifier**, **États de besoin (à traiter)**, **Transactions à confirmer**.
-
-### 6. Sidebar
-
-Add **États de besoin** group entry, expand **Tasks** into a collapsible group with the 5 sub-items, add **Notifications** under Workspace.
-
-### Visual direction
-
-Keep the plum/teal Odoo-leaning theme. Status colors: amber = pending pricing, blue = in progress, emerald = closed, red = rejected/urgent. Dense table rows, semantic tokens only, no flat-color hero blocks.
-
-### Out of scope for this slice
-
-- Mobile-specific layouts (works responsive, not redesigned).
-- Email/SMS delivery for notifications (in-app only).
-- Multi-currency on requisitions (USD only, like the reference).
-- Calendar/Agenda redesign (KPI links to existing calendar).
-
-### Order of work
-
-1. Migration (enums, tables, RLS, GRANTs, helper fns).
-2. Sidebar + routes scaffolding.
-3. Requisitions list → detail → print.
-4. Tasks sub-modules with master-detail.
-5. Internal notifications + bell badge.
-6. Dashboard refresh.
-7. Seed sample requisitions + notifications into the existing mock data.
+This is a large slice — I'll deliver it in one pass, but if you want it phased (e.g. Projects+Tasks+Agenda first, then Payroll, then Finance/Users) say the word.
