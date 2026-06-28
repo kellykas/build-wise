@@ -38,11 +38,13 @@ import { Route as AuthenticatedAppCalendarRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAppAttendanceRouteImport } from './routes/_authenticated/app/attendance'
 import { Route as AuthenticatedAppTasksIndexRouteImport } from './routes/_authenticated/app/tasks.index'
 import { Route as AuthenticatedAppRequisitionsIndexRouteImport } from './routes/_authenticated/app/requisitions.index'
+import { Route as AuthenticatedAppProjectsIndexRouteImport } from './routes/_authenticated/app/projects.index'
 import { Route as AuthenticatedAppTasksUrgentRouteImport } from './routes/_authenticated/app/tasks.urgent'
 import { Route as AuthenticatedAppTasksSupervisionRouteImport } from './routes/_authenticated/app/tasks.supervision'
 import { Route as AuthenticatedAppTasksExecutionRouteImport } from './routes/_authenticated/app/tasks.execution'
 import { Route as AuthenticatedAppTasksApprovalRouteImport } from './routes/_authenticated/app/tasks.approval'
 import { Route as AuthenticatedAppRequisitionsIdRouteImport } from './routes/_authenticated/app/requisitions.$id'
+import { Route as AuthenticatedAppProjectsIdRouteImport } from './routes/_authenticated/app/projects.$id'
 
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
@@ -205,6 +207,12 @@ const AuthenticatedAppRequisitionsIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedAppRequisitionsRoute,
   } as any)
+const AuthenticatedAppProjectsIndexRoute =
+  AuthenticatedAppProjectsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedAppProjectsRoute,
+  } as any)
 const AuthenticatedAppTasksUrgentRoute =
   AuthenticatedAppTasksUrgentRouteImport.update({
     id: '/urgent',
@@ -235,6 +243,12 @@ const AuthenticatedAppRequisitionsIdRoute =
     path: '/$id',
     getParentRoute: () => AuthenticatedAppRequisitionsRoute,
   } as any)
+const AuthenticatedAppProjectsIdRoute =
+  AuthenticatedAppProjectsIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedAppProjectsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -257,17 +271,19 @@ export interface FileRoutesByFullPath {
   '/app/notifications': typeof AuthenticatedAppNotificationsRoute
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/procurement': typeof AuthenticatedAppProcurementRoute
-  '/app/projects': typeof AuthenticatedAppProjectsRoute
+  '/app/projects': typeof AuthenticatedAppProjectsRouteWithChildren
   '/app/requisitions': typeof AuthenticatedAppRequisitionsRouteWithChildren
   '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/suppliers': typeof AuthenticatedAppSuppliersRoute
   '/app/tasks': typeof AuthenticatedAppTasksRouteWithChildren
   '/app/': typeof AuthenticatedAppIndexRoute
+  '/app/projects/$id': typeof AuthenticatedAppProjectsIdRoute
   '/app/requisitions/$id': typeof AuthenticatedAppRequisitionsIdRoute
   '/app/tasks/approval': typeof AuthenticatedAppTasksApprovalRoute
   '/app/tasks/execution': typeof AuthenticatedAppTasksExecutionRoute
   '/app/tasks/supervision': typeof AuthenticatedAppTasksSupervisionRoute
   '/app/tasks/urgent': typeof AuthenticatedAppTasksUrgentRoute
+  '/app/projects/': typeof AuthenticatedAppProjectsIndexRoute
   '/app/requisitions/': typeof AuthenticatedAppRequisitionsIndexRoute
   '/app/tasks/': typeof AuthenticatedAppTasksIndexRoute
 }
@@ -291,15 +307,16 @@ export interface FileRoutesByTo {
   '/app/notifications': typeof AuthenticatedAppNotificationsRoute
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/procurement': typeof AuthenticatedAppProcurementRoute
-  '/app/projects': typeof AuthenticatedAppProjectsRoute
   '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/suppliers': typeof AuthenticatedAppSuppliersRoute
   '/app': typeof AuthenticatedAppIndexRoute
+  '/app/projects/$id': typeof AuthenticatedAppProjectsIdRoute
   '/app/requisitions/$id': typeof AuthenticatedAppRequisitionsIdRoute
   '/app/tasks/approval': typeof AuthenticatedAppTasksApprovalRoute
   '/app/tasks/execution': typeof AuthenticatedAppTasksExecutionRoute
   '/app/tasks/supervision': typeof AuthenticatedAppTasksSupervisionRoute
   '/app/tasks/urgent': typeof AuthenticatedAppTasksUrgentRoute
+  '/app/projects': typeof AuthenticatedAppProjectsIndexRoute
   '/app/requisitions': typeof AuthenticatedAppRequisitionsIndexRoute
   '/app/tasks': typeof AuthenticatedAppTasksIndexRoute
 }
@@ -326,17 +343,19 @@ export interface FileRoutesById {
   '/_authenticated/app/notifications': typeof AuthenticatedAppNotificationsRoute
   '/_authenticated/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/_authenticated/app/procurement': typeof AuthenticatedAppProcurementRoute
-  '/_authenticated/app/projects': typeof AuthenticatedAppProjectsRoute
+  '/_authenticated/app/projects': typeof AuthenticatedAppProjectsRouteWithChildren
   '/_authenticated/app/requisitions': typeof AuthenticatedAppRequisitionsRouteWithChildren
   '/_authenticated/app/settings': typeof AuthenticatedAppSettingsRoute
   '/_authenticated/app/suppliers': typeof AuthenticatedAppSuppliersRoute
   '/_authenticated/app/tasks': typeof AuthenticatedAppTasksRouteWithChildren
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
+  '/_authenticated/app/projects/$id': typeof AuthenticatedAppProjectsIdRoute
   '/_authenticated/app/requisitions/$id': typeof AuthenticatedAppRequisitionsIdRoute
   '/_authenticated/app/tasks/approval': typeof AuthenticatedAppTasksApprovalRoute
   '/_authenticated/app/tasks/execution': typeof AuthenticatedAppTasksExecutionRoute
   '/_authenticated/app/tasks/supervision': typeof AuthenticatedAppTasksSupervisionRoute
   '/_authenticated/app/tasks/urgent': typeof AuthenticatedAppTasksUrgentRoute
+  '/_authenticated/app/projects/': typeof AuthenticatedAppProjectsIndexRoute
   '/_authenticated/app/requisitions/': typeof AuthenticatedAppRequisitionsIndexRoute
   '/_authenticated/app/tasks/': typeof AuthenticatedAppTasksIndexRoute
 }
@@ -369,11 +388,13 @@ export interface FileRouteTypes {
     | '/app/suppliers'
     | '/app/tasks'
     | '/app/'
+    | '/app/projects/$id'
     | '/app/requisitions/$id'
     | '/app/tasks/approval'
     | '/app/tasks/execution'
     | '/app/tasks/supervision'
     | '/app/tasks/urgent'
+    | '/app/projects/'
     | '/app/requisitions/'
     | '/app/tasks/'
   fileRoutesByTo: FileRoutesByTo
@@ -397,15 +418,16 @@ export interface FileRouteTypes {
     | '/app/notifications'
     | '/app/onboarding'
     | '/app/procurement'
-    | '/app/projects'
     | '/app/settings'
     | '/app/suppliers'
     | '/app'
+    | '/app/projects/$id'
     | '/app/requisitions/$id'
     | '/app/tasks/approval'
     | '/app/tasks/execution'
     | '/app/tasks/supervision'
     | '/app/tasks/urgent'
+    | '/app/projects'
     | '/app/requisitions'
     | '/app/tasks'
   id:
@@ -437,11 +459,13 @@ export interface FileRouteTypes {
     | '/_authenticated/app/suppliers'
     | '/_authenticated/app/tasks'
     | '/_authenticated/app/'
+    | '/_authenticated/app/projects/$id'
     | '/_authenticated/app/requisitions/$id'
     | '/_authenticated/app/tasks/approval'
     | '/_authenticated/app/tasks/execution'
     | '/_authenticated/app/tasks/supervision'
     | '/_authenticated/app/tasks/urgent'
+    | '/_authenticated/app/projects/'
     | '/_authenticated/app/requisitions/'
     | '/_authenticated/app/tasks/'
   fileRoutesById: FileRoutesById
@@ -661,6 +685,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppRequisitionsIndexRouteImport
       parentRoute: typeof AuthenticatedAppRequisitionsRoute
     }
+    '/_authenticated/app/projects/': {
+      id: '/_authenticated/app/projects/'
+      path: '/'
+      fullPath: '/app/projects/'
+      preLoaderRoute: typeof AuthenticatedAppProjectsIndexRouteImport
+      parentRoute: typeof AuthenticatedAppProjectsRoute
+    }
     '/_authenticated/app/tasks/urgent': {
       id: '/_authenticated/app/tasks/urgent'
       path: '/urgent'
@@ -696,8 +727,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppRequisitionsIdRouteImport
       parentRoute: typeof AuthenticatedAppRequisitionsRoute
     }
+    '/_authenticated/app/projects/$id': {
+      id: '/_authenticated/app/projects/$id'
+      path: '/$id'
+      fullPath: '/app/projects/$id'
+      preLoaderRoute: typeof AuthenticatedAppProjectsIdRouteImport
+      parentRoute: typeof AuthenticatedAppProjectsRoute
+    }
   }
 }
+
+interface AuthenticatedAppProjectsRouteChildren {
+  AuthenticatedAppProjectsIdRoute: typeof AuthenticatedAppProjectsIdRoute
+  AuthenticatedAppProjectsIndexRoute: typeof AuthenticatedAppProjectsIndexRoute
+}
+
+const AuthenticatedAppProjectsRouteChildren: AuthenticatedAppProjectsRouteChildren =
+  {
+    AuthenticatedAppProjectsIdRoute: AuthenticatedAppProjectsIdRoute,
+    AuthenticatedAppProjectsIndexRoute: AuthenticatedAppProjectsIndexRoute,
+  }
+
+const AuthenticatedAppProjectsRouteWithChildren =
+  AuthenticatedAppProjectsRoute._addFileChildren(
+    AuthenticatedAppProjectsRouteChildren,
+  )
 
 interface AuthenticatedAppRequisitionsRouteChildren {
   AuthenticatedAppRequisitionsIdRoute: typeof AuthenticatedAppRequisitionsIdRoute
@@ -751,7 +805,7 @@ interface AuthenticatedAppRouteRouteChildren {
   AuthenticatedAppNotificationsRoute: typeof AuthenticatedAppNotificationsRoute
   AuthenticatedAppOnboardingRoute: typeof AuthenticatedAppOnboardingRoute
   AuthenticatedAppProcurementRoute: typeof AuthenticatedAppProcurementRoute
-  AuthenticatedAppProjectsRoute: typeof AuthenticatedAppProjectsRoute
+  AuthenticatedAppProjectsRoute: typeof AuthenticatedAppProjectsRouteWithChildren
   AuthenticatedAppRequisitionsRoute: typeof AuthenticatedAppRequisitionsRouteWithChildren
   AuthenticatedAppSettingsRoute: typeof AuthenticatedAppSettingsRoute
   AuthenticatedAppSuppliersRoute: typeof AuthenticatedAppSuppliersRoute
@@ -773,7 +827,7 @@ const AuthenticatedAppRouteRouteChildren: AuthenticatedAppRouteRouteChildren = {
   AuthenticatedAppNotificationsRoute: AuthenticatedAppNotificationsRoute,
   AuthenticatedAppOnboardingRoute: AuthenticatedAppOnboardingRoute,
   AuthenticatedAppProcurementRoute: AuthenticatedAppProcurementRoute,
-  AuthenticatedAppProjectsRoute: AuthenticatedAppProjectsRoute,
+  AuthenticatedAppProjectsRoute: AuthenticatedAppProjectsRouteWithChildren,
   AuthenticatedAppRequisitionsRoute:
     AuthenticatedAppRequisitionsRouteWithChildren,
   AuthenticatedAppSettingsRoute: AuthenticatedAppSettingsRoute,

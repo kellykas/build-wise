@@ -54,16 +54,16 @@ function ProjectDetail() {
 
   if (!project || !draft) return <div className="text-sm text-muted-foreground">Loading…</div>;
 
-  const update = async (patch: Partial<Project>) => {
-    const { error } = await supabase.from("projects").update(patch).eq("id", id);
+  const update = async (patch: Record<string, unknown>) => {
+    const { error } = await supabase.from("projects").update(patch as never).eq("id", id);
     if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["project", id] });
     qc.invalidateQueries({ queryKey: ["module", "projects"] });
     toast.success("Saved");
   };
 
-  const totalSpent = (pos ?? []).reduce((s, p: { total_amount: number }) => s + Number(p.total_amount || 0), 0);
-  const tasksDone = (tasks ?? []).filter((t: { status: string }) => t.status === "completed").length;
+  const totalSpent = ((pos ?? []) as Array<{ total_amount: number | null }>).reduce((s, p) => s + Number(p.total_amount || 0), 0);
+  const tasksDone = ((tasks ?? []) as Array<{ status: string }>).filter((t) => t.status === "completed").length;
   const daysRemaining = draft.end_date ? Math.ceil((new Date(draft.end_date).getTime() - Date.now()) / 86400000) : null;
 
   return (
