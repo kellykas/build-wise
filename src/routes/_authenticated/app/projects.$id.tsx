@@ -8,9 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Calendar, MapPin, DollarSign, TrendingUp, Trash2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { ArrowLeft, Calendar, MapPin, DollarSign, TrendingUp, Trash2, Users, Wallet, PiggyBank } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
+
 
 export const Route = createFileRoute("/_authenticated/app/projects/$id")({
   component: ProjectDetail,
@@ -65,6 +67,8 @@ function ProjectDetail() {
   const totalSpent = ((pos ?? []) as Array<{ total_amount: number | null }>).reduce((s, p) => s + Number(p.total_amount || 0), 0);
   const tasksDone = ((tasks ?? []) as Array<{ status: string }>).filter((t) => t.status === "completed").length;
   const daysRemaining = draft.end_date ? Math.ceil((new Date(draft.end_date).getTime() - Date.now()) / 86400000) : null;
+  const remainingBudget = Number(draft.budget || 0) - totalSpent;
+  const spentPct = draft.budget ? Math.round((totalSpent / draft.budget) * 100) : 0;
 
   return (
     <div className="space-y-6">
@@ -72,15 +76,19 @@ function ProjectDetail() {
         <Button variant="ghost" size="sm" onClick={() => navigate({ to: "/app/projects" })}>
           <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
-        <Button variant="destructive" size="sm" onClick={async () => {
-          if (!confirm("Delete this project?")) return;
-          const { error } = await supabase.from("projects").delete().eq("id", id);
-          if (error) return toast.error(error.message);
-          toast.success("Project deleted");
-          qc.invalidateQueries({ queryKey: ["module", "projects"] });
-          navigate({ to: "/app/projects" });
-        }}><Trash2 className="mr-2 h-4 w-4" /> Delete</Button>
+        <div className="flex gap-2">
+          <AgentsDialog projectId={id} managerId={(project as unknown as { manager_id: string | null }).manager_id} />
+          <Button variant="destructive" size="sm" onClick={async () => {
+            if (!confirm("Delete this project?")) return;
+            const { error } = await supabase.from("projects").delete().eq("id", id);
+            if (error) return toast.error(error.message);
+            toast.success("Project deleted");
+            qc.invalidateQueries({ queryKey: ["module", "projects"] });
+            navigate({ to: "/app/projects" });
+          }}><Trash2 className="mr-2 h-4 w-4" /> Delete</Button>
+        </div>
       </div>
+
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
