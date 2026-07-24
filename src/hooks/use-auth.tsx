@@ -11,11 +11,18 @@ type Profile = {
   phone: string | null;
 };
 
+export type AppRole =
+  | "super_admin" | "company_owner" | "director" | "project_manager"
+  | "site_engineer" | "accountant" | "hr_manager" | "procurement_officer"
+  | "store_manager" | "employee" | "client";
 
 type AuthCtx = {
   user: User | null;
   session: Session | null;
   profile: Profile | null;
+  roles: AppRole[];
+  hasRole: (...r: AppRole[]) => boolean;
+  isAdmin: boolean;
   loading: boolean;
   refresh: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -26,25 +33,23 @@ const AuthContext = createContext<AuthCtx | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadProfile = async (uid: string) => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("id, company_id, full_name, email, avatar_url, phone")
-      .eq("id", uid)
-      .maybeSingle();
-    setProfile(data as Profile | null);
+    const [{ data: p }, { data: r }] = await Promise.all([
+      supabase.from("profiles").select("id, company_id, full_name, email, avatar_url, phone").eq("id", uid).maybeSingle(),
+      supabase.from("user_roles").select("role").eq("user_id", uid),
+    ]);
+    setProfile(p as Profile | null);
+    setRoles(((r ?? []) as { role: AppRole }[]).map((x) => x.role));
   };
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s);
-      if (s?.user) {
-        setTimeout(() => loadProfile(s.user.id), 0);
-      } else {
-        setProfile(null);
-      }
+      if (s?.user) setTimeout(() => loadProfile(s.user.id), 0);
+      else { setProfile(null); setRoles([]); }
     });
     supabase.auth.getSession().then(async ({ data }) => {
       setSession(data.session);
@@ -54,15 +59,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  const refresh = async () => {
-    if (session?.user) await loadProfile(session.user.id);
-  };
-  const signOut = async () => {
-    await supabase.auth.signOut();
-  };
+  const refresh = async () => { if (session?.user) await loadProfile(session.user.id); };
+  const signOut = async () => { await supabase.auth.signOut(); };
+  const hasRole = (...r: AppRole[]) => r.some((x) => roles.includes(x));
+  const isAdmin = hasRole("super_admin", "company_owner");
 
   return (
-    <AuthContext.Provider value={{ user: session?.user ?? null, session, profile, loading, refresh, signOut }}>
+    <AuthContext.Provider value={{ user: session?.user ?? null, session, profile, roles, hasRole, isAdmin, loading, refresh, signOut }}>
       {children}
     </AuthContext.Provider>
   );
