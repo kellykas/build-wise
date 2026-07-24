@@ -22,7 +22,18 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import type { ReactNode } from "react";
 
-const groups = [
+import type { AppRole } from "@/hooks/use-auth";
+
+// roles allowed to see the item. undefined = everyone signed-in.
+type NavItemDef = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean; roles?: AppRole[] };
+
+const ADMIN: AppRole[] = ["super_admin", "company_owner", "director"];
+const HR: AppRole[] = [...ADMIN, "hr_manager"];
+const FIN: AppRole[] = [...ADMIN, "accountant"];
+const PROC: AppRole[] = [...ADMIN, "procurement_officer", "store_manager"];
+const OPS: AppRole[] = [...ADMIN, "project_manager", "site_engineer"];
+
+const groups: { label: string; items: NavItemDef[] }[] = [
   {
     label: "Workspace",
     items: [
@@ -34,35 +45,35 @@ const groups = [
   {
     label: "Opérations",
     items: [
-      { to: "/app/projects", label: "Projets", icon: FolderKanban },
+      { to: "/app/projects", label: "Projets", icon: FolderKanban, roles: [...OPS, "accountant"] },
       { to: "/app/tasks", label: "Tâches", icon: ClipboardList },
-      { to: "/app/requisitions", label: "États de besoin", icon: FileSpreadsheet },
-      { to: "/app/clients", label: "Clients", icon: Users },
-      { to: "/app/client-portal", label: "Portail Client", icon: Building2 },
+      { to: "/app/requisitions", label: "États de besoin", icon: FileSpreadsheet, roles: [...OPS, ...FIN, ...PROC] },
+      { to: "/app/clients", label: "Clients", icon: Users, roles: [...ADMIN, "project_manager", "accountant"] },
+      { to: "/app/client-portal", label: "Portail Client", icon: Building2, roles: [...ADMIN, "project_manager", "client"] },
     ],
   },
   {
     label: "Ressources Humaines",
     items: [
-      { to: "/app/employees", label: "Employés", icon: UserCog },
-      { to: "/app/attendance", label: "Présence", icon: ClipboardCheck },
-      { to: "/app/payroll", label: "Paie", icon: ClipboardCheck },
+      { to: "/app/employees", label: "Employés", icon: UserCog, roles: HR },
+      { to: "/app/attendance", label: "Présence", icon: ClipboardCheck, roles: [...HR, "project_manager"] },
+      { to: "/app/payroll", label: "Paie", icon: ClipboardCheck, roles: [...HR, "accountant"] },
     ],
   },
   {
     label: "Chaîne d'approvisionnement",
     items: [
-      { to: "/app/suppliers", label: "Fournisseurs", icon: Truck },
-      { to: "/app/procurement", label: "Achats", icon: ShoppingCart },
-      { to: "/app/inventory", label: "Stock", icon: Boxes },
-      { to: "/app/equipment", label: "Équipement", icon: Wrench },
+      { to: "/app/suppliers", label: "Fournisseurs", icon: Truck, roles: PROC },
+      { to: "/app/procurement", label: "Achats", icon: ShoppingCart, roles: [...PROC, ...FIN] },
+      { to: "/app/inventory", label: "Stock", icon: Boxes, roles: [...PROC, "site_engineer"] },
+      { to: "/app/equipment", label: "Équipement", icon: Wrench, roles: [...PROC, ...OPS] },
     ],
   },
   {
     label: "Finance",
     items: [
-      { to: "/app/invoices", label: "Factures", icon: Receipt },
-      { to: "/app/finance", label: "Trésorerie", icon: Wallet },
+      { to: "/app/invoices", label: "Factures", icon: Receipt, roles: [...FIN, "project_manager"] },
+      { to: "/app/finance", label: "Trésorerie", icon: Wallet, roles: FIN },
     ],
   },
   {
@@ -72,7 +83,8 @@ const groups = [
       { to: "/app/settings", label: "Paramètres", icon: Settings },
     ],
   },
-] as const;
+];
+
 
 function NavItem({ to, label, icon: Icon, exact }: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -90,9 +102,14 @@ function NavItem({ to, label, icon: Icon, exact }: { to: string; label: string; 
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { profile, user, signOut } = useAuth();
+  const { profile, user, signOut, roles, isAdmin } = useAuth();
   const navigate = useNavigate();
   const initials = (profile?.full_name || user?.email || "U").slice(0, 2).toUpperCase();
+  const canSee = (allowed?: AppRole[]) =>
+    !allowed || isAdmin || allowed.some((r) => roles.includes(r));
+  const visibleGroups = groups
+    .map((g) => ({ ...g, items: g.items.filter((it) => canSee(it.roles)) }))
+    .filter((g) => g.items.length > 0);
   const { data: unreadCount } = useQuery({
     queryKey: ["unread-notifs", user?.id],
     queryFn: async () => {
@@ -106,6 +123,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     enabled: !!user,
     refetchInterval: 30_000,
   });
+
 
   return (
     <SidebarProvider>
@@ -122,7 +140,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </SidebarHeader>
         <SidebarContent>
-          {groups.map((g) => (
+          {visibleGroups.map((g) => (
             <SidebarGroup key={g.label}>
               <SidebarGroupLabel>{g.label}</SidebarGroupLabel>
               <SidebarGroupContent>
@@ -133,6 +151,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </SidebarGroup>
           ))}
         </SidebarContent>
+
         <SidebarFooter>
           <div className="px-2 py-2 text-xs text-sidebar-foreground/50 group-data-[collapsible=icon]:hidden">
             v0.1 · {profile?.email}
