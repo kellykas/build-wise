@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
+import { createCompanyUser } from "@/lib/admin-users.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,21 +12,22 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Settings as SettingsIcon } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Settings as SettingsIcon, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/app/settings")({
   component: SettingsPage,
 });
 
-const ROLES = ["super_admin", "company_owner", "project_manager", "site_supervisor", "engineer", "finance_manager", "hr_manager", "procurement_officer", "warehouse_keeper", "employee", "client"] as const;
+const ROLES = ["super_admin", "company_owner", "director", "project_manager", "site_engineer", "accountant", "hr_manager", "procurement_officer", "store_manager", "employee", "client"] as const;
 
 type Profile = { id: string; full_name: string; email: string; phone: string | null };
 type UserRole = { id: string; user_id: string; role: string };
 
 function SettingsPage() {
-  const { profile, user } = useAuth();
-  const isAdmin = true; // simplified — actual check via has_role would gate buttons
+  const { isAdmin, hasRole } = useAuth();
+  const canManageUsers = isAdmin || hasRole("director", "hr_manager");
 
   return (
     <div className="space-y-6">
@@ -45,7 +48,7 @@ function SettingsPage() {
         </TabsList>
 
         <TabsContent value="profile"><ProfileTab /></TabsContent>
-        <TabsContent value="users">{isAdmin ? <UsersTab /> : <div className="text-sm text-muted-foreground">Admins only.</div>}</TabsContent>
+        <TabsContent value="users">{canManageUsers ? <UsersTab /> : <div className="text-sm text-muted-foreground">Admins only.</div>}</TabsContent>
         <TabsContent value="payroll"><PayrollRulesTab /></TabsContent>
         <TabsContent value="company"><CompanyTab /></TabsContent>
       </Tabs>
@@ -76,6 +79,10 @@ function ProfileTab() {
 
 function UsersTab() {
   const qc = useQueryClient();
+  const createUser = useServerFn(createCompanyUser);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [draft, setDraft] = useState({ email: "", password: "", fullName: "", phone: "", role: "employee", employeeId: "", clientId: "" });
   const { data: profiles } = useQuery({
     queryKey: ["company-profiles"],
     queryFn: async () => ((await supabase.from("profiles").select("id,full_name,email,phone")).data ?? []) as Profile[],
@@ -83,6 +90,14 @@ function UsersTab() {
   const { data: roles } = useQuery({
     queryKey: ["all-roles"],
     queryFn: async () => ((await supabase.from("user_roles").select("id,user_id,role")).data ?? []) as UserRole[],
+  });
+  const { data: employees } = useQuery({
+    queryKey: ["employees-user-link"],
+    queryFn: async () => ((await supabase.from("employees").select("id,full_name,email,user_id").is("user_id", null).order("full_name")).data ?? []) as Array<{ id: string; full_name: string; email: string | null; user_id: string | null }>,
+  });
+  const { data: clients } = useQuery({
+    queryKey: ["clients-user-link"],
+    queryFn: async () => ((await supabase.from("clients").select("id,name,email,user_id").is("user_id", null).order("name")).data ?? []) as Array<{ id: string; name: string; email: string | null; user_id: string | null }>,
   });
 
   const rolesByUser = new Map<string, UserRole[]>();
@@ -99,11 +114,26 @@ function UsersTab() {
     qc.invalidateQueries({ queryKey: ["all-roles"] });
   };
 
+  const submitCreate = async () => {
+    setCreating(true);
+    try {
+      await createUser({ data: draft });
+      toast.success("User created and role assigned");
+      setCreateOpen(false);
+      setDraft({ email: "", password: "", fullName: "", phone: "", role: "employee", employeeId: "", clientId: "" });
+      qc.invalidateQueries({ queryKey: ["company-profiles"] });
+      qc.invalidateQueries({ queryKey: ["all-roles"] });
+      qc.invalidateQueries({ queryKey: ["employees-user-link"] });
+      qc.invalidateQueries({ queryKey: ["clients-user-link"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not create user");
+    } finally {
+      setCreating(false);
+    }
+  };
+
   return (
-    <Card><CardHeader><CardTitle className="text-base">Team members</CardTitle></CardHeader><CardContent className="space-y-3">
-      <div className="rounded-md border border-dashed p-3 text-xs text-muted-foreground">
-        Invite users by sharing the sign-up link. Once they sign up they will appear here and you can assign roles.
-      </div>
+    <Card><CardHeader className="flex flex-row items-center justify-between gap-3"><CardTitle className="text-base">Team members</CardTitle><Button size="sm" onClick={() => setCreateOpen(true)}><UserPlus className="mr-2 h-4 w-4" /> Create user</Button></CardHeader><CardContent className="space-y-3">
       <div className="space-y-2">
         {(profiles ?? []).map((p) => (
           <div key={p.id} className="rounded-md border border-border p-3">
@@ -128,6 +158,27 @@ function UsersTab() {
           </div>
         ))}
       </div>
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Create user account</DialogTitle>
+            <DialogDescription>Create staff or client access and link it to an employee/client record.</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div><Label>Full name</Label><Input className="mt-1" value={draft.fullName} onChange={(e) => setDraft({ ...draft, fullName: e.target.value })} /></div>
+            <div><Label>Email</Label><Input className="mt-1" type="email" value={draft.email} onChange={(e) => setDraft({ ...draft, email: e.target.value })} /></div>
+            <div><Label>Temporary password</Label><Input className="mt-1" type="password" value={draft.password} onChange={(e) => setDraft({ ...draft, password: e.target.value })} /></div>
+            <div><Label>Phone</Label><Input className="mt-1" value={draft.phone} onChange={(e) => setDraft({ ...draft, phone: e.target.value })} /></div>
+            <div><Label>Role</Label><Select value={draft.role} onValueChange={(role) => setDraft({ ...draft, role })}><SelectTrigger className="mt-1"><SelectValue /></SelectTrigger><SelectContent>{ROLES.map((r) => <SelectItem key={r} value={r}>{r.replace(/_/g, " ")}</SelectItem>)}</SelectContent></Select></div>
+            <div><Label>Link employee</Label><Select value={draft.employeeId || "none"} onValueChange={(employeeId) => setDraft({ ...draft, employeeId: employeeId === "none" ? "" : employeeId })}><SelectTrigger className="mt-1"><SelectValue placeholder="Optional" /></SelectTrigger><SelectContent><SelectItem value="none">No employee link</SelectItem>{(employees ?? []).map((e) => <SelectItem key={e.id} value={e.id}>{e.full_name}</SelectItem>)}</SelectContent></Select></div>
+            <div className="sm:col-span-2"><Label>Link client portal</Label><Select value={draft.clientId || "none"} onValueChange={(clientId) => setDraft({ ...draft, clientId: clientId === "none" ? "" : clientId, role: clientId === "none" ? draft.role : "client" })}><SelectTrigger className="mt-1"><SelectValue placeholder="Optional" /></SelectTrigger><SelectContent><SelectItem value="none">No client link</SelectItem>{(clients ?? []).map((c) => <SelectItem key={c.id} value={c.id}>{c.name} {c.email ? `· ${c.email}` : ""}</SelectItem>)}</SelectContent></Select></div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
+            <Button onClick={submitCreate} disabled={creating || !draft.email || !draft.password || !draft.fullName}>{creating ? "Creating…" : "Create account"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </CardContent></Card>
   );
 }
