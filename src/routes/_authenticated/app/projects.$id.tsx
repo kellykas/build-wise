@@ -219,17 +219,24 @@ function ProjectDetail() {
 
 function AgentsDialog({ projectId, managerId }: { projectId: string; managerId: string | null }) {
   const [open, setOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState("");
+  const [memberRole, setMemberRole] = useState("Membre du projet");
+  const qc = useQueryClient();
   const { data: agents } = useQuery({
     queryKey: ["project-agents", projectId, managerId],
     enabled: open,
     queryFn: async () => {
-      // collect user ids from task assignments + project manager
-      const { data: assigns } = await supabase
+      const [{ data: project }, { data: members }, { data: assigns }] = await Promise.all([
+        supabase.from("projects").select("company_id").eq("id", projectId).single(),
+        supabase.from("project_members" as never).select("id,user_id,role" as never).eq("project_id", projectId),
+        supabase
         .from("task_assignments")
         .select("user_id, role, tasks!inner(project_id)")
-        .eq("tasks.project_id", projectId);
+        .eq("tasks.project_id", projectId),
+      ]);
       const rows = (assigns ?? []) as { user_id: string; role: string }[];
-      const idSet = new Set<string>(rows.map((r) => r.user_id));
+      const explicitMembers = (members ?? []) as unknown as { id: string; user_id: string; role: string }[];
+      const idSet = new Set<string>([...rows.map((r) => r.user_id), ...explicitMembers.map((m) => m.user_id)]);
       if (managerId) idSet.add(managerId);
       const ids = Array.from(idSet);
       if (ids.length === 0) return [];
@@ -249,12 +256,40 @@ function AgentsDialog({ projectId, managerId }: { projectId: string; managerId: 
       });
       return ((profs ?? []) as { id: string; full_name: string | null; email: string | null }[]).map((p) => ({
         ...p,
+        companyId: (project as { company_id?: string } | null)?.company_id,
+        membershipId: explicitMembers.find((m) => m.user_id === p.id)?.id ?? null,
+        memberRole: explicitMembers.find((m) => m.user_id === p.id)?.role ?? null,
         isManager: p.id === managerId,
         appRoles: roleMap.get(p.id) ?? [],
         taskRoles: Array.from(taskRoleMap.get(p.id) ?? []),
       }));
     },
   });
+  const { data: profiles } = useQuery({
+    queryKey: ["project-member-candidates"],
+    enabled: open,
+    queryFn: async () => ((await supabase.from("profiles").select("id,full_name,email").order("full_name")).data ?? []) as Array<{ id: string; full_name: string | null; email: string | null }>,
+  });
+  const addMember = async () => {
+    if (!selectedUser) return;
+    const { data: project } = await supabase.from("projects").select("company_id").eq("id", projectId).single();
+    const companyId = (project as { company_id?: string } | null)?.company_id;
+    if (!companyId) return toast.error("Project company not found");
+    const { error } = await supabase.from("project_members" as never).insert({ company_id: companyId, project_id: projectId, user_id: selectedUser, role: memberRole } as never);
+    if (error) return toast.error(error.message);
+    setSelectedUser("");
+    setMemberRole("Membre du projet");
+    qc.invalidateQueries({ queryKey: ["project-agents", projectId, managerId] });
+    toast.success("Personne ajoutée au projet");
+  };
+  const removeMember = async (membershipId: string | null) => {
+    if (!membershipId) return;
+    const { error } = await supabase.from("project_members" as never).delete().eq("id", membershipId);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["project-agents", projectId, managerId] });
+    toast.success("Personne retirée du projet");
+  };
+  const assignedIds = new Set((agents ?? []).map((a) => a.id));
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -263,8 +298,16 @@ function AgentsDialog({ projectId, managerId }: { projectId: string; managerId: 
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Agents attachés au projet</DialogTitle>
-          <DialogDescription>Personnes affectées via les tâches ou comme chef de projet.</DialogDescription>
+          <DialogDescription>Ajoutez directement les employés, managers ou clients concernés par ce projet.</DialogDescription>
         </DialogHeader>
+        <div className="grid gap-2 rounded-md border border-border p-3 sm:grid-cols-[1fr_180px_auto]">
+          <Select value={selectedUser} onValueChange={setSelectedUser}>
+            <SelectTrigger><SelectValue placeholder="Choisir une personne" /></SelectTrigger>
+            <SelectContent>{(profiles ?? []).filter((p) => !assignedIds.has(p.id)).map((p) => <SelectItem key={p.id} value={p.id}>{p.full_name ?? p.email}</SelectItem>)}</SelectContent>
+          </Select>
+          <Input value={memberRole} onChange={(e) => setMemberRole(e.target.value)} placeholder="Rôle projet" />
+          <Button onClick={addMember} disabled={!selectedUser}>Ajouter</Button>
+        </div>
         <div className="max-h-[60vh] space-y-2 overflow-y-auto">
           {!agents && <div className="text-sm text-muted-foreground">Chargement…</div>}
           {agents && agents.length === 0 && <div className="text-sm text-muted-foreground">Aucun agent affecté à ce projet pour le moment.</div>}
@@ -276,8 +319,10 @@ function AgentsDialog({ projectId, managerId }: { projectId: string; managerId: 
               </div>
               <div className="flex flex-wrap justify-end gap-1">
                 {a.isManager && <Badge>Chef de chantier</Badge>}
+                {a.memberRole && <Badge variant="default" className="text-[10px]">{a.memberRole}</Badge>}
                 {a.appRoles.map((r) => <Badge key={r} variant="secondary" className="text-[10px]">{r.replace(/_/g, " ")}</Badge>)}
                 {a.taskRoles.map((r) => <Badge key={`t-${r}`} variant="outline" className="text-[10px]">{r}</Badge>)}
+                {a.membershipId && <Button size="sm" variant="ghost" onClick={() => removeMember(a.membershipId)}>Retirer</Button>}
               </div>
             </div>
           ))}
