@@ -105,10 +105,14 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { profile, user, signOut, roles, isAdmin } = useAuth();
   const navigate = useNavigate();
   const initials = (profile?.full_name || user?.email || "U").slice(0, 2).toUpperCase();
-  const canSee = (allowed?: AppRole[]) =>
-    !allowed || isAdmin || allowed.some((r) => roles.includes(r));
+  const isClientOnly = roles.includes("client") && !roles.some((r) => r !== "client");
+  const clientAllowedPaths = new Set(["/app/client-portal", "/app/notifications", "/app/settings"]);
+  const canSee = (item: NavItemDef) => {
+    if (isClientOnly) return clientAllowedPaths.has(item.to);
+    return !item.roles || isAdmin || item.roles.some((r) => roles.includes(r));
+  };
   const visibleGroups = groups
-    .map((g) => ({ ...g, items: g.items.filter((it) => canSee(it.roles)) }))
+    .map((g) => ({ ...g, items: g.items.filter((it) => canSee(it)) }))
     .filter((g) => g.items.length > 0);
   const { data: unreadCount } = useQuery({
     queryKey: ["unread-notifs", user?.id],
