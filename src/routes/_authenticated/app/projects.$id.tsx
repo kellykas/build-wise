@@ -282,7 +282,8 @@ function AgentsDialog({ projectId, managerId }: { projectId: string; managerId: 
     qc.invalidateQueries({ queryKey: ["project-agents", projectId, managerId] });
     toast.success("Personne ajoutée au projet");
   };
-  const removeMember = async (membershipId: string) => {
+  const removeMember = async (membershipId: string | null) => {
+    if (!membershipId) return;
     const { error } = await supabase.from("project_members" as never).delete().eq("id", membershipId);
     if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["project-agents", projectId, managerId] });
