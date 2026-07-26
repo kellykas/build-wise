@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { FileText, FolderPlus, Upload, Trash2, Folder, Download } from "lucide-react";
 import { toast } from "sonner";
+import { recordAudit } from "@/lib/audit";
 
 export const Route = createFileRoute("/_authenticated/app/documents")({
   component: DocumentsPage,
