@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Settings as SettingsIcon, UserPlus } from "lucide-react";
 import { toast } from "sonner";
+import { recordAudit } from "@/lib/audit";
 
 export const Route = createFileRoute("/_authenticated/app/settings")({
   component: SettingsPage,
@@ -45,14 +46,61 @@ function SettingsPage() {
           <TabsTrigger value="users">Users & roles</TabsTrigger>
           <TabsTrigger value="payroll">Payroll rules</TabsTrigger>
           <TabsTrigger value="company">Company</TabsTrigger>
+          {isAdmin && <TabsTrigger value="audit">Audit log</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="profile"><ProfileTab /></TabsContent>
         <TabsContent value="users">{canManageUsers ? <UsersTab /> : <div className="text-sm text-muted-foreground">Admins only.</div>}</TabsContent>
         <TabsContent value="payroll"><PayrollRulesTab /></TabsContent>
         <TabsContent value="company"><CompanyTab /></TabsContent>
+        {isAdmin && <TabsContent value="audit"><AuditTab /></TabsContent>}
       </Tabs>
     </div>
+  );
+}
+
+function AuditTab() {
+  const { data: logs } = useQuery({
+    queryKey: ["audit-logs"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("audit_logs" as never)
+        .select("id, created_at, actor_email, action, entity_type, entity_id, metadata")
+        .order("created_at", { ascending: false })
+        .limit(200);
+      if (error) throw error;
+      return (data ?? []) as Array<{ id: string; created_at: string; actor_email: string | null; action: string; entity_type: string | null; entity_id: string | null; metadata: Record<string, unknown> }>;
+    },
+  });
+  return (
+    <Card>
+      <CardHeader><CardTitle className="text-base">Recent activity ({logs?.length ?? 0})</CardTitle></CardHeader>
+      <CardContent className="p-0">
+        <table className="w-full text-sm">
+          <thead className="border-b border-border bg-muted/40 text-left text-xs uppercase text-muted-foreground">
+            <tr>
+              <th className="px-4 py-2">When</th>
+              <th className="px-4 py-2">Actor</th>
+              <th className="px-4 py-2">Action</th>
+              <th className="px-4 py-2">Target</th>
+              <th className="px-4 py-2">Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(logs ?? []).map((l) => (
+              <tr key={l.id} className="border-b border-border last:border-0 align-top">
+                <td className="px-4 py-2 text-xs text-muted-foreground whitespace-nowrap">{new Date(l.created_at).toLocaleString()}</td>
+                <td className="px-4 py-2 text-xs">{l.actor_email ?? "—"}</td>
+                <td className="px-4 py-2"><Badge variant="outline">{l.action}</Badge></td>
+                <td className="px-4 py-2 text-xs">{l.entity_type ?? "—"}{l.entity_id ? ` · ${l.entity_id.slice(0, 8)}` : ""}</td>
+                <td className="px-4 py-2 text-xs text-muted-foreground"><pre className="whitespace-pre-wrap break-all font-mono text-[10px]">{JSON.stringify(l.metadata)}</pre></td>
+              </tr>
+            ))}
+            {(!logs || logs.length === 0) && <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-muted-foreground">No activity yet.</td></tr>}
+          </tbody>
+        </table>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -106,11 +154,16 @@ function UsersTab() {
   const assign = async (userId: string, role: string) => {
     const { error } = await supabase.from("user_roles").insert({ user_id: userId, role: role as never });
     if (error) return toast.error(error.message);
+    await recordAudit({ action: "role.assign", entity_type: "user", entity_id: userId, metadata: { role } });
     qc.invalidateQueries({ queryKey: ["all-roles"] });
     toast.success("Role assigned");
   };
   const removeRole = async (id: string) => {
+    const target = (roles ?? []).find((r) => r.id === id);
     await supabase.from("user_roles").delete().eq("id", id);
+    if (target) {
+      await recordAudit({ action: "role.remove", entity_type: "user", entity_id: target.user_id, metadata: { role: target.role } });
+    }
     qc.invalidateQueries({ queryKey: ["all-roles"] });
   };
 

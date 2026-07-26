@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { ArrowLeft, Calendar, MapPin, DollarSign, TrendingUp, Trash2, Users, Wallet, PiggyBank } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
+import { recordAudit } from "@/lib/audit";
 
 
 export const Route = createFileRoute("/_authenticated/app/projects/$id")({
@@ -277,15 +278,17 @@ function AgentsDialog({ projectId, managerId }: { projectId: string; managerId: 
     if (!companyId) return toast.error("Project company not found");
     const { error } = await supabase.from("project_members" as never).insert({ company_id: companyId, project_id: projectId, user_id: selectedUser, role: memberRole } as never);
     if (error) return toast.error(error.message);
+    await recordAudit({ action: "project.member.add", entity_type: "project", entity_id: projectId, metadata: { user_id: selectedUser, role: memberRole } });
     setSelectedUser("");
     setMemberRole("Membre du projet");
     qc.invalidateQueries({ queryKey: ["project-agents", projectId, managerId] });
     toast.success("Personne ajoutée au projet");
   };
-  const removeMember = async (membershipId: string | null) => {
+  const removeMember = async (membershipId: string | null, userId?: string) => {
     if (!membershipId) return;
     const { error } = await supabase.from("project_members" as never).delete().eq("id", membershipId);
     if (error) return toast.error(error.message);
+    await recordAudit({ action: "project.member.remove", entity_type: "project", entity_id: projectId, metadata: { user_id: userId ?? null, membership_id: membershipId } });
     qc.invalidateQueries({ queryKey: ["project-agents", projectId, managerId] });
     toast.success("Personne retirée du projet");
   };
@@ -322,7 +325,7 @@ function AgentsDialog({ projectId, managerId }: { projectId: string; managerId: 
                 {a.memberRole && <Badge variant="default" className="text-[10px]">{a.memberRole}</Badge>}
                 {a.appRoles.map((r) => <Badge key={r} variant="secondary" className="text-[10px]">{r.replace(/_/g, " ")}</Badge>)}
                 {a.taskRoles.map((r) => <Badge key={`t-${r}`} variant="outline" className="text-[10px]">{r}</Badge>)}
-                {a.membershipId && <Button size="sm" variant="ghost" onClick={() => removeMember(a.membershipId)}>Retirer</Button>}
+                {a.membershipId && <Button size="sm" variant="ghost" onClick={() => removeMember(a.membershipId, a.id)}>Retirer</Button>}
               </div>
             </div>
           ))}

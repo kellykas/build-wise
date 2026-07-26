@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Building2, Upload, ImageIcon, Receipt, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
+import { recordAudit } from "@/lib/audit";
 
 export const Route = createFileRoute("/_authenticated/app/client-portal")({
   component: ClientPortalPage,
@@ -93,6 +94,7 @@ function ClientPortalPage() {
     } as never);
     setUploading(false);
     if (ins.error) return toast.error(ins.error.message);
+    await recordAudit({ action: "portal.photo.upload", entity_type: "project", entity_id: selectedProject, metadata: { name: file.name, size: file.size, path } });
     if (fileRef.current) fileRef.current.value = "";
     toast.success("Photo ajoutée");
     qc.invalidateQueries({ queryKey: ["portal-photos", selectedProject] });

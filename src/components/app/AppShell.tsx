@@ -23,15 +23,17 @@ import { Badge } from "@/components/ui/badge";
 import type { ReactNode } from "react";
 
 import type { AppRole } from "@/hooks/use-auth";
+import { ADMIN as _ADMIN, HR as _HR, FIN as _FIN, PROC as _PROC, OPS as _OPS, CLIENT_ALLOWED } from "@/lib/rbac";
 
 // roles allowed to see the item. undefined = everyone signed-in.
 type NavItemDef = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean; roles?: AppRole[] };
 
-const ADMIN: AppRole[] = ["super_admin", "company_owner", "director"];
-const HR: AppRole[] = [...ADMIN, "hr_manager"];
-const FIN: AppRole[] = [...ADMIN, "accountant"];
-const PROC: AppRole[] = [...ADMIN, "procurement_officer", "store_manager"];
-const OPS: AppRole[] = [...ADMIN, "project_manager", "site_engineer"];
+const ADMIN: AppRole[] = _ADMIN;
+const HR: AppRole[] = _HR;
+const FIN: AppRole[] = _FIN;
+const PROC: AppRole[] = _PROC;
+const OPS: AppRole[] = _OPS;
+void CLIENT_ALLOWED;
 
 const groups: { label: string; items: NavItemDef[] }[] = [
   {
