@@ -89,6 +89,7 @@ function DocumentsPage() {
     } as never);
     setUploading(false);
     if (ins.error) return toast.error(ins.error.message);
+    await recordAudit({ action: "document.upload", entity_type: "document", metadata: { name: file.name, folder: uploadFolder, size: file.size, mime_type: file.type, path } });
     toast.success("Fichier téléversé");
     setUploadOpen(false);
     if (fileRef.current) fileRef.current.value = "";
@@ -106,6 +107,7 @@ function DocumentsPage() {
     await supabase.storage.from("documents").remove([d.storage_path]);
     const { error } = await supabase.from("documents").delete().eq("id", d.id);
     if (error) return toast.error(error.message);
+    await recordAudit({ action: "document.delete", entity_type: "document", entity_id: d.id, metadata: { name: d.name, folder: d.folder } });
     toast.success("Supprimé");
     qc.invalidateQueries({ queryKey: ["module:documents"] });
   };

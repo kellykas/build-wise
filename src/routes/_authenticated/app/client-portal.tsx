@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Building2, Upload, ImageIcon, Receipt, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
+import { recordAudit } from "@/lib/audit";
 
 export const Route = createFileRoute("/_authenticated/app/client-portal")({
   component: ClientPortalPage,
