@@ -106,11 +106,16 @@ function UsersTab() {
   const assign = async (userId: string, role: string) => {
     const { error } = await supabase.from("user_roles").insert({ user_id: userId, role: role as never });
     if (error) return toast.error(error.message);
+    await recordAudit({ action: "role.assign", entity_type: "user", entity_id: userId, metadata: { role } });
     qc.invalidateQueries({ queryKey: ["all-roles"] });
     toast.success("Role assigned");
   };
   const removeRole = async (id: string) => {
+    const target = (roles ?? []).find((r) => r.id === id);
     await supabase.from("user_roles").delete().eq("id", id);
+    if (target) {
+      await recordAudit({ action: "role.remove", entity_type: "user", entity_id: target.user_id, metadata: { role: target.role } });
+    }
     qc.invalidateQueries({ queryKey: ["all-roles"] });
   };
 

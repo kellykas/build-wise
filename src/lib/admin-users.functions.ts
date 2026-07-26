@@ -87,5 +87,21 @@ export const createCompanyUser = createServerFn({ method: "POST" })
       if (error) throw error;
     }
 
+    await supabaseAdmin.from("audit_logs").insert({
+      company_id: companyId,
+      actor_id: context.userId,
+      actor_email: (context.claims as { email?: string } | null)?.email ?? null,
+      action: "user.create",
+      entity_type: "user",
+      entity_id: userId,
+      metadata: {
+        email: data.email,
+        full_name: data.fullName,
+        role: data.role,
+        linked_employee_id: data.employeeId || null,
+        linked_client_id: data.clientId || null,
+      },
+    });
+
     return { id: userId, email: data.email };
   });
