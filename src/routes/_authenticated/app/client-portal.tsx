@@ -23,9 +23,9 @@ type ProgressPhoto = { id: string; name: string; storage_path: string; created_a
 const FOLDER = "Progression client";
 
 function ClientPortalPage() {
-  const { profile, isAdmin, hasRole } = useAuth();
+  const { profile, user, isAdmin, hasRole } = useAuth();
   const qc = useQueryClient();
-  const canManage = isAdmin || hasRole("project_manager", "director");
+  const canUploadPhotos = isAdmin || hasRole("project_manager", "director", "client");
   const [selectedProject, setSelectedProject] = useState<string>("");
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -65,9 +65,16 @@ function ClientPortalPage() {
 
   useEffect(() => {
     (async () => {
-      if (!photos || photos.length === 0) return;
+      if (!photos || photos.length === 0) {
+        setSigned({});
+        return;
+      }
       const paths = photos.map((p) => p.storage_path);
-      const { data } = await supabase.storage.from("documents").createSignedUrls(paths, 3600);
+      const { data, error } = await supabase.storage.from("documents").createSignedUrls(paths, 3600);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
       const map: Record<string, string> = {};
       (data ?? []).forEach((s, i) => { if (s.signedUrl) map[paths[i]] = s.signedUrl; });
       setSigned(map);
@@ -91,9 +98,13 @@ function ClientPortalPage() {
       mime_type: file.type,
       size_bytes: file.size,
       storage_path: path,
+      uploaded_by: user?.id ?? null,
     } as never);
     setUploading(false);
-    if (ins.error) return toast.error(ins.error.message);
+    if (ins.error) {
+      await supabase.storage.from("documents").remove([path]);
+      return toast.error(ins.error.message);
+    }
     await recordAudit({ action: "portal.photo.upload", entity_type: "project", entity_id: selectedProject, metadata: { name: file.name, size: file.size, path } });
     if (fileRef.current) fileRef.current.value = "";
     toast.success("Photo ajoutée");
@@ -142,7 +153,7 @@ function ClientPortalPage() {
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-base"><ImageIcon className="h-4 w-4" /> Progression du projet</CardTitle>
-            {canManage && (
+            {canUploadPhotos && (
               <div className="flex items-center gap-2">
                 <Input ref={fileRef} type="file" accept="image/*" className="h-9 w-56" />
                 <Button size="sm" onClick={upload} disabled={uploading || !selectedProject}>
@@ -154,7 +165,7 @@ function ClientPortalPage() {
           <CardContent>
             {(!photos || photos.length === 0) && (
               <div className="rounded-md border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-                Aucune photo pour l'instant. {canManage && "Ajoutez des photos pour permettre au client de suivre l'évolution."}
+                Aucune photo pour l'instant. {canUploadPhotos && "Ajoutez des photos pour permettre au client de suivre l'évolution."}
               </div>
             )}
             {photos && photos.length > 0 && (
