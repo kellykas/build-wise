@@ -19,18 +19,20 @@ export const Route = createFileRoute("/_authenticated/app/documents")({
 });
 
 type Doc = { id: string; name: string; folder: string | null; mime_type: string | null; size_bytes: number | null; storage_path: string; created_at: string };
+type Project = { id: string; name: string };
 
 const DEFAULT_FOLDERS = ["Contrats", "Plans", "Rapports", "Factures", "Photos chantier", "Administratif"];
 
 function DocumentsPage() {
   const qc = useQueryClient();
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const [active, setActive] = useState<string>("all");
   const [customFolders, setCustomFolders] = useState<string[]>([]);
   const [newFolderOpen, setNewFolderOpen] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const [uploadOpen, setUploadOpen] = useState(false);
   const [uploadFolder, setUploadFolder] = useState<string>(DEFAULT_FOLDERS[0]);
+  const [uploadProject, setUploadProject] = useState<string>("general");
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -41,6 +43,16 @@ function DocumentsPage() {
       const { data, error } = await supabase.from("documents").select("*").order("created_at", { ascending: false });
       if (error) throw error;
       return (data ?? []) as Doc[];
+    },
+  });
+
+  const { data: projects } = useQuery({
+    queryKey: ["documents-projects", profile?.company_id],
+    enabled: !!profile?.company_id,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("projects").select("id, name").order("name");
+      if (error) throw error;
+      return (data ?? []) as Project[];
     },
   });
 
@@ -76,20 +88,26 @@ function DocumentsPage() {
     if (!profile?.company_id) return toast.error("Espace de travail introuvable");
     setUploading(true);
     const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const path = `${profile.company_id}/${uploadFolder}/${Date.now()}-${safe}`;
+    const projectSegment = uploadProject === "general" ? "general" : uploadProject;
+    const path = `${profile.company_id}/${projectSegment}/${uploadFolder}/${Date.now()}-${safe}`;
     const up = await supabase.storage.from("documents").upload(path, file, { upsert: false, contentType: file.type });
     if (up.error) { setUploading(false); return toast.error(up.error.message); }
     const ins = await supabase.from("documents").insert({
       company_id: profile.company_id,
+      project_id: uploadProject === "general" ? null : uploadProject,
       name: file.name,
       folder: uploadFolder,
       mime_type: file.type,
       size_bytes: file.size,
       storage_path: path,
+      uploaded_by: user?.id ?? null,
     } as never);
     setUploading(false);
-    if (ins.error) return toast.error(ins.error.message);
-    await recordAudit({ action: "document.upload", entity_type: "document", metadata: { name: file.name, folder: uploadFolder, size: file.size, mime_type: file.type, path } });
+    if (ins.error) {
+      await supabase.storage.from("documents").remove([path]);
+      return toast.error(ins.error.message);
+    }
+    await recordAudit({ action: "document.upload", entity_type: "document", metadata: { name: file.name, folder: uploadFolder, project_id: uploadProject === "general" ? null : uploadProject, size: file.size, mime_type: file.type, path } });
     toast.success("Fichier téléversé");
     setUploadOpen(false);
     if (fileRef.current) fileRef.current.value = "";
@@ -197,6 +215,16 @@ function DocumentsPage() {
             <DialogDescription>Le fichier sera archivé dans le dossier sélectionné.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
+            <div>
+              <Label>Projet</Label>
+              <Select value={uploadProject} onValueChange={setUploadProject}>
+                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="general">Documents généraux</SelectItem>
+                  {(projects ?? []).map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
             <div>
               <Label>Dossier</Label>
               <Select value={uploadFolder} onValueChange={setUploadFolder}>
