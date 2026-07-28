@@ -10,16 +10,27 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { FileText, FolderPlus, Upload, Trash2, Folder, Download } from "lucide-react";
+import { Download, Eye, ExternalLink, FileText, Folder, FolderPlus, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { recordAudit } from "@/lib/audit";
 
 export const Route = createFileRoute("/_authenticated/app/documents")({
+  head: () => ({
+    meta: [
+      { title: "Documents — BuildFlow ERP" },
+      { name: "description", content: "Upload, organize, preview and download project documents in BuildFlow ERP." },
+      { property: "og:title", content: "Documents — BuildFlow ERP" },
+      { property: "og:description", content: "Upload, organize, preview and download project documents in BuildFlow ERP." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: DocumentsPage,
 });
 
 type Doc = { id: string; name: string; folder: string | null; mime_type: string | null; size_bytes: number | null; storage_path: string; created_at: string };
 type Project = { id: string; name: string };
+type PreviewState = { doc: Doc; url: string } | null;
 
 const DEFAULT_FOLDERS = ["Contrats", "Plans", "Rapports", "Factures", "Photos chantier", "Administratif"];
 
@@ -34,6 +45,8 @@ function DocumentsPage() {
   const [uploadFolder, setUploadFolder] = useState<string>(DEFAULT_FOLDERS[0]);
   const [uploadProject, setUploadProject] = useState<string>("general");
   const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState<PreviewState>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const { data: docs } = useQuery({
@@ -114,10 +127,25 @@ function DocumentsPage() {
     qc.invalidateQueries({ queryKey: ["module:documents"] });
   };
 
-  const download = async (d: Doc) => {
+  const createSignedUrl = async (d: Doc) => {
     const { data, error } = await supabase.storage.from("documents").createSignedUrl(d.storage_path, 60);
-    if (error) return toast.error(error.message);
-    window.open(data.signedUrl, "_blank");
+    if (error) {
+      toast.error(error.message);
+      return null;
+    }
+    return data.signedUrl;
+  };
+
+  const download = async (d: Doc) => {
+    const url = await createSignedUrl(d);
+    if (url) window.open(url, "_blank");
+  };
+
+  const openPreview = async (d: Doc) => {
+    setPreviewLoading(true);
+    const url = await createSignedUrl(d);
+    setPreviewLoading(false);
+    if (url) setPreview({ doc: d, url });
   };
 
   const remove = async (d: Doc) => {
@@ -169,16 +197,19 @@ function DocumentsPage() {
             </thead>
             <tbody>
               {filtered.map((d) => (
-                <tr key={d.id} className="border-b border-border last:border-0 hover:bg-muted/30">
-                  <td className="px-4 py-2 font-medium">{d.name}</td>
+                <tr key={d.id} onClick={() => openPreview(d)} className="cursor-pointer border-b border-border last:border-0 hover:bg-muted/30">
+                  <td className="px-4 py-2 font-medium">
+                    <button type="button" className="text-left hover:text-primary" onClick={(e) => { e.stopPropagation(); openPreview(d); }}>{d.name}</button>
+                  </td>
                   <td className="px-4 py-2"><Badge variant="outline">{d.folder ?? "Autres"}</Badge></td>
                   <td className="px-4 py-2 text-xs text-muted-foreground">{d.mime_type ?? "—"}</td>
                   <td className="px-4 py-2 text-xs">{d.size_bytes ? `${Math.round(Number(d.size_bytes) / 1024)} KB` : "—"}</td>
                   <td className="px-4 py-2 text-xs text-muted-foreground">{new Date(d.created_at).toLocaleDateString()}</td>
                   <td className="px-4 py-2">
-                    <div className="flex justify-end gap-1">
-                      <Button size="icon" variant="ghost" onClick={() => download(d)}><Download className="h-4 w-4" /></Button>
-                      <Button size="icon" variant="ghost" onClick={() => remove(d)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                    <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                      <Button size="icon" variant="ghost" title="Preview" onClick={() => openPreview(d)}><Eye className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" title="Download" onClick={() => download(d)}><Download className="h-4 w-4" /></Button>
+                      <Button size="icon" variant="ghost" title="Delete" onClick={() => remove(d)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                     </div>
                   </td>
                 </tr>
@@ -242,6 +273,37 @@ function DocumentsPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setUploadOpen(false)}>Annuler</Button>
             <Button onClick={upload} disabled={uploading}>{uploading ? "Téléversement…" : "Téléverser"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!preview || previewLoading} onOpenChange={(open) => { if (!open) setPreview(null); }}>
+        <DialogContent className="max-h-[90vh] max-w-5xl overflow-hidden">
+          <DialogHeader>
+            <DialogTitle>{preview?.doc.name ?? "Préparation de l'aperçu…"}</DialogTitle>
+            <DialogDescription>{preview?.doc.mime_type ?? "Document"}</DialogDescription>
+          </DialogHeader>
+          <div className="min-h-[60vh] overflow-hidden rounded-md border border-border bg-muted/30">
+            {previewLoading && <div className="grid h-[60vh] place-items-center text-sm text-muted-foreground">Chargement de l'aperçu…</div>}
+            {!previewLoading && preview?.doc.mime_type?.startsWith("image/") && (
+              <img src={preview.url} alt={preview.doc.name} className="h-[60vh] w-full object-contain" />
+            )}
+            {!previewLoading && preview?.doc.mime_type === "application/pdf" && (
+              <iframe src={preview.url} title={preview.doc.name} className="h-[60vh] w-full" />
+            )}
+            {!previewLoading && preview && !preview.doc.mime_type?.startsWith("image/") && preview.doc.mime_type !== "application/pdf" && (
+              <div className="grid h-[60vh] place-items-center p-8 text-center">
+                <div>
+                  <FileText className="mx-auto h-10 w-10 text-muted-foreground" />
+                  <div className="mt-3 text-sm font-medium">Aperçu intégré non disponible pour ce type de fichier.</div>
+                  <Button className="mt-4" onClick={() => window.open(preview.url, "_blank")}><ExternalLink className="mr-2 h-4 w-4" /> Ouvrir le fichier</Button>
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPreview(null)}>Fermer</Button>
+            {preview && <Button onClick={() => window.open(preview.url, "_blank")}><Download className="mr-2 h-4 w-4" /> Télécharger</Button>}
           </DialogFooter>
         </DialogContent>
       </Dialog>
