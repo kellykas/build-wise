@@ -14,6 +14,16 @@ import { toast } from "sonner";
 import { recordAudit } from "@/lib/audit";
 
 export const Route = createFileRoute("/_authenticated/app/client-portal")({
+  head: () => ({
+    meta: [
+      { title: "Client Portal — BuildFlow ERP" },
+      { name: "description", content: "Client portal for project progress, photo galleries, invoices and company communication." },
+      { property: "og:title", content: "Client Portal — BuildFlow ERP" },
+      { property: "og:description", content: "Client portal for project progress, photo galleries, invoices and company communication." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: ClientPortalPage,
 });
 
@@ -35,7 +45,8 @@ function ClientPortalPage() {
     queryKey: ["portal-projects", profile?.company_id],
     enabled: !!profile?.company_id,
     queryFn: async () => {
-      const { data } = await supabase.from("projects").select("id, name, progress, status, location, end_date").order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("projects").select("id, name, progress, status, location, end_date").order("created_at", { ascending: false });
+      if (error) throw error;
       return (data ?? []) as Project[];
     },
   });
@@ -48,11 +59,12 @@ function ClientPortalPage() {
     queryKey: ["portal-photos", selectedProject],
     enabled: !!selectedProject,
     queryFn: async () => {
-      const { data } = await supabase.from("documents")
+      const { data, error } = await supabase.from("documents")
         .select("id, name, storage_path, created_at")
         .eq("project_id", selectedProject)
         .eq("folder", FOLDER)
         .order("created_at", { ascending: false });
+      if (error) throw error;
       return (data ?? []) as ProgressPhoto[];
     },
   });
@@ -60,7 +72,11 @@ function ClientPortalPage() {
   const { data: invoices } = useQuery({
     queryKey: ["portal-invoices", selectedProject],
     enabled: !!selectedProject,
-    queryFn: async () => (await supabase.from("invoices").select("*").eq("project_id", selectedProject).order("issue_date", { ascending: false })).data ?? [],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("invoices").select("*").eq("project_id", selectedProject).order("issue_date", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
   });
 
   useEffect(() => {
@@ -108,7 +124,8 @@ function ClientPortalPage() {
     await recordAudit({ action: "portal.photo.upload", entity_type: "project", entity_id: selectedProject, metadata: { name: file.name, size: file.size, path } });
     if (fileRef.current) fileRef.current.value = "";
     toast.success("Photo ajoutée");
-    qc.invalidateQueries({ queryKey: ["portal-photos", selectedProject] });
+    await qc.invalidateQueries({ queryKey: ["portal-photos", selectedProject] });
+    qc.invalidateQueries({ queryKey: ["module:documents"] });
   };
 
   const current = projects?.find((p) => p.id === selectedProject);
