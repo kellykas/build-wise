@@ -269,6 +269,19 @@ function ClientPortalPage() {
           </Card>
         </div>
       </div>
+
+      <Dialog open={!!lightbox} onOpenChange={(o) => { if (!o) setLightbox(null); }}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>{lightbox?.name}</DialogTitle>
+            <DialogDescription>Ajoutée le {lightbox ? new Date(lightbox.created_at).toLocaleString() : ""}</DialogDescription>
+          </DialogHeader>
+          {lightbox && signed[lightbox.storage_path] && (
+            <img src={signed[lightbox.storage_path]} alt={lightbox.name} className="max-h-[70vh] w-full rounded-md object-contain" />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
+
   );
 }
