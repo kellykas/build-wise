@@ -216,7 +216,16 @@ function UploadChecksTab() {
   );
 }
 
+const AUDIT_FILTERS: Array<{ key: string; label: string; match: (a: string) => boolean }> = [
+  { key: "all", label: "Tout", match: () => true },
+  { key: "uploads", label: "Téléversements", match: (a) => a === "document.upload" || a === "portal.photo.upload" },
+  { key: "documents", label: "Documents", match: (a) => a.startsWith("document.") },
+  { key: "photos", label: "Photos portail", match: (a) => a.startsWith("portal.photo.") },
+  { key: "access", label: "Utilisateurs & rôles", match: (a) => a.startsWith("user.") || a.startsWith("role.") || a.startsWith("project.member.") },
+];
+
 function AuditTab() {
+  const [filter, setFilter] = useState("all");
   const { data: logs } = useQuery({
     queryKey: ["audit-logs"],
     queryFn: async () => {
@@ -229,9 +238,25 @@ function AuditTab() {
       return (data ?? []) as Array<{ id: string; created_at: string; actor_email: string | null; action: string; entity_type: string | null; entity_id: string | null; metadata: Record<string, unknown> }>;
     },
   });
+  const active = AUDIT_FILTERS.find((f) => f.key === filter) ?? AUDIT_FILTERS[0];
+  const rows = (logs ?? []).filter((l) => active.match(l.action));
   return (
     <Card>
-      <CardHeader><CardTitle className="text-base">Recent activity ({logs?.length ?? 0})</CardTitle></CardHeader>
+      <CardHeader className="space-y-3">
+        <CardTitle className="text-base">Recent activity ({rows.length})</CardTitle>
+        <div className="flex flex-wrap gap-2">
+          {AUDIT_FILTERS.map((f) => (
+            <button
+              key={f.key}
+              onClick={() => setFilter(f.key)}
+              className={`rounded-full border px-3 py-1 text-xs ${filter === f.key ? "border-primary bg-primary text-primary-foreground" : "border-border hover:bg-muted"}`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+      </CardHeader>
+
       <CardContent className="p-0">
         <table className="w-full text-sm">
           <thead className="border-b border-border bg-muted/40 text-left text-xs uppercase text-muted-foreground">
