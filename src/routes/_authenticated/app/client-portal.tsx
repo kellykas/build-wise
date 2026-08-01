@@ -9,9 +9,11 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Building2, Upload, ImageIcon, Receipt, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { recordAudit } from "@/lib/audit";
+import { buildProgressPhotoPath, diagnoseUploadError, sortGallery, type GallerySort } from "@/lib/upload";
 
 export const Route = createFileRoute("/_authenticated/app/client-portal")({
   head: () => ({
@@ -39,7 +41,11 @@ function ClientPortalPage() {
   const [selectedProject, setSelectedProject] = useState<string>("");
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [caption, setCaption] = useState("");
+  const [sort, setSort] = useState<GallerySort>("newest");
   const [signed, setSigned] = useState<Record<string, string>>({});
+  const [lightbox, setLightbox] = useState<ProgressPhoto | null>(null);
+
 
   const { data: projects } = useQuery({
     queryKey: ["portal-projects", profile?.company_id],
@@ -98,35 +104,61 @@ function ClientPortalPage() {
   }, [photos]);
 
   const upload = async () => {
-    const file = fileRef.current?.files?.[0];
-    if (!file || !selectedProject || !profile?.company_id) return;
-    if (!file.type.startsWith("image/")) return toast.error("Seules les images sont acceptées");
+    const files = Array.from(fileRef.current?.files ?? []);
+    if (files.length === 0) return toast.error("Choisissez au moins une photo");
+    if (!selectedProject) return toast.error("Sélectionnez d'abord un projet");
+    if (!profile?.company_id) return toast.error("Espace de travail introuvable");
+    const companyId = profile.company_id;
     setUploading(true);
-    const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const path = `${profile.company_id}/${selectedProject}/progress/${Date.now()}-${safe}`;
-    const up = await supabase.storage.from("documents").upload(path, file, { contentType: file.type });
-    if (up.error) { setUploading(false); return toast.error(up.error.message); }
-    const ins = await supabase.from("documents").insert({
-      company_id: profile.company_id,
-      project_id: selectedProject,
-      name: file.name,
-      folder: FOLDER,
-      mime_type: file.type,
-      size_bytes: file.size,
-      storage_path: path,
-      uploaded_by: user?.id ?? null,
-    } as never);
-    setUploading(false);
-    if (ins.error) {
-      await supabase.storage.from("documents").remove([path]);
-      return toast.error(ins.error.message);
+    let ok = 0;
+
+    for (const file of files) {
+      if (!file.type.startsWith("image/")) {
+        toast.error(`${file.name} : seules les images sont acceptées`);
+        continue;
+      }
+      const path = buildProgressPhotoPath({ companyId, projectId: selectedProject, fileName: file.name });
+      const up = await supabase.storage.from("documents").upload(path, file, { contentType: file.type });
+      if (up.error) {
+        const d = diagnoseUploadError(up.error as { message?: string; statusCode?: string }, "storage");
+        toast.error(d.message, { description: d.hint, duration: 8000 });
+        continue;
+      }
+      const ins = await supabase.from("documents").insert({
+        company_id: companyId,
+        project_id: selectedProject,
+        name: caption.trim() ? `${caption.trim()}${files.length > 1 ? ` — ${file.name}` : ""}` : file.name,
+        folder: FOLDER,
+        mime_type: file.type,
+        size_bytes: file.size,
+        storage_path: path,
+        uploaded_by: user?.id ?? null,
+      } as never);
+      if (ins.error) {
+        await supabase.storage.from("documents").remove([path]);
+        const d = diagnoseUploadError(ins.error, "database");
+        toast.error(d.message, { description: d.hint, duration: 8000 });
+        continue;
+      }
+      await recordAudit({
+        action: "portal.photo.upload",
+        entity_type: "project",
+        entity_id: selectedProject,
+        metadata: { name: file.name, caption: caption.trim() || null, company_id: companyId, project_id: selectedProject, size: file.size, mime_type: file.type, path, uploaded_at: new Date().toISOString() },
+      });
+      ok++;
     }
-    await recordAudit({ action: "portal.photo.upload", entity_type: "project", entity_id: selectedProject, metadata: { name: file.name, size: file.size, path } });
+
+    setUploading(false);
     if (fileRef.current) fileRef.current.value = "";
-    toast.success("Photo ajoutée");
+    if (ok > 0) {
+      setCaption("");
+      toast.success(`${ok} photo${ok > 1 ? "s" : ""} ajoutée${ok > 1 ? "s" : ""}`);
+    }
     await qc.invalidateQueries({ queryKey: ["portal-photos", selectedProject] });
     qc.invalidateQueries({ queryKey: ["module:documents"] });
   };
+
 
   const current = projects?.find((p) => p.id === selectedProject);
 
@@ -168,13 +200,24 @@ function ClientPortalPage() {
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-base"><ImageIcon className="h-4 w-4" /> Progression du projet</CardTitle>
+          <CardHeader className="space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <CardTitle className="flex items-center gap-2 text-base"><ImageIcon className="h-4 w-4" /> Galerie de progression ({photos?.length ?? 0})</CardTitle>
+              <Select value={sort} onValueChange={(v) => setSort(v as GallerySort)}>
+                <SelectTrigger className="h-9 w-44"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Plus récentes d'abord</SelectItem>
+                  <SelectItem value="oldest">Plus anciennes d'abord</SelectItem>
+                  <SelectItem value="name">Légende (A→Z)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             {canUploadPhotos && (
-              <div className="flex items-center gap-2">
-                <Input ref={fileRef} type="file" accept="image/*" className="h-9 w-56" />
+              <div className="flex flex-wrap items-center gap-2 rounded-md border border-border bg-muted/30 p-2">
+                <Input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="Légende (ex. Coulage dalle R+1)" className="h-9 w-64" />
+                <Input ref={fileRef} type="file" accept="image/*" multiple className="h-9 w-64" />
                 <Button size="sm" onClick={upload} disabled={uploading || !selectedProject}>
-                  <Upload className="mr-2 h-4 w-4" /> {uploading ? "…" : "Ajouter"}
+                  <Upload className="mr-2 h-4 w-4" /> {uploading ? "Envoi…" : "Ajouter des photos"}
                 </Button>
               </div>
             )}
@@ -187,21 +230,22 @@ function ClientPortalPage() {
             )}
             {photos && photos.length > 0 && (
               <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-                {photos.map((p) => (
-                  <div key={p.id} className="group overflow-hidden rounded-md border border-border">
+                {sortGallery(photos, sort).map((p) => (
+                  <button key={p.id} type="button" onClick={() => setLightbox(p)} className="group overflow-hidden rounded-md border border-border text-left transition hover:border-primary">
                     {signed[p.storage_path] ? (
-                      <img src={signed[p.storage_path]} alt={p.name} className="h-40 w-full object-cover" />
+                      <img src={signed[p.storage_path]} alt={p.name} loading="lazy" className="h-40 w-full object-cover" />
                     ) : (
                       <div className="h-40 w-full animate-pulse bg-muted" />
                     )}
                     <div className="border-t border-border p-2 text-xs">
                       <div className="truncate font-medium">{p.name}</div>
-                      <div className="text-muted-foreground">{new Date(p.created_at).toLocaleDateString()}</div>
+                      <div className="text-muted-foreground">{new Date(p.created_at).toLocaleString()}</div>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             )}
+
           </CardContent>
         </Card>
 
@@ -226,6 +270,19 @@ function ClientPortalPage() {
           </Card>
         </div>
       </div>
+
+      <Dialog open={!!lightbox} onOpenChange={(o) => { if (!o) setLightbox(null); }}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>{lightbox?.name}</DialogTitle>
+            <DialogDescription>Ajoutée le {lightbox ? new Date(lightbox.created_at).toLocaleString() : ""}</DialogDescription>
+          </DialogHeader>
+          {lightbox && signed[lightbox.storage_path] && (
+            <img src={signed[lightbox.storage_path]} alt={lightbox.name} className="max-h-[70vh] w-full rounded-md object-contain" />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
+
   );
 }

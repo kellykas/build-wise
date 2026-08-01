@@ -10,9 +10,12 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Download, Eye, ExternalLink, FileText, Folder, FolderPlus, Trash2, Upload } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Download, Eye, ExternalLink, FileText, Folder, FolderPlus, Trash2, Upload, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { recordAudit } from "@/lib/audit";
+import { buildStoragePath, diagnoseUploadError } from "@/lib/upload";
+
 
 export const Route = createFileRoute("/_authenticated/app/documents")({
   head: () => ({
@@ -32,6 +35,8 @@ type Doc = { id: string; name: string; folder: string | null; mime_type: string 
 type Project = { id: string; name: string };
 type PreviewState = { doc: Doc; url: string } | null;
 
+type UploadJob = { name: string; status: "pending" | "uploading" | "done" | "error"; error?: string };
+
 const DEFAULT_FOLDERS = ["Contrats", "Plans", "Rapports", "Factures", "Photos chantier", "Administratif"];
 
 function DocumentsPage() {
@@ -45,6 +50,8 @@ function DocumentsPage() {
   const [uploadFolder, setUploadFolder] = useState<string>(DEFAULT_FOLDERS[0]);
   const [uploadProject, setUploadProject] = useState<string>("general");
   const [uploading, setUploading] = useState(false);
+  const [jobs, setJobs] = useState<UploadJob[]>([]);
+
   const [preview, setPreview] = useState<PreviewState>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -96,36 +103,72 @@ function DocumentsPage() {
   };
 
   const upload = async () => {
-    const file = fileRef.current?.files?.[0];
-    if (!file) return toast.error("Choisissez un fichier");
+    const files = Array.from(fileRef.current?.files ?? []);
+    if (files.length === 0) return toast.error("Choisissez au moins un fichier");
     if (!profile?.company_id) return toast.error("Espace de travail introuvable");
+    const companyId = profile.company_id;
+    const projectId = uploadProject === "general" ? null : uploadProject;
+
     setUploading(true);
-    const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const projectSegment = uploadProject === "general" ? "general" : uploadProject;
-    const path = `${profile.company_id}/${projectSegment}/${uploadFolder}/${Date.now()}-${safe}`;
-    const up = await supabase.storage.from("documents").upload(path, file, { upsert: false, contentType: file.type });
-    if (up.error) { setUploading(false); return toast.error(up.error.message); }
-    const ins = await supabase.from("documents").insert({
-      company_id: profile.company_id,
-      project_id: uploadProject === "general" ? null : uploadProject,
-      name: file.name,
-      folder: uploadFolder,
-      mime_type: file.type,
-      size_bytes: file.size,
-      storage_path: path,
-      uploaded_by: user?.id ?? null,
-    } as never);
-    setUploading(false);
-    if (ins.error) {
-      await supabase.storage.from("documents").remove([path]);
-      return toast.error(ins.error.message);
+    setJobs(files.map((f) => ({ name: f.name, status: "pending" as const })));
+    let done = 0;
+    let failed = 0;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      setJobs((s) => s.map((j, idx) => (idx === i ? { ...j, status: "uploading" } : j)));
+      const path = buildStoragePath({ companyId, projectId, folder: uploadFolder, fileName: file.name });
+
+      const up = await supabase.storage.from("documents").upload(path, file, { upsert: false, contentType: file.type });
+      if (up.error) {
+        const d = diagnoseUploadError(up.error as { message?: string; statusCode?: string }, "storage");
+        setJobs((s) => s.map((j, idx) => (idx === i ? { ...j, status: "error", error: `${d.message} ${d.hint}` } : j)));
+        failed++;
+        continue;
+      }
+
+      const ins = await supabase.from("documents").insert({
+        company_id: companyId,
+        project_id: projectId,
+        name: file.name,
+        folder: uploadFolder,
+        mime_type: file.type,
+        size_bytes: file.size,
+        storage_path: path,
+        uploaded_by: user?.id ?? null,
+      } as never);
+
+      if (ins.error) {
+        await supabase.storage.from("documents").remove([path]);
+        const d = diagnoseUploadError(ins.error, "database");
+        setJobs((s) => s.map((j, idx) => (idx === i ? { ...j, status: "error", error: `${d.message} ${d.hint}` } : j)));
+        failed++;
+        continue;
+      }
+
+      await recordAudit({
+        action: "document.upload",
+        entity_type: "document",
+        entity_id: projectId,
+        metadata: { name: file.name, folder: uploadFolder, company_id: companyId, project_id: projectId, size: file.size, mime_type: file.type, path, uploaded_at: new Date().toISOString() },
+      });
+      done++;
+      setJobs((s) => s.map((j, idx) => (idx === i ? { ...j, status: "done" } : j)));
+      qc.invalidateQueries({ queryKey: ["module:documents"] });
     }
-    await recordAudit({ action: "document.upload", entity_type: "document", metadata: { name: file.name, folder: uploadFolder, project_id: uploadProject === "general" ? null : uploadProject, size: file.size, mime_type: file.type, path } });
-    toast.success("Fichier téléversé");
-    setUploadOpen(false);
-    if (fileRef.current) fileRef.current.value = "";
+
+    setUploading(false);
+    if (failed === 0) {
+      toast.success(`${done} fichier${done > 1 ? "s" : ""} téléversé${done > 1 ? "s" : ""}`);
+      setUploadOpen(false);
+      setJobs([]);
+      if (fileRef.current) fileRef.current.value = "";
+    } else {
+      toast.error(`${failed} échec${failed > 1 ? "s" : ""} sur ${files.length}. Voir le détail dans la fenêtre.`);
+    }
     qc.invalidateQueries({ queryKey: ["module:documents"] });
   };
+
 
   const createSignedUrl = async (d: Doc) => {
     const { data, error } = await supabase.storage.from("documents").createSignedUrl(d.storage_path, 60);
@@ -242,8 +285,8 @@ function DocumentsPage() {
       <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Téléverser un document</DialogTitle>
-            <DialogDescription>Le fichier sera archivé dans le dossier sélectionné.</DialogDescription>
+            <DialogTitle>Téléverser des documents</DialogTitle>
+            <DialogDescription>Sélectionnez un ou plusieurs fichiers ; ils seront archivés dans le dossier choisi.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
             <div>
@@ -266,10 +309,35 @@ function DocumentsPage() {
               </Select>
             </div>
             <div>
-              <Label>Fichier</Label>
-              <Input ref={fileRef} type="file" className="mt-1" />
+              <Label>Fichiers</Label>
+              <Input ref={fileRef} type="file" multiple className="mt-1" onChange={() => setJobs([])} />
+              <p className="mt-1 text-xs text-muted-foreground">Vous pouvez sélectionner plusieurs fichiers à la fois.</p>
             </div>
+            {jobs.length > 0 && (
+              <div className="space-y-2 rounded-md border border-border p-3">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>Progression</span>
+                  <span>{jobs.filter((j) => j.status === "done").length}/{jobs.length}</span>
+                </div>
+                <Progress value={(jobs.filter((j) => j.status !== "pending" && j.status !== "uploading").length / jobs.length) * 100} />
+                <div className="max-h-40 space-y-1 overflow-auto">
+                  {jobs.map((j) => (
+                    <div key={j.name} className="text-xs">
+                      <div className="flex items-center gap-2">
+                        {j.status === "done" && <CheckCircle2 className="h-3.5 w-3.5 text-primary" />}
+                        {j.status === "error" && <XCircle className="h-3.5 w-3.5 text-destructive" />}
+                        {j.status === "uploading" && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
+                        {j.status === "pending" && <span className="h-3.5 w-3.5 rounded-full border border-border" />}
+                        <span className="truncate">{j.name}</span>
+                      </div>
+                      {j.error && <div className="ml-5 text-[11px] text-destructive">{j.error}</div>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setUploadOpen(false)}>Annuler</Button>
             <Button onClick={upload} disabled={uploading}>{uploading ? "Téléversement…" : "Téléverser"}</Button>
