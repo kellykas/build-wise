@@ -285,8 +285,8 @@ function DocumentsPage() {
       <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Téléverser un document</DialogTitle>
-            <DialogDescription>Le fichier sera archivé dans le dossier sélectionné.</DialogDescription>
+            <DialogTitle>Téléverser des documents</DialogTitle>
+            <DialogDescription>Sélectionnez un ou plusieurs fichiers ; ils seront archivés dans le dossier choisi.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
             <div>
