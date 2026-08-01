@@ -199,13 +199,24 @@ function ClientPortalPage() {
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-base"><ImageIcon className="h-4 w-4" /> Progression du projet</CardTitle>
+          <CardHeader className="space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <CardTitle className="flex items-center gap-2 text-base"><ImageIcon className="h-4 w-4" /> Galerie de progression ({photos?.length ?? 0})</CardTitle>
+              <Select value={sort} onValueChange={(v) => setSort(v as GallerySort)}>
+                <SelectTrigger className="h-9 w-44"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Plus récentes d'abord</SelectItem>
+                  <SelectItem value="oldest">Plus anciennes d'abord</SelectItem>
+                  <SelectItem value="name">Légende (A→Z)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             {canUploadPhotos && (
-              <div className="flex items-center gap-2">
-                <Input ref={fileRef} type="file" accept="image/*" className="h-9 w-56" />
+              <div className="flex flex-wrap items-center gap-2 rounded-md border border-border bg-muted/30 p-2">
+                <Input value={caption} onChange={(e) => setCaption(e.target.value)} placeholder="Légende (ex. Coulage dalle R+1)" className="h-9 w-64" />
+                <Input ref={fileRef} type="file" accept="image/*" multiple className="h-9 w-64" />
                 <Button size="sm" onClick={upload} disabled={uploading || !selectedProject}>
-                  <Upload className="mr-2 h-4 w-4" /> {uploading ? "…" : "Ajouter"}
+                  <Upload className="mr-2 h-4 w-4" /> {uploading ? "Envoi…" : "Ajouter des photos"}
                 </Button>
               </div>
             )}
@@ -218,21 +229,22 @@ function ClientPortalPage() {
             )}
             {photos && photos.length > 0 && (
               <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-                {photos.map((p) => (
-                  <div key={p.id} className="group overflow-hidden rounded-md border border-border">
+                {sortGallery(photos, sort).map((p) => (
+                  <button key={p.id} type="button" onClick={() => setLightbox(p)} className="group overflow-hidden rounded-md border border-border text-left transition hover:border-primary">
                     {signed[p.storage_path] ? (
-                      <img src={signed[p.storage_path]} alt={p.name} className="h-40 w-full object-cover" />
+                      <img src={signed[p.storage_path]} alt={p.name} loading="lazy" className="h-40 w-full object-cover" />
                     ) : (
                       <div className="h-40 w-full animate-pulse bg-muted" />
                     )}
                     <div className="border-t border-border p-2 text-xs">
                       <div className="truncate font-medium">{p.name}</div>
-                      <div className="text-muted-foreground">{new Date(p.created_at).toLocaleDateString()}</div>
+                      <div className="text-muted-foreground">{new Date(p.created_at).toLocaleString()}</div>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             )}
+
           </CardContent>
         </Card>
 
