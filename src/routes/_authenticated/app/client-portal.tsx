@@ -40,7 +40,11 @@ function ClientPortalPage() {
   const [selectedProject, setSelectedProject] = useState<string>("");
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [caption, setCaption] = useState("");
+  const [sort, setSort] = useState<GallerySort>("newest");
   const [signed, setSigned] = useState<Record<string, string>>({});
+  const [lightbox, setLightbox] = useState<ProgressPhoto | null>(null);
+
 
   const { data: projects } = useQuery({
     queryKey: ["portal-projects", profile?.company_id],
