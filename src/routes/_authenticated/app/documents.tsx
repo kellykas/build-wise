@@ -99,36 +99,72 @@ function DocumentsPage() {
   };
 
   const upload = async () => {
-    const file = fileRef.current?.files?.[0];
-    if (!file) return toast.error("Choisissez un fichier");
+    const files = Array.from(fileRef.current?.files ?? []);
+    if (files.length === 0) return toast.error("Choisissez au moins un fichier");
     if (!profile?.company_id) return toast.error("Espace de travail introuvable");
+    const companyId = profile.company_id;
+    const projectId = uploadProject === "general" ? null : uploadProject;
+
     setUploading(true);
-    const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const projectSegment = uploadProject === "general" ? "general" : uploadProject;
-    const path = `${profile.company_id}/${projectSegment}/${uploadFolder}/${Date.now()}-${safe}`;
-    const up = await supabase.storage.from("documents").upload(path, file, { upsert: false, contentType: file.type });
-    if (up.error) { setUploading(false); return toast.error(up.error.message); }
-    const ins = await supabase.from("documents").insert({
-      company_id: profile.company_id,
-      project_id: uploadProject === "general" ? null : uploadProject,
-      name: file.name,
-      folder: uploadFolder,
-      mime_type: file.type,
-      size_bytes: file.size,
-      storage_path: path,
-      uploaded_by: user?.id ?? null,
-    } as never);
-    setUploading(false);
-    if (ins.error) {
-      await supabase.storage.from("documents").remove([path]);
-      return toast.error(ins.error.message);
+    setJobs(files.map((f) => ({ name: f.name, status: "pending" as const })));
+    let done = 0;
+    let failed = 0;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      setJobs((s) => s.map((j, idx) => (idx === i ? { ...j, status: "uploading" } : j)));
+      const path = buildStoragePath({ companyId, projectId, folder: uploadFolder, fileName: file.name });
+
+      const up = await supabase.storage.from("documents").upload(path, file, { upsert: false, contentType: file.type });
+      if (up.error) {
+        const d = diagnoseUploadError(up.error as { message?: string; statusCode?: string }, "storage");
+        setJobs((s) => s.map((j, idx) => (idx === i ? { ...j, status: "error", error: `${d.message} ${d.hint}` } : j)));
+        failed++;
+        continue;
+      }
+
+      const ins = await supabase.from("documents").insert({
+        company_id: companyId,
+        project_id: projectId,
+        name: file.name,
+        folder: uploadFolder,
+        mime_type: file.type,
+        size_bytes: file.size,
+        storage_path: path,
+        uploaded_by: user?.id ?? null,
+      } as never);
+
+      if (ins.error) {
+        await supabase.storage.from("documents").remove([path]);
+        const d = diagnoseUploadError(ins.error, "database");
+        setJobs((s) => s.map((j, idx) => (idx === i ? { ...j, status: "error", error: `${d.message} ${d.hint}` } : j)));
+        failed++;
+        continue;
+      }
+
+      await recordAudit({
+        action: "document.upload",
+        entity_type: "document",
+        entity_id: projectId,
+        metadata: { name: file.name, folder: uploadFolder, company_id: companyId, project_id: projectId, size: file.size, mime_type: file.type, path, uploaded_at: new Date().toISOString() },
+      });
+      done++;
+      setJobs((s) => s.map((j, idx) => (idx === i ? { ...j, status: "done" } : j)));
+      qc.invalidateQueries({ queryKey: ["module:documents"] });
     }
-    await recordAudit({ action: "document.upload", entity_type: "document", metadata: { name: file.name, folder: uploadFolder, project_id: uploadProject === "general" ? null : uploadProject, size: file.size, mime_type: file.type, path } });
-    toast.success("Fichier téléversé");
-    setUploadOpen(false);
-    if (fileRef.current) fileRef.current.value = "";
+
+    setUploading(false);
+    if (failed === 0) {
+      toast.success(`${done} fichier${done > 1 ? "s" : ""} téléversé${done > 1 ? "s" : ""}`);
+      setUploadOpen(false);
+      setJobs([]);
+      if (fileRef.current) fileRef.current.value = "";
+    } else {
+      toast.error(`${failed} échec${failed > 1 ? "s" : ""} sur ${files.length}. Voir le détail dans la fenêtre.`);
+    }
     qc.invalidateQueries({ queryKey: ["module:documents"] });
   };
+
 
   const createSignedUrl = async (d: Doc) => {
     const { data, error } = await supabase.storage.from("documents").createSignedUrl(d.storage_path, 60);
