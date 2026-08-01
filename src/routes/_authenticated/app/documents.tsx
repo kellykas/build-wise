@@ -10,9 +10,12 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Download, Eye, ExternalLink, FileText, Folder, FolderPlus, Trash2, Upload } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Download, Eye, ExternalLink, FileText, Folder, FolderPlus, Trash2, Upload, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { recordAudit } from "@/lib/audit";
+import { buildStoragePath, diagnoseUploadError } from "@/lib/upload";
+
 
 export const Route = createFileRoute("/_authenticated/app/documents")({
   head: () => ({
