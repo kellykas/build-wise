@@ -35,6 +35,8 @@ type Doc = { id: string; name: string; folder: string | null; mime_type: string 
 type Project = { id: string; name: string };
 type PreviewState = { doc: Doc; url: string } | null;
 
+type UploadJob = { name: string; status: "pending" | "uploading" | "done" | "error"; error?: string };
+
 const DEFAULT_FOLDERS = ["Contrats", "Plans", "Rapports", "Factures", "Photos chantier", "Administratif"];
 
 function DocumentsPage() {
