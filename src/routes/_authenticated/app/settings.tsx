@@ -269,16 +269,23 @@ function AuditTab() {
             </tr>
           </thead>
           <tbody>
-            {(logs ?? []).map((l) => (
-              <tr key={l.id} className="border-b border-border last:border-0 align-top">
-                <td className="px-4 py-2 text-xs text-muted-foreground whitespace-nowrap">{new Date(l.created_at).toLocaleString()}</td>
-                <td className="px-4 py-2 text-xs">{l.actor_email ?? "—"}</td>
-                <td className="px-4 py-2"><Badge variant="outline">{l.action}</Badge></td>
-                <td className="px-4 py-2 text-xs">{l.entity_type ?? "—"}{l.entity_id ? ` · ${l.entity_id.slice(0, 8)}` : ""}</td>
-                <td className="px-4 py-2 text-xs text-muted-foreground"><pre className="whitespace-pre-wrap break-all font-mono text-[10px]">{JSON.stringify(l.metadata)}</pre></td>
-              </tr>
-            ))}
-            {(!logs || logs.length === 0) && <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-muted-foreground">No activity yet.</td></tr>}
+            {rows.map((l) => {
+              const m = (l.metadata ?? {}) as { project_id?: string | null; company_id?: string | null; name?: string; path?: string };
+              return (
+                <tr key={l.id} className="border-b border-border last:border-0 align-top">
+                  <td className="px-4 py-2 text-xs text-muted-foreground whitespace-nowrap">{new Date(l.created_at).toLocaleString()}</td>
+                  <td className="px-4 py-2 text-xs">{l.actor_email ?? "—"}</td>
+                  <td className="px-4 py-2"><Badge variant="outline">{l.action}</Badge></td>
+                  <td className="px-4 py-2 text-xs">
+                    {l.entity_type ?? "—"}{l.entity_id ? ` · ${l.entity_id.slice(0, 8)}` : ""}
+                    {m.project_id ? <div className="text-muted-foreground">projet {String(m.project_id).slice(0, 8)}</div> : null}
+                  </td>
+                  <td className="px-4 py-2 text-xs text-muted-foreground"><pre className="whitespace-pre-wrap break-all font-mono text-[10px]">{JSON.stringify(l.metadata)}</pre></td>
+                </tr>
+              );
+            })}
+            {rows.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-muted-foreground">No activity yet.</td></tr>}
+
           </tbody>
         </table>
       </CardContent>
