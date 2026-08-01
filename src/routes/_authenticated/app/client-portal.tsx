@@ -98,35 +98,61 @@ function ClientPortalPage() {
   }, [photos]);
 
   const upload = async () => {
-    const file = fileRef.current?.files?.[0];
-    if (!file || !selectedProject || !profile?.company_id) return;
-    if (!file.type.startsWith("image/")) return toast.error("Seules les images sont acceptées");
+    const files = Array.from(fileRef.current?.files ?? []);
+    if (files.length === 0) return toast.error("Choisissez au moins une photo");
+    if (!selectedProject) return toast.error("Sélectionnez d'abord un projet");
+    if (!profile?.company_id) return toast.error("Espace de travail introuvable");
+    const companyId = profile.company_id;
     setUploading(true);
-    const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const path = `${profile.company_id}/${selectedProject}/progress/${Date.now()}-${safe}`;
-    const up = await supabase.storage.from("documents").upload(path, file, { contentType: file.type });
-    if (up.error) { setUploading(false); return toast.error(up.error.message); }
-    const ins = await supabase.from("documents").insert({
-      company_id: profile.company_id,
-      project_id: selectedProject,
-      name: file.name,
-      folder: FOLDER,
-      mime_type: file.type,
-      size_bytes: file.size,
-      storage_path: path,
-      uploaded_by: user?.id ?? null,
-    } as never);
-    setUploading(false);
-    if (ins.error) {
-      await supabase.storage.from("documents").remove([path]);
-      return toast.error(ins.error.message);
+    let ok = 0;
+
+    for (const file of files) {
+      if (!file.type.startsWith("image/")) {
+        toast.error(`${file.name} : seules les images sont acceptées`);
+        continue;
+      }
+      const path = buildProgressPhotoPath({ companyId, projectId: selectedProject, fileName: file.name });
+      const up = await supabase.storage.from("documents").upload(path, file, { contentType: file.type });
+      if (up.error) {
+        const d = diagnoseUploadError(up.error as { message?: string; statusCode?: string }, "storage");
+        toast.error(d.message, { description: d.hint, duration: 8000 });
+        continue;
+      }
+      const ins = await supabase.from("documents").insert({
+        company_id: companyId,
+        project_id: selectedProject,
+        name: caption.trim() ? `${caption.trim()}${files.length > 1 ? ` — ${file.name}` : ""}` : file.name,
+        folder: FOLDER,
+        mime_type: file.type,
+        size_bytes: file.size,
+        storage_path: path,
+        uploaded_by: user?.id ?? null,
+      } as never);
+      if (ins.error) {
+        await supabase.storage.from("documents").remove([path]);
+        const d = diagnoseUploadError(ins.error, "database");
+        toast.error(d.message, { description: d.hint, duration: 8000 });
+        continue;
+      }
+      await recordAudit({
+        action: "portal.photo.upload",
+        entity_type: "project",
+        entity_id: selectedProject,
+        metadata: { name: file.name, caption: caption.trim() || null, company_id: companyId, project_id: selectedProject, size: file.size, mime_type: file.type, path, uploaded_at: new Date().toISOString() },
+      });
+      ok++;
     }
-    await recordAudit({ action: "portal.photo.upload", entity_type: "project", entity_id: selectedProject, metadata: { name: file.name, size: file.size, path } });
+
+    setUploading(false);
     if (fileRef.current) fileRef.current.value = "";
-    toast.success("Photo ajoutée");
+    if (ok > 0) {
+      setCaption("");
+      toast.success(`${ok} photo${ok > 1 ? "s" : ""} ajoutée${ok > 1 ? "s" : ""}`);
+    }
     await qc.invalidateQueries({ queryKey: ["portal-photos", selectedProject] });
     qc.invalidateQueries({ queryKey: ["module:documents"] });
   };
+
 
   const current = projects?.find((p) => p.id === selectedProject);
 
