@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Building2, Upload, ImageIcon, Receipt, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { recordAudit } from "@/lib/audit";
+import { buildProgressPhotoPath, diagnoseUploadError, sortGallery, type GallerySort } from "@/lib/upload";
 
 export const Route = createFileRoute("/_authenticated/app/client-portal")({
   head: () => ({
