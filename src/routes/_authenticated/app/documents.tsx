@@ -309,10 +309,35 @@ function DocumentsPage() {
               </Select>
             </div>
             <div>
-              <Label>Fichier</Label>
-              <Input ref={fileRef} type="file" className="mt-1" />
+              <Label>Fichiers</Label>
+              <Input ref={fileRef} type="file" multiple className="mt-1" onChange={() => setJobs([])} />
+              <p className="mt-1 text-xs text-muted-foreground">Vous pouvez sélectionner plusieurs fichiers à la fois.</p>
             </div>
+            {jobs.length > 0 && (
+              <div className="space-y-2 rounded-md border border-border p-3">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>Progression</span>
+                  <span>{jobs.filter((j) => j.status === "done").length}/{jobs.length}</span>
+                </div>
+                <Progress value={(jobs.filter((j) => j.status !== "pending" && j.status !== "uploading").length / jobs.length) * 100} />
+                <div className="max-h-40 space-y-1 overflow-auto">
+                  {jobs.map((j) => (
+                    <div key={j.name} className="text-xs">
+                      <div className="flex items-center gap-2">
+                        {j.status === "done" && <CheckCircle2 className="h-3.5 w-3.5 text-primary" />}
+                        {j.status === "error" && <XCircle className="h-3.5 w-3.5 text-destructive" />}
+                        {j.status === "uploading" && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
+                        {j.status === "pending" && <span className="h-3.5 w-3.5 rounded-full border border-border" />}
+                        <span className="truncate">{j.name}</span>
+                      </div>
+                      {j.error && <div className="ml-5 text-[11px] text-destructive">{j.error}</div>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setUploadOpen(false)}>Annuler</Button>
             <Button onClick={upload} disabled={uploading}>{uploading ? "Téléversement…" : "Téléverser"}</Button>
