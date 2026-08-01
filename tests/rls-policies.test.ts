@@ -6,10 +6,10 @@ import { execFileSync } from "node:child_process";
 import { describe, expect, it } from "vitest";
 
 function sql(query: string): string[][] {
-  // Collapse whitespace server-side so multi-line policy expressions stay on one row.
-  const flat = `select array_to_string(array(select regexp_replace(coalesce(v, ''), '\\s+', ' ', 'g') from unnest(t.*::text[]) as v), '\u0001') from (${query}) t`;
-  const out = execFileSync("psql", ["-At", "-c", flat], { encoding: "utf8" });
-  return out.trim().split("\n").filter(Boolean).map((l) => l.split("\u0001"));
+  const wrapped = `select coalesce(json_agg(row_to_json(t)), '[]')::text from (${query}) t`;
+  const out = execFileSync("psql", ["-At", "-c", wrapped], { encoding: "utf8" });
+  const rows = JSON.parse(out.trim() || "[]") as Array<Record<string, unknown>>;
+  return rows.map((r) => Object.values(r).map((v) => String(v ?? "").replace(/\s+/g, " ")));
 }
 
 const UPLOAD_TABLES = ["documents", "projects", "project_members", "audit_logs"];
