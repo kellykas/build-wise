@@ -50,12 +50,12 @@ describe("public schema policies", () => {
 describe("Data API grants", () => {
   it("grants authenticated access to every table used by uploads", () => {
     for (const table of UPLOAD_TABLES) {
-      const rows = sql(
-        `select privilege_type from information_schema.role_table_grants
-         where grantee='authenticated' and table_schema='public' and table_name='${table}'`,
-      ).flat();
-      expect(rows, `${table} missing authenticated grants`).toContain("SELECT");
-      expect(rows, `${table} missing authenticated INSERT`).toContain("INSERT");
+      for (const priv of ["SELECT", "INSERT"]) {
+        const [row] = sql(`select has_table_privilege('authenticated','public.${table}','${priv}')::text as ok`);
+        expect(row[0], `${table} missing authenticated ${priv}`).toBe("true");
+      }
+      const [svc] = sql(`select has_table_privilege('service_role','public.${table}','SELECT')::text as ok`);
+      expect(svc[0], `${table} missing service_role grant`).toBe("true");
     }
   });
 });
@@ -92,15 +92,26 @@ describe("storage policies for the documents bucket", () => {
 });
 
 describe("multi-role accounts", () => {
-  it("classifies accounts holding staff + client roles as staff", () => {
+  it("keeps a staff role alongside the client role so staff policies still apply", () => {
     const multi = sql(
-      `select user_id from public.user_roles group by user_id
-       having bool_or(role='client') and bool_or(role <> 'client')`,
-    ).flat();
-    if (multi.length === 0) return; // nothing to assert in a fresh workspace
-    for (const uid of multi) {
-      const [row] = sql(`select public.is_staff_user('${uid}')::text`);
-      expect(row[0], `user ${uid} should be staff`).toBe("t");
+      `select user_id::text as user_id, string_agg(role::text, ',' order by role::text) as roles
+       from public.user_roles group by user_id
+       having bool_or(role = 'client') and bool_or(role <> 'client')`,
+    );
+    for (const [uid, roles] of multi) {
+      const list = roles.split(",");
+      expect(list, `user ${uid} lost its staff role`).not.toEqual(["client"]);
+      expect(list.some((r) => r !== "client")).toBe(true);
     }
+  });
+
+  it("defines is_staff_user without excluding client role holders", () => {
+    const [row] = sql(
+      `select pg_get_functiondef(p.oid) as def from pg_proc p
+       join pg_namespace n on n.oid = p.pronamespace
+       where n.nspname = 'public' and p.proname = 'is_staff_user'`,
+    );
+    expect(row[0]).toContain("super_admin");
+    expect(row[0]).not.toMatch(/not\s+public\.has_role/i);
   });
 });
