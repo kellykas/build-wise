@@ -10,7 +10,10 @@ import { buildProgressPhotoPath, buildStoragePath } from "../src/lib/upload";
 
 const url = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
 const key = process.env["SUPABASE_PUBLISHABLE_KEY"] ?? process.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
-const token = process.env["LOVABLE_BROWSER_SUPABASE_ACCESS_TOKEN"];
+const sessionJson = process.env["LOVABLE_BROWSER_SUPABASE_SESSION_JSON"];
+const token =
+  process.env["LOVABLE_BROWSER_SUPABASE_ACCESS_TOKEN"] ??
+  (sessionJson ? (JSON.parse(sessionJson) as { access_token?: string }).access_token : undefined);
 
 const enabled = Boolean(url && key && token);
 
