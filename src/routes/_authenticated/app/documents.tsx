@@ -48,6 +48,8 @@ function DocumentsPage() {
   const [uploadFolder, setUploadFolder] = useState<string>(DEFAULT_FOLDERS[0]);
   const [uploadProject, setUploadProject] = useState<string>("general");
   const [uploading, setUploading] = useState(false);
+  const [jobs, setJobs] = useState<UploadJob[]>([]);
+
   const [preview, setPreview] = useState<PreviewState>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
