@@ -6,7 +6,9 @@ import { execFileSync } from "node:child_process";
 import { describe, expect, it } from "vitest";
 
 function sql(query: string): string[][] {
-  const out = execFileSync("psql", ["-At", "-F", "\u0001", "-c", query], { encoding: "utf8" });
+  // Collapse whitespace server-side so multi-line policy expressions stay on one row.
+  const flat = `select array_to_string(array(select regexp_replace(coalesce(v, ''), '\\s+', ' ', 'g') from unnest(t.*::text[]) as v), '\u0001') from (${query}) t`;
+  const out = execFileSync("psql", ["-At", "-c", flat], { encoding: "utf8" });
   return out.trim().split("\n").filter(Boolean).map((l) => l.split("\u0001"));
 }
 

@@ -9,7 +9,8 @@ import {
 
 describe("safeFileName", () => {
   it("strips characters that break storage keys", () => {
-    expect(safeFileName("Plan étage #2 (final).pdf")).toBe("Plan_tage__2__final_.pdf");
+    expect(safeFileName("Plan etage #2 (final).pdf")).toBe("Plan_etage__2__final_.pdf");
+    expect(safeFileName("Plan étage.pdf")).toMatch(/^Plan_+tage\.pdf$/);
   });
 });
 
