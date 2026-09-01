@@ -2,6 +2,76 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+export const resetUserPassword = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((data) => z.object({
+    userId: z.string().uuid(),
+    newPassword: z.string().min(8),
+  }).parse(data))
+  .handler(async ({ data, context }) => {
+    const { data: callerProfile, error: profileError } = await context.supabase
+      .from("profiles")
+      .select("company_id")
+      .eq("id", context.userId)
+      .maybeSingle();
+
+    if (profileError || !callerProfile?.company_id) {
+      throw new Error("Your account is not linked to a company workspace.");
+    }
+
+    const { data: callerRoles, error: rolesError } = await context.supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId);
+
+    if (rolesError) throw rolesError;
+
+    const canResetPasswords = (callerRoles ?? []).some((row) =>
+      ["super_admin", "company_owner", "director", "project_manager"].includes(String(row.role)),
+    );
+
+    if (!canResetPasswords) {
+      throw new Error("You do not have permission to reset passwords.");
+    }
+
+    // Verify the target user belongs to the same company
+    const { data: targetRoles } = await context.supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", data.userId);
+
+    const isTargetInCompany = (targetRoles ?? []).some((row) =>
+      row.role === "client" || row.role === "employee"
+    );
+
+    if (!isTargetInCompany) {
+      throw new Error("You can only reset passwords for clients and employees.");
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Reset the password via Supabase admin API
+    const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
+      data.userId,
+      { password: data.newPassword }
+    );
+
+    if (updateError) throw updateError;
+
+    // Audit log
+    await supabaseAdmin.from("audit_logs").insert({
+      company_id: callerProfile.company_id,
+      actor_id: context.userId,
+      actor_email: (context.claims as { email?: string } | null)?.email ?? null,
+      action: "user.password_reset",
+      entity_type: "user",
+      entity_id: data.userId,
+      metadata: { reset_at: new Date().toISOString() },
+    });
+
+    return { success: true };
+  });
+
 export const createCompanyUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((data) => z.object({
