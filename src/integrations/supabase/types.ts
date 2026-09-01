@@ -661,6 +661,60 @@ export type Database = {
           },
         ]
       }
+      notification_log: {
+        Row: {
+          channel: string | null
+          company_id: string | null
+          created_at: string
+          id: string
+          knock_message_id: string | null
+          knock_workflow: string | null
+          payload: Json
+          recipient_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          channel?: string | null
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          knock_message_id?: string | null
+          knock_workflow?: string | null
+          payload?: Json
+          recipient_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          channel?: string | null
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          knock_message_id?: string | null
+          knock_workflow?: string | null
+          payload?: Json
+          recipient_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_log_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_log_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string | null
@@ -830,6 +884,27 @@ export type Database = {
           },
         ]
       }
+      permission_keys: {
+        Row: {
+          description: string | null
+          key: string
+          label: string
+          module: string
+        }
+        Insert: {
+          description?: string | null
+          key: string
+          label: string
+          module: string
+        }
+        Update: {
+          description?: string | null
+          key?: string
+          label?: string
+          module?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -838,6 +913,7 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          knock_user_id: string | null
           phone: string | null
           updated_at: string
         }
@@ -848,6 +924,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          knock_user_id?: string | null
           phone?: string | null
           updated_at?: string
         }
@@ -858,6 +935,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          knock_user_id?: string | null
           phone?: string | null
           updated_at?: string
         }
@@ -1548,6 +1626,51 @@ export type Database = {
           },
         ]
       }
+      user_permissions: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          granted: boolean
+          id: string
+          permission_key: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          granted?: boolean
+          id?: string
+          permission_key: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          granted?: boolean
+          id?: string
+          permission_key?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_permissions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_permissions_permission_key_fkey"
+            columns: ["permission_key"]
+            isOneToOne: false
+            referencedRelation: "permission_keys"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           company_id: string | null
@@ -1586,6 +1709,13 @@ export type Database = {
     }
     Functions: {
       current_company_id: { Args: never; Returns: string }
+      get_user_permissions: {
+        Args: { _user_id: string }
+        Returns: {
+          granted: boolean
+          permission_key: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1594,6 +1724,10 @@ export type Database = {
         Returns: boolean
       }
       is_staff_user: { Args: { _user_id: string }; Returns: boolean }
+      user_has_permission: {
+        Args: { _permission_key: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role:

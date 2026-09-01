@@ -18,6 +18,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedAppRouteRouteImport } from './routes/_authenticated/app/route'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app/index'
+import { Route as ApiPublicKnockWebhookRouteImport } from './routes/api/public/knock-webhook'
 import { Route as AuthenticatedAppTasksRouteImport } from './routes/_authenticated/app/tasks'
 import { Route as AuthenticatedAppSuppliersRouteImport } from './routes/_authenticated/app/suppliers'
 import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app/settings'
@@ -90,6 +91,11 @@ const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedAppRouteRoute,
+} as any)
+const ApiPublicKnockWebhookRoute = ApiPublicKnockWebhookRouteImport.update({
+  id: '/api/public/knock-webhook',
+  path: '/api/public/knock-webhook',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAppTasksRoute = AuthenticatedAppTasksRouteImport.update({
   id: '/tasks',
@@ -283,6 +289,7 @@ export interface FileRoutesByFullPath {
   '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/suppliers': typeof AuthenticatedAppSuppliersRoute
   '/app/tasks': typeof AuthenticatedAppTasksRouteWithChildren
+  '/api/public/knock-webhook': typeof ApiPublicKnockWebhookRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/app/projects/$id': typeof AuthenticatedAppProjectsIdRoute
   '/app/requisitions/$id': typeof AuthenticatedAppRequisitionsIdRoute
@@ -317,6 +324,7 @@ export interface FileRoutesByTo {
   '/app/procurement': typeof AuthenticatedAppProcurementRoute
   '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/suppliers': typeof AuthenticatedAppSuppliersRoute
+  '/api/public/knock-webhook': typeof ApiPublicKnockWebhookRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/app/projects/$id': typeof AuthenticatedAppProjectsIdRoute
   '/app/requisitions/$id': typeof AuthenticatedAppRequisitionsIdRoute
@@ -357,6 +365,7 @@ export interface FileRoutesById {
   '/_authenticated/app/settings': typeof AuthenticatedAppSettingsRoute
   '/_authenticated/app/suppliers': typeof AuthenticatedAppSuppliersRoute
   '/_authenticated/app/tasks': typeof AuthenticatedAppTasksRouteWithChildren
+  '/api/public/knock-webhook': typeof ApiPublicKnockWebhookRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/app/projects/$id': typeof AuthenticatedAppProjectsIdRoute
   '/_authenticated/app/requisitions/$id': typeof AuthenticatedAppRequisitionsIdRoute
@@ -397,6 +406,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/suppliers'
     | '/app/tasks'
+    | '/api/public/knock-webhook'
     | '/app/'
     | '/app/projects/$id'
     | '/app/requisitions/$id'
@@ -431,6 +441,7 @@ export interface FileRouteTypes {
     | '/app/procurement'
     | '/app/settings'
     | '/app/suppliers'
+    | '/api/public/knock-webhook'
     | '/app'
     | '/app/projects/$id'
     | '/app/requisitions/$id'
@@ -470,6 +481,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/settings'
     | '/_authenticated/app/suppliers'
     | '/_authenticated/app/tasks'
+    | '/api/public/knock-webhook'
     | '/_authenticated/app/'
     | '/_authenticated/app/projects/$id'
     | '/_authenticated/app/requisitions/$id'
@@ -490,6 +502,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   ProjectsRoute: typeof ProjectsRoute
   ServicesRoute: typeof ServicesRoute
+  ApiPublicKnockWebhookRoute: typeof ApiPublicKnockWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -556,6 +569,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/'
       preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
       parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/api/public/knock-webhook': {
+      id: '/api/public/knock-webhook'
+      path: '/api/public/knock-webhook'
+      fullPath: '/api/public/knock-webhook'
+      preLoaderRoute: typeof ApiPublicKnockWebhookRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/app/tasks': {
       id: '/_authenticated/app/tasks'
@@ -881,7 +901,18 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   ProjectsRoute: ProjectsRoute,
   ServicesRoute: ServicesRoute,
+  ApiPublicKnockWebhookRoute: ApiPublicKnockWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
