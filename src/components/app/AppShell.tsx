@@ -8,6 +8,7 @@ import {
   Settings, Bell, Search, ChevronDown, LogOut, HardHat, Building2, FileSpreadsheet,
   ShieldCheck, Menu, X, History,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
@@ -39,66 +40,45 @@ const PROC: AppRole[] = _PROC;
 const OPS: AppRole[] = _OPS;
 void CLIENT_ALLOWED;
 
-const groups: { label: string; items: NavItemDef[] }[] = [
-  {
-    label: "Workspace",
-    items: [
-      { to: "/app", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
-      { to: "/app/notifications", label: "Notifications", icon: Bell },
-      { to: "/app/calendar", label: "Agenda", icon: CalendarDays },
-    ],
+// Nav labels use i18n keys — resolved at render time inside AppShell
+const NAV_KEYS = {
+  groups: {
+    workspace: "app.groups.workspace",
+    operations: "app.groups.operations",
+    hr: "app.groups.hr",
+    supply_chain: "app.groups.supply_chain",
+    finance: "app.groups.finance",
+    library: "app.groups.library",
   },
-  {
-    label: "Opérations",
-    items: [
-      { to: "/app/projects", label: "Projets", icon: FolderKanban, roles: [...OPS, "accountant"] },
-      { to: "/app/tasks", label: "Tâches", icon: ClipboardList },
-      { to: "/app/requisitions", label: "États de besoin", icon: FileSpreadsheet, roles: [...OPS, ...FIN, ...PROC] },
-      { to: "/app/clients", label: "Clients", icon: Users, roles: [...ADMIN, "project_manager", "accountant"] },
-      { to: "/app/client-portal", label: "Portail Client", icon: Building2, roles: [...ADMIN, "project_manager", "client"] },
-    ],
+  nav: {
+    dashboard: "app.nav.dashboard",
+    notifications: "app.nav.notifications",
+    calendar: "app.nav.calendar",
+    projects: "app.nav.projects",
+    tasks: "app.nav.tasks",
+    requisitions: "app.nav.requisitions",
+    clients: "app.nav.clients",
+    client_portal: "app.nav.client_portal",
+    employees: "app.nav.employees",
+    attendance: "app.nav.attendance",
+    payroll: "app.nav.payroll",
+    suppliers: "app.nav.suppliers",
+    procurement: "app.nav.procurement",
+    inventory: "app.nav.inventory",
+    equipment: "app.nav.equipment",
+    invoices: "app.nav.invoices",
+    finance: "app.nav.finance",
+    documents: "app.nav.documents",
+    notification_log: "app.nav.notification_log",
+    settings: "app.nav.settings",
   },
-  {
-    label: "Ressources Humaines",
-    items: [
-      { to: "/app/employees", label: "Employés", icon: UserCog, roles: HR },
-      { to: "/app/attendance", label: "Présence", icon: ClipboardCheck, roles: [...HR, "project_manager"] },
-      { to: "/app/payroll", label: "Paie", icon: ClipboardCheck, roles: [...HR, "accountant"] },
-    ],
+  mobile: {
+    home: "app.mobile.home",
+    tasks: "app.mobile.tasks",
+    projects: "app.mobile.projects",
+    alerts: "app.mobile.alerts",
   },
-  {
-    label: "Chaîne d'approvisionnement",
-    items: [
-      { to: "/app/suppliers", label: "Fournisseurs", icon: Truck, roles: PROC },
-      { to: "/app/procurement", label: "Achats", icon: ShoppingCart, roles: [...PROC, ...FIN] },
-      { to: "/app/inventory", label: "Stock", icon: Boxes, roles: [...PROC, "site_engineer"] },
-      { to: "/app/equipment", label: "Équipement", icon: Wrench, roles: [...PROC, ...OPS] },
-    ],
-  },
-  {
-    label: "Finance",
-    items: [
-      { to: "/app/invoices", label: "Factures", icon: Receipt, roles: [...FIN, "project_manager"] },
-      { to: "/app/finance", label: "Trésorerie", icon: Wallet, roles: FIN },
-    ],
-  },
-  {
-    label: "Bibliothèque",
-    items: [
-      { to: "/app/documents", label: "Documents", icon: FileText },
-      { to: "/app/notification-log", label: "Notification Log", icon: History, roles: [...ADMIN] },
-      { to: "/app/settings", label: "Paramètres", icon: Settings },
-    ],
-  },
-];
-
-// Quick nav items for mobile bottom bar
-const mobileQuickNav = [
-  { to: "/app", label: "Home", icon: LayoutDashboard, exact: true },
-  { to: "/app/tasks", label: "Tasks", icon: ClipboardList },
-  { to: "/app/projects", label: "Projects", icon: FolderKanban },
-  { to: "/app/notifications", label: "Alerts", icon: Bell },
-];
+} as const;
 
 function NavItem({ to, label, icon: Icon, exact }: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -117,6 +97,7 @@ function NavItem({ to, label, icon: Icon, exact }: { to: string; label: string; 
 
 function MobileNav({ visibleGroups, children }: { visibleGroups: { label: string; items: NavItemDef[] }[]; children: ReactNode }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   return (
     <Sheet>
@@ -133,8 +114,8 @@ function MobileNav({ visibleGroups, children }: { visibleGroups: { label: string
               <HardHat className="h-4 w-4" />
             </span>
             <div>
-              <div className="text-sm font-semibold">BuildFlow</div>
-              <div className="text-xs text-muted-foreground">Construction ERP</div>
+              <div className="text-sm font-semibold">{t("app.brand")}</div>
+              <div className="text-xs text-muted-foreground">{t("app.subtitle")}</div>
             </div>
           </div>
           <div className="flex-1 overflow-y-auto py-2">
@@ -160,7 +141,7 @@ function MobileNav({ visibleGroups, children }: { visibleGroups: { label: string
             ))}
           </div>
           <div className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
-            v0.1 · BuildFlow ERP
+            {t("app.version")} · {t("app.brand")} {t("app.subtitle")}
           </div>
         </div>
       </SheetContent>
@@ -170,9 +151,52 @@ function MobileNav({ visibleGroups, children }: { visibleGroups: { label: string
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { profile, user, signOut, roles, isAdmin } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isMobile = useIsMobile();
+  // Build nav groups with translated labels at render time
+  const k = NAV_KEYS;
+  const groups: { label: string; items: NavItemDef[] }[] = [
+    { label: t(k.groups.workspace), items: [
+      { to: "/app", label: t(k.nav.dashboard), icon: LayoutDashboard, exact: true },
+      { to: "/app/notifications", label: t(k.nav.notifications), icon: Bell },
+      { to: "/app/calendar", label: t(k.nav.calendar), icon: CalendarDays },
+    ]},
+    { label: t(k.groups.operations), items: [
+      { to: "/app/projects", label: t(k.nav.projects), icon: FolderKanban, roles: [...OPS, "accountant"] },
+      { to: "/app/tasks", label: t(k.nav.tasks), icon: ClipboardList },
+      { to: "/app/requisitions", label: t(k.nav.requisitions), icon: FileSpreadsheet, roles: [...OPS, ...FIN, ...PROC] },
+      { to: "/app/clients", label: t(k.nav.clients), icon: Users, roles: [...ADMIN, "project_manager", "accountant"] },
+      { to: "/app/client-portal", label: t(k.nav.client_portal), icon: Building2, roles: [...ADMIN, "project_manager", "client"] },
+    ]},
+    { label: t(k.groups.hr), items: [
+      { to: "/app/employees", label: t(k.nav.employees), icon: UserCog, roles: HR },
+      { to: "/app/attendance", label: t(k.nav.attendance), icon: ClipboardCheck, roles: [...HR, "project_manager"] },
+      { to: "/app/payroll", label: t(k.nav.payroll), icon: ClipboardCheck, roles: [...HR, "accountant"] },
+    ]},
+    { label: t(k.groups.supply_chain), items: [
+      { to: "/app/suppliers", label: t(k.nav.suppliers), icon: Truck, roles: PROC },
+      { to: "/app/procurement", label: t(k.nav.procurement), icon: ShoppingCart, roles: [...PROC, ...FIN] },
+      { to: "/app/inventory", label: t(k.nav.inventory), icon: Boxes, roles: [...PROC, "site_engineer"] },
+      { to: "/app/equipment", label: t(k.nav.equipment), icon: Wrench, roles: [...PROC, ...OPS] },
+    ]},
+    { label: t(k.groups.finance), items: [
+      { to: "/app/invoices", label: t(k.nav.invoices), icon: Receipt, roles: [...FIN, "project_manager"] },
+      { to: "/app/finance", label: t(k.nav.finance), icon: Wallet, roles: FIN },
+    ]},
+    { label: t(k.groups.library), items: [
+      { to: "/app/documents", label: t(k.nav.documents), icon: FileText },
+      { to: "/app/notification-log", label: t(k.nav.notification_log), icon: History, roles: [...ADMIN] },
+      { to: "/app/settings", label: t(k.nav.settings), icon: Settings },
+    ]},
+  ];
+  const mobileQuickNav = [
+    { to: "/app", label: t(k.mobile.home), icon: LayoutDashboard, exact: true },
+    { to: "/app/tasks", label: t(k.mobile.tasks), icon: ClipboardList },
+    { to: "/app/projects", label: t(k.mobile.projects), icon: FolderKanban },
+    { to: "/app/notifications", label: t(k.mobile.alerts), icon: Bell },
+  ];
   const [searchOpen, setSearchOpen] = useState(false);
   const initials = (profile?.full_name || user?.email || "U").slice(0, 2).toUpperCase();
   const isClientOnly = roles.includes("client") && !roles.some((r) => r !== "client");
@@ -207,8 +231,8 @@ export function AppShell({ children }: { children: ReactNode }) {
               <HardHat className="h-4 w-4" />
             </span>
             <div className="min-w-0 group-data-[collapsible=icon]:hidden">
-              <div className="truncate text-sm font-semibold text-sidebar-foreground">BuildFlow</div>
-              <div className="truncate text-xs text-sidebar-foreground/60">Construction ERP</div>
+              <div className="truncate text-sm font-semibold text-sidebar-foreground">{t("app.brand")}</div>
+              <div className="truncate text-xs text-sidebar-foreground/60">{t("app.subtitle")}</div>
             </div>
           </div>
         </SidebarHeader>
@@ -245,7 +269,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           {/* Search - desktop */}
           <div className="relative hidden flex-1 max-w-md md:block">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Search projects, tasks, clients…" className="h-9 pl-9 text-sm" />
+            <Input placeholder={t("app.search_placeholder")} className="h-9 pl-9 text-sm" />
           </div>
 
           {/* Search - mobile toggle */}
@@ -282,11 +306,11 @@ export function AppShell({ children }: { children: ReactNode }) {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => navigate({ to: "/app/settings" })}>
-                <Settings className="mr-2 h-4 w-4" /> Settings
+                <Settings className="mr-2 h-4 w-4" /> {t("app.settings")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={async () => { await signOut(); navigate({ to: "/auth" }); }} className="text-destructive">
-                <LogOut className="mr-2 h-4 w-4" /> Sign out
+                <LogOut className="mr-2 h-4 w-4" /> {t("app.sign_out")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

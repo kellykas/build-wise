@@ -117,5 +117,49 @@
     "en": "English",
     "fr": "Français"
   },
-  "access_denied": "Vous n'avez pas accès à cette page."
+  "access_denied": "Vous n'avez pas accès à cette page.",
+  "app": {
+    "brand": "BuildFlow",
+    "subtitle": "ERP Construction",
+    "search_placeholder": "Rechercher projets, tâches, clients…",
+    "settings": "Paramètres",
+    "sign_out": "Déconnexion",
+    "version": "v0.1",
+    "groups": {
+      "workspace": "Espace de travail",
+      "operations": "Opérations",
+      "hr": "Ressources Humaines",
+      "supply_chain": "Chaîne d'approvisionnement",
+      "finance": "Finance",
+      "library": "Bibliothèque"
+    },
+    "nav": {
+      "dashboard": "Tableau de bord",
+      "notifications": "Notifications",
+      "calendar": "Agenda",
+      "projects": "Projets",
+      "tasks": "Tâches",
+      "requisitions": "États de besoin",
+      "clients": "Clients",
+      "client_portal": "Portail Client",
+      "employees": "Employés",
+      "attendance": "Présence",
+      "payroll": "Paie",
+      "suppliers": "Fournisseurs",
+      "procurement": "Achats",
+      "inventory": "Stock",
+      "equipment": "Équipement",
+      "invoices": "Factures",
+      "finance": "Trésorerie",
+      "documents": "Documents",
+      "notification_log": "Journal des notifications",
+      "settings": "Paramètres"
+    },
+    "mobile": {
+      "home": "Accueil",
+      "tasks": "Tâches",
+      "projects": "Projets",
+      "alerts": "Alertes"
+    }
+  }
 }

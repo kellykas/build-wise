@@ -117,5 +117,49 @@
     "en": "English",
     "fr": "Français"
   },
-  "access_denied": "You do not have access to this page."
+  "access_denied": "You do not have access to this page.",
+  "app": {
+    "brand": "BuildFlow",
+    "subtitle": "Construction ERP",
+    "search_placeholder": "Search projects, tasks, clients…",
+    "settings": "Settings",
+    "sign_out": "Sign out",
+    "version": "v0.1",
+    "groups": {
+      "workspace": "Workspace",
+      "operations": "Operations",
+      "hr": "Human Resources",
+      "supply_chain": "Supply Chain",
+      "finance": "Finance",
+      "library": "Library"
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "notifications": "Notifications",
+      "calendar": "Calendar",
+      "projects": "Projects",
+      "tasks": "Tasks",
+      "requisitions": "Requisitions",
+      "clients": "Clients",
+      "client_portal": "Client Portal",
+      "employees": "Employees",
+      "attendance": "Attendance",
+      "payroll": "Payroll",
+      "suppliers": "Suppliers",
+      "procurement": "Procurement",
+      "inventory": "Inventory",
+      "equipment": "Equipment",
+      "invoices": "Invoices",
+      "finance": "Treasury",
+      "documents": "Documents",
+      "notification_log": "Notification Log",
+      "settings": "Settings"
+    },
+    "mobile": {
+      "home": "Home",
+      "tasks": "Tasks",
+      "projects": "Projects",
+      "alerts": "Alerts"
+    }
+  }
 }
