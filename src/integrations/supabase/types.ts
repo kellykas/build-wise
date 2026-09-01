@@ -661,6 +661,60 @@ export type Database = {
           },
         ]
       }
+      notification_log: {
+        Row: {
+          channel: string | null
+          company_id: string | null
+          created_at: string
+          id: string
+          knock_message_id: string | null
+          knock_workflow: string | null
+          payload: Json
+          recipient_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          channel?: string | null
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          knock_message_id?: string | null
+          knock_workflow?: string | null
+          payload?: Json
+          recipient_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          channel?: string | null
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          knock_message_id?: string | null
+          knock_workflow?: string | null
+          payload?: Json
+          recipient_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_log_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notification_log_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string | null
