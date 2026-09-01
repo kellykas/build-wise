@@ -16,6 +16,7 @@ export const ROUTE_ROLES: Record<string, AppRole[] | undefined> = {
   "/app/settings": undefined,
   "/app/documents": undefined,
 
+
   "/app/projects": [...OPS, "accountant"],
   "/app/tasks": undefined,
   "/app/requisitions": [...OPS, ...FIN, ...PROC],

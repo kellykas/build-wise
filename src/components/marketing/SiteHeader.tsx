@@ -1,16 +1,15 @@
 import { Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { HardHat, Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 
-const nav = [
-  { to: "/", label: "Home" },
-  { to: "/about", label: "About" },
-  { to: "/services", label: "Services" },
-  { to: "/projects", label: "Projects" },
-  { to: "/contact", label: "Contact" },
-] as const;
+const navKeys = ["home", "about", "services", "projects", "contact"] as const;
+const navPaths = ["/", "/about", "/services", "/projects", "/contact"] as const;
 
 export function SiteHeader() {
+  const { t } = useTranslation();
+
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
@@ -21,21 +20,22 @@ export function SiteHeader() {
           <span className="text-lg tracking-tight">BuildFlow<span className="text-accent"> Construction</span></span>
         </Link>
         <nav className="hidden items-center gap-7 md:flex">
-          {nav.map((n) => (
+          {navKeys.map((key, i) => (
             <Link
-              key={n.to}
-              to={n.to}
+              key={navPaths[i]}
+              to={navPaths[i]}
               className="text-sm text-muted-foreground hover:text-foreground"
               activeProps={{ className: "text-foreground font-medium" }}
-              activeOptions={{ exact: n.to === "/" }}
+              activeOptions={{ exact: navPaths[i] === "/" }}
             >
-              {n.label}
+              {t(`nav.${key}`)}
             </Link>
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <Link to="/auth"><Button variant="ghost" size="sm">Portal</Button></Link>
-          <Link to="/contact" search={{ type: "quote" }}><Button size="sm">Request a quote</Button></Link>
+          <LanguageSwitcher />
+          <Link to="/auth"><Button variant="ghost" size="sm">{t("nav.dashboard")}</Button></Link>
+          <Link to="/contact" search={{ type: "quote" }}><Button size="sm">{t("hero.cta_quote")}</Button></Link>
         </div>
       </div>
     </header>
@@ -43,6 +43,8 @@ export function SiteHeader() {
 }
 
 export function SiteFooter() {
+  const { t } = useTranslation();
+
   return (
     <footer className="border-t border-border bg-card">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-4">
@@ -54,16 +56,16 @@ export function SiteFooter() {
             BuildFlow Construction
           </div>
           <p className="mt-3 text-sm text-muted-foreground">
-            Building landmarks of trust since 1998. Commercial, residential and industrial construction delivered on time, on budget.
+            {t("footer.description")}
           </p>
         </div>
         <div>
           <div className="text-sm font-semibold">Company</div>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-            <li><Link to="/about" className="hover:text-foreground">About us</Link></li>
-            <li><Link to="/services" className="hover:text-foreground">Our services</Link></li>
-            <li><Link to="/projects" className="hover:text-foreground">Our projects</Link></li>
-            <li><Link to="/contact" className="hover:text-foreground">Contact</Link></li>
+            <li><Link to="/about" className="hover:text-foreground">{t("nav.about")}</Link></li>
+            <li><Link to="/services" className="hover:text-foreground">{t("nav.services")}</Link></li>
+            <li><Link to="/projects" className="hover:text-foreground">{t("nav.projects")}</Link></li>
+            <li><Link to="/contact" className="hover:text-foreground">{t("nav.contact")}</Link></li>
           </ul>
         </div>
         <div>
@@ -77,11 +79,11 @@ export function SiteFooter() {
         <div>
           <div className="text-sm font-semibold">Start a project</div>
           <p className="mt-3 text-sm text-muted-foreground">Tell us about your build and our team will reply within 24 hours.</p>
-          <Link to="/contact" search={{ type: "quote" }}><Button size="sm" className="mt-3">Request a quote</Button></Link>
+          <Link to="/contact" search={{ type: "quote" }}><Button size="sm" className="mt-3">{t("hero.cta_quote")}</Button></Link>
         </div>
       </div>
       <div className="border-t border-border py-4 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} BuildFlow Construction Co. All rights reserved.
+        {t("footer.copyright")}
       </div>
     </footer>
   );

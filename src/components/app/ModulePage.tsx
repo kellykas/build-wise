@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export type Column<T = any> = { key: string; label: string; render?: (row: T) => ReactNode };
 
 export function ModulePage<T extends { id: string }>({
-  title, description, table, columns, onNew, icon, onRowClick, select,
+  title, description, table, columns, onNew, icon, onRowClick, select, actions,
 }: {
   title: string;
   description: string;
@@ -20,6 +20,7 @@ export function ModulePage<T extends { id: string }>({
   icon?: ReactNode;
   onRowClick?: (row: T) => void;
   select?: string;
+  actions?: ReactNode;
 }) {
   const { data, isLoading } = useQuery({
     queryKey: ["module", table],
@@ -40,9 +41,12 @@ export function ModulePage<T extends { id: string }>({
             <p className="text-sm text-muted-foreground">{description}</p>
           </div>
         </div>
-        {onNew && (
-          <Button onClick={onNew}><Plus className="mr-2 h-4 w-4" /> New</Button>
-        )}
+        <div className="flex items-center gap-2">
+          {actions}
+          {onNew && (
+            <Button onClick={onNew}><Plus className="mr-2 h-4 w-4" /> New</Button>
+          )}
+        </div>
       </div>
 
       <Card>

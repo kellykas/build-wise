@@ -1,0 +1,120 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "about": "À propos",
+    "services": "Services",
+    "projects": "Projets",
+    "contact": "Contact",
+    "login": "Connexion",
+    "dashboard": "Tableau de bord"
+  },
+  "hero": {
+    "badge": "Licencié · cautionné · assuré · conforme OSHA",
+    "title": "Construire des repères de <1>confiance</1> depuis 1998.",
+    "subtitle": "Nous sommes BuildFlow Construction — un entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure dans toute la région. À temps. Dans le budget. Conçu pour durer.",
+    "cta_quote": "Demander un devis gratuit",
+    "cta_projects": "Voir nos projets",
+    "phone_label": "Parlez à un chef de projet aujourd'hui :",
+    "phone_number": "+1 (555) 240-8800"
+  },
+  "stats": {
+    "projects": "Projets livrés",
+    "years": "Années d'activité",
+    "value": "Valeur construite",
+    "ontime": "Jalons à temps"
+  },
+  "services_section": {
+    "title": "Ce que nous construisons",
+    "subtitle": "Des maisons personnalisées aux campus à plusieurs tours, nos équipes couvrent tous les métiers en interne.",
+    "view_all": "Tous les services →",
+    "learn_more": "En savoir plus",
+    "commercial": {
+      "title": "Commercial",
+      "desc": "Bureaux, commerces, hôtels et immeubles mixtes."
+    },
+    "residential": {
+      "title": "Résidentiel",
+      "desc": "Maisons personnalisées, immeubles multi-familiaux et rénovations."
+    },
+    "industrial": {
+      "title": "Industriel",
+      "desc": "Entrepôts, usines et centres de distribution."
+    },
+    "renovation": {
+      "title": "Rénovation",
+      "desc": "Restauration, réaménagement et réutilisation adaptative."
+    }
+  },
+  "featured": {
+    "title": "Projets en vedette",
+    "subtitle": "Un aperçu des constructions récentes. Explorez le portfolio complet pour les études de cas et les métriques.",
+    "view_all": "Voir tous les projets →",
+    "riverside": {
+      "title": "Tour Riverside",
+      "tag": "Commercial · 44 500 m²"
+    },
+    "maple": {
+      "title": "Résidences Maple Heights",
+      "tag": "Résidentiel · 186 unités"
+    },
+    "northgate": {
+      "title": "Centre logistique Northgate",
+      "tag": "Industriel · 57 500 m²"
+    }
+  },
+  "why_us": {
+    "title": "Pourquoi les propriétaires choisissent BuildFlow",
+    "subtitle": "Nous sommes directs, transparents et prévisibles. L'équipe qui remporte le travail est celle qui le construit — sansintermédiaires, sans surprises.",
+    "points": [
+      "Équipes d'exécution pour béton, charpente, finitions et coordination MEP",
+      "Rapports hebdomadaires sur les coûts et l'horaire, sans postes cachés",
+      "Chef de projet dédié du lancement à la garantie de 24 mois",
+      "Record de sécurité leader dans l'industrie (EMR de 0,62)",
+      "Accès au portail propriétaire pour les dessins, demandes de renseignements, factures et photos"
+    ]
+  },
+  "testimonials": {
+    "1": {
+      "quote": "BuildFlow a livré notre siège social deux semaines plus tôt et sous budget. Leur chef de projet nous a tenus informés chaque semaine.",
+      "author": "Sandra Hill, PDG · Northwind Logistics"
+    },
+    "2": {
+      "quote": "Un savoir-faire que l'on ressent. Chaque détail de notre maison était réfléchi et construit pour durer.",
+      "author": "Daniel et Mia Foster · Hillview Estates"
+    },
+    "3": {
+      "quote": "Un bilan de sécurité et une discipline qualité rares dans cette industrie. Nous leur avons attribué trois projets consécutifs.",
+      "author": "Robert Sanchez, Directeur · Civic Authority"
+    }
+  },
+  "certifications": {
+    "enr": "ENR Top 400 Contractor",
+    "osha": "Certifié OSHA SHARP",
+    "leed": "Constructeur LEED Gold",
+    "iso": "ISO 9001:2015",
+    "agc": "Membre AGC"
+  },
+  "cta": {
+    "title": "Prêt à démarrer votre projet ?",
+    "subtitle": "Parlez-nous de votre construction. Vous recevrez la réponse d'un chef de projet dans les 24 heures — et une estimation budgétaire sans engagement.",
+    "quote_btn": "Demander un devis",
+    "hi_btn": "Juste dire bonjour"
+  },
+  "footer": {
+    "copyright": "© 2024 BuildFlow Construction. Tous droits réservés.",
+    "description": "Entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure."
+  },
+  "not_found": {
+    "title": "Page non trouvée",
+    "subtitle": "La page que vous recherchez n'existe pas.",
+    "go_home": "Retour à l'accueil"
+  },
+  "error": {
+    "title": "Une erreur s'est produite",
+    "try_again": "Réessayer"
+  },
+  "language": {
+    "en": "English",
+    "fr": "Français"
+  }
+}

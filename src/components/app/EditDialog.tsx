@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { notifyTaskAssigned } from "@/lib/notifications";
 
 export type Field = {
   key: string;
@@ -59,10 +60,23 @@ export function EditDialog({
     const q = isEdit
       ? supabase.from(table as never).update(payload as never).eq("id", row!.id as string)
       : supabase.from(table as never).insert(payload as never);
-    const { error } = await q;
+    const { data: result, error } = await q;
     setSaving(false);
     if (error) return toast.error(error.message);
     toast.success(isEdit ? "Updated" : "Created");
+
+    // Send notification when a task is created with an assignee
+    if (!isEdit && table === "tasks" && values.assigned_to && profile?.company_id) {
+      const assigneeId = values.assigned_to as string;
+      await notifyTaskAssigned({
+        companyId: profile.company_id,
+        senderId: null,
+        assigneeId,
+        taskName: (values.name as string) || "New task",
+        dueDate: values.due_date as string | null,
+      });
+    }
+
     (invalidate ?? [`module:${table}`]).forEach((k) => qc.invalidateQueries({ queryKey: [k] }));
     qc.invalidateQueries({ queryKey: ["module", table] });
     qc.invalidateQueries({ queryKey: ["dashboard-counts"] });

@@ -1,8 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { ModulePage, type Column } from "@/components/app/ModulePage";
-import { FolderKanban } from "lucide-react";
+import { GanttChart } from "@/components/app/GanttChart";
+import { FolderKanban, BarChart3, List } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { EditDialog, type Field } from "@/components/app/EditDialog";
 
 export const Route = createFileRoute("/_authenticated/app/projects/")({
@@ -46,7 +50,18 @@ const fields: Field[] = [
 function ProjectsPage() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Project | null>(null);
+  const [view, setView] = useState<"list" | "gantt">("list");
   const navigate = useNavigate();
+
+  // Fetch projects for Gantt view
+  const { data: projects } = useQuery({
+    queryKey: ["module", "projects"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("projects").select("*").order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as Project[];
+    },
+  });
 
   const columns: Column<Project>[] = [
     { key: "name", label: "Project", render: (r) => <span className="font-medium">{r.name}</span> },
@@ -70,15 +85,55 @@ function ProjectsPage() {
 
   return (
     <>
-      <ModulePage<Project>
-        title="Projects"
-        description="All projects across your portfolio. Click a row to open details."
-        table="projects"
-        columns={columns}
-        icon={<span className="grid h-9 w-9 place-items-center rounded-md bg-primary/10 text-primary"><FolderKanban className="h-5 w-5" /></span>}
-        onNew={() => { setEditing(null); setOpen(true); }}
-        onRowClick={(r) => navigate({ to: "/app/projects/$id", params: { id: r.id } })}
-      />
+      <div className="space-y-4">
+        {/* Header with view toggle */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <span className="grid h-9 w-9 place-items-center rounded-md bg-primary/10 text-primary"><FolderKanban className="h-5 w-5" /></span>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight sm:text-2xl">Projects</h1>
+              <p className="text-sm text-muted-foreground">All projects across your portfolio. Click a row to open details.</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="flex rounded-md border border-border">
+              <button
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs ${view === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+                onClick={() => setView("list")}
+              ><List className="h-3.5 w-3.5" /> List</button>
+              <button
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs ${view === "gantt" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"}`}
+                onClick={() => setView("gantt")}
+              ><BarChart3 className="h-3.5 w-3.5" /> Timeline</button>
+            </div>
+          </div>
+        </div>
+
+        {view === "list" ? (
+          <ModulePage<Project>
+            title=""
+            description=""
+            table="projects"
+            columns={columns}
+            onNew={() => { setEditing(null); setOpen(true); }}
+            onRowClick={(r) => navigate({ to: "/app/projects/$id", params: { id: r.id } })}
+          />
+        ) : (
+          <GanttChart
+            title="Project Timeline"
+            items={(projects ?? []).map((p) => ({
+              id: p.id,
+              name: p.name,
+              start_date: p.start_date,
+              end_date: p.end_date,
+              progress: p.progress,
+              status: p.status,
+              priority: p.priority,
+            }))}
+            onItemClick={(item) => navigate({ to: "/app/projects/$id", params: { id: item.id } })}
+          />
+        )}
+      </div>
       <EditDialog
         open={open || !!editing}
         onOpenChange={(v) => { if (!v) { setOpen(false); setEditing(null); } }}

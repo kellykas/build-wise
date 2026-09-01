@@ -1,12 +1,15 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import {
   LayoutDashboard, FolderKanban, ClipboardList, Users, UserCog, ClipboardCheck,
   Truck, ShoppingCart, Boxes, Wrench, Receipt, Wallet, FileText, CalendarDays,
   Settings, Bell, Search, ChevronDown, LogOut, HardHat, Building2, FileSpreadsheet,
+  ShieldCheck, Menu, X, History,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
@@ -20,12 +23,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import type { ReactNode } from "react";
 
 import type { AppRole } from "@/hooks/use-auth";
 import { ADMIN as _ADMIN, HR as _HR, FIN as _FIN, PROC as _PROC, OPS as _OPS, CLIENT_ALLOWED } from "@/lib/rbac";
 
-// roles allowed to see the item. undefined = everyone signed-in.
 type NavItemDef = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean; roles?: AppRole[] };
 
 const ADMIN: AppRole[] = _ADMIN;
@@ -82,11 +85,19 @@ const groups: { label: string; items: NavItemDef[] }[] = [
     label: "Bibliothèque",
     items: [
       { to: "/app/documents", label: "Documents", icon: FileText },
+      { to: "/app/notification-log", label: "Notification Log", icon: History, roles: [...ADMIN] },
       { to: "/app/settings", label: "Paramètres", icon: Settings },
     ],
   },
 ];
 
+// Quick nav items for mobile bottom bar
+const mobileQuickNav = [
+  { to: "/app", label: "Home", icon: LayoutDashboard, exact: true },
+  { to: "/app/tasks", label: "Tasks", icon: ClipboardList },
+  { to: "/app/projects", label: "Projects", icon: FolderKanban },
+  { to: "/app/notifications", label: "Alerts", icon: Bell },
+];
 
 function NavItem({ to, label, icon: Icon, exact }: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -103,9 +114,63 @@ function NavItem({ to, label, icon: Icon, exact }: { to: string; label: string; 
   );
 }
 
+function MobileNav({ visibleGroups, children }: { visibleGroups: { label: string; items: NavItemDef[] }[]; children: ReactNode }) {
+  const navigate = useNavigate();
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="icon" className="shrink-0 md:hidden">
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Menu</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-72 p-0">
+        <div className="flex h-full flex-col">
+          <div className="flex items-center gap-2 border-b border-border px-4 py-3">
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-primary text-primary-foreground">
+              <HardHat className="h-4 w-4" />
+            </span>
+            <div>
+              <div className="text-sm font-semibold">BuildFlow</div>
+              <div className="text-xs text-muted-foreground">Construction ERP</div>
+            </div>
+          </div>
+          <div className="flex-1 overflow-y-auto py-2">
+            {visibleGroups.map((g) => (
+              <div key={g.label} className="px-3 py-2">
+                <div className="mb-1 px-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">{g.label}</div>
+                <div className="space-y-0.5">
+                  {g.items.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <button
+                        key={item.to}
+                        className="flex w-full items-center gap-3 rounded-md px-2 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+                        onClick={() => navigate({ to: item.to })}
+                      >
+                        <Icon className="h-4 w-4" />
+                        {item.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
+            v0.1 · BuildFlow ERP
+          </div>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const { profile, user, signOut, roles, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
+  const [searchOpen, setSearchOpen] = useState(false);
   const initials = (profile?.full_name || user?.email || "U").slice(0, 2).toUpperCase();
   const isClientOnly = roles.includes("client") && !roles.some((r) => r !== "client");
   const clientAllowedPaths = new Set(["/app/client-portal", "/app/notifications", "/app/settings"]);
@@ -129,7 +194,6 @@ export function AppShell({ children }: { children: ReactNode }) {
     enabled: !!user,
     refetchInterval: 30_000,
   });
-
 
   return (
     <SidebarProvider>
@@ -165,42 +229,92 @@ export function AppShell({ children }: { children: ReactNode }) {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur">
-          <SidebarTrigger />
+        {/* Header */}
+        <header className="sticky top-0 z-30 flex h-12 items-center gap-2 border-b border-border bg-background/80 px-3 backdrop-blur sm:h-14 sm:gap-3 sm:px-4">
+          {/* Mobile: hamburger + sheet nav */}
+          <MobileNav visibleGroups={visibleGroups}>
+            <SidebarTrigger className="md:hidden" />
+          </MobileNav>
+
+          {/* Desktop: sidebar toggle */}
+          <SidebarTrigger className="hidden md:flex" />
+
+          {/* Search - desktop */}
           <div className="relative hidden flex-1 max-w-md md:block">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="Search projects, tasks, clients…" className="pl-9" />
+            <Input placeholder="Search projects, tasks, clients…" className="h-9 pl-9 text-sm" />
           </div>
+
+          {/* Search - mobile toggle */}
           <div className="flex-1 md:hidden" />
-          <Button variant="ghost" size="icon" className="relative" onClick={() => navigate({ to: "/app/notifications" })}>
+
+          {/* Notifications */}
+          <Button variant="ghost" size="icon" className="relative h-9 w-9 shrink-0" onClick={() => navigate({ to: "/app/notifications" })}>
             <Bell className="h-4 w-4" />
             {(unreadCount ?? 0) > 0 && (
-              <Badge className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px]" variant="destructive">{unreadCount}</Badge>
+              <Badge className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 text-[10px]" variant="destructive">
+                {(unreadCount ?? 0) > 99 ? "99+" : unreadCount}
+              </Badge>
             )}
           </Button>
+
+          {/* User dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="gap-2 px-2">
-                <Avatar className="h-7 w-7"><AvatarFallback>{initials}</AvatarFallback></Avatar>
+              <Button variant="ghost" className="gap-1.5 px-1.5 sm:gap-2 sm:px-2">
+                <Avatar className="h-7 w-7"><AvatarFallback className="text-xs">{initials}</AvatarFallback></Avatar>
                 <span className="hidden text-sm sm:inline">{profile?.full_name || user?.email}</span>
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                <ChevronDown className="hidden h-3.5 w-3.5 text-muted-foreground sm:block" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>{profile?.email}</DropdownMenuLabel>
+              <DropdownMenuLabel>
+                <div className="flex flex-col">
+                  <span className="text-sm">{profile?.full_name || "User"}</span>
+                  <span className="text-xs text-muted-foreground">{profile?.email}</span>
+                </div>
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => navigate({ to: "/app/settings" })}>
                 <Settings className="mr-2 h-4 w-4" /> Settings
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={async () => { await signOut(); navigate({ to: "/auth" }); }}>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={async () => { await signOut(); navigate({ to: "/auth" }); }} className="text-destructive">
                 <LogOut className="mr-2 h-4 w-4" /> Sign out
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        <main className="min-h-[calc(100vh-3.5rem)] bg-background p-4 sm:p-6 lg:p-8">
+
+        {/* Main content */}
+        <main className="min-h-[calc(100vh-3rem)] bg-background p-3 pb-20 sm:min-h-[calc(100vh-3.5rem)] sm:p-6 sm:pb-6 lg:p-8">
           {children}
         </main>
+
+        {/* Mobile bottom nav */}
+        {isMobile && (
+          <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+            <div className="grid grid-cols-4 gap-1 px-2 py-1.5">
+              {mobileQuickNav.map((item) => {
+                const Icon = item.icon;
+                const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+                const active = item.exact ? pathname === item.to : pathname.startsWith(item.to);
+                return (
+                  <button
+                    key={item.to}
+                    className={`flex flex-col items-center gap-0.5 rounded-md py-1.5 text-[10px] transition-colors ${
+                      active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"
+                    }`}
+                    onClick={() => navigate({ to: item.to })}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </nav>
+        )}
       </SidebarInset>
     </SidebarProvider>
   );

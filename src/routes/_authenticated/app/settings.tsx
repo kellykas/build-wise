@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,10 +12,13 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { CheckCircle2, Loader2, Settings as SettingsIcon, ShieldCheck, UserPlus, XCircle } from "lucide-react";
+import { CheckCircle2, Loader2, Settings as SettingsIcon, ShieldCheck, UserPlus, XCircle, Search, Users, RefreshCw, Save, Bell } from "lucide-react";
 import { toast } from "sonner";
 import { recordAudit } from "@/lib/audit";
+import { TEMPLATE_DEFAULTS, TEMPLATE_LABELS } from "@/lib/notification-templates";
 
 export const Route = createFileRoute("/_authenticated/app/settings")({
   head: () => ({
@@ -33,7 +36,7 @@ export const Route = createFileRoute("/_authenticated/app/settings")({
 
 const ROLES = ["super_admin", "company_owner", "director", "project_manager", "site_engineer", "accountant", "hr_manager", "procurement_officer", "store_manager", "employee", "client"] as const;
 
-type Profile = { id: string; full_name: string; email: string; phone: string | null };
+type Profile = { id: string; full_name: string; email: string; phone: string | null; knock_user_id?: string | null };
 type UserRole = { id: string; user_id: string; role: string };
 type CheckResult = { name: string; ok: boolean; message: string };
 
@@ -55,16 +58,20 @@ function SettingsPage() {
         <TabsList>
           <TabsTrigger value="profile">My profile</TabsTrigger>
           <TabsTrigger value="users">Users & roles</TabsTrigger>
+          {isAdmin && <TabsTrigger value="permissions">Permissions</TabsTrigger>}
           <TabsTrigger value="payroll">Payroll rules</TabsTrigger>
           <TabsTrigger value="company">Company</TabsTrigger>
+          {isAdmin && <TabsTrigger value="notifications">Notifications</TabsTrigger>}
           {isAdmin && <TabsTrigger value="checks">Upload checks</TabsTrigger>}
           {isAdmin && <TabsTrigger value="audit">Audit log</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="profile"><ProfileTab /></TabsContent>
         <TabsContent value="users">{canManageUsers ? <UsersTab /> : <div className="text-sm text-muted-foreground">Admins only.</div>}</TabsContent>
+        {isAdmin && <TabsContent value="permissions"><PermissionsTab /></TabsContent>}
         <TabsContent value="payroll"><PayrollRulesTab /></TabsContent>
         <TabsContent value="company"><CompanyTab /></TabsContent>
+        {isAdmin && <TabsContent value="notifications"><NotificationsTab /></TabsContent>}
         {isAdmin && <TabsContent value="checks"><UploadChecksTab /></TabsContent>}
         {isAdmin && <TabsContent value="audit"><AuditTab /></TabsContent>}
       </Tabs>
@@ -322,8 +329,15 @@ function UsersTab() {
   const [draft, setDraft] = useState({ email: "", password: "", fullName: "", phone: "", role: "employee", employeeId: "", clientId: "" });
   const { data: profiles } = useQuery({
     queryKey: ["company-profiles"],
-    queryFn: async () => ((await supabase.from("profiles").select("id,full_name,email,phone")).data ?? []) as Profile[],
+    queryFn: async () => { const { data } = await supabase.from("profiles" as never).select("id,full_name,email,phone" as never); return (data ?? []) as unknown as Profile[]; },
   });
+
+  const saveKnockId = async (userId: string, knockId: string) => {
+    const { error } = await supabase.from("profiles" as never).update({ knock_user_id: knockId || null } as never).eq("id", userId);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["company-profiles"] });
+    toast.success("Knock user ID saved");
+  };
   const { data: roles } = useQuery({
     queryKey: ["all-roles"],
     queryFn: async () => ((await supabase.from("user_roles").select("id,user_id,role")).data ?? []) as UserRole[],
@@ -383,6 +397,16 @@ function UsersTab() {
               <div>
                 <div className="font-medium">{p.full_name ?? p.email}</div>
                 <div className="text-xs text-muted-foreground">{p.email}</div>
+                <div className="mt-1.5 flex items-center gap-1.5">
+                  <span className="text-xs text-muted-foreground">Knock ID:</span>
+                  <Input
+                    className="h-7 w-48 text-xs"
+                    placeholder="knock_user_xxx"
+                    defaultValue={p.knock_user_id ?? ""}
+                    onBlur={(e) => saveKnockId(p.id, e.target.value)}
+                  />
+                  {p.knock_user_id && <span className="text-xs text-success">✓</span>}
+                </div>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 {(rolesByUser.get(p.id) ?? []).map((r) => (
@@ -493,6 +517,884 @@ function CompanyTab() {
           </div>
         ))}
         <div className="sm:col-span-2"><Button onClick={save}>Save</Button></div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ==================== Notifications Tab ====================
+
+type ReminderSettingsRow = {
+  id?: string;
+  company_id: string;
+  enabled: boolean;
+  due_soon_days: number;
+  overdue_first_days: number;
+  overdue_followup_days: number;
+  overdue_final_days: number;
+  recipient_roles: string[];
+};
+
+const ALL_ROLES = ["super_admin", "company_owner", "director", "project_manager", "site_engineer", "accountant", "hr_manager", "procurement_officer", "store_manager", "employee"] as const;
+
+type NotifTypeSettingsRow = {
+  id?: string;
+  company_id: string;
+  type_key: string;
+  enabled: boolean;
+  send_email: boolean;
+  send_in_app: boolean;
+  recipient_roles: string[];
+};
+
+type NotificationTemplateRow = {
+  id?: string;
+  company_id: string;
+  template_key: string;
+  subject: string;
+  body: string;
+  enabled: boolean;
+};
+
+const NOTIF_TYPE_LABELS: Record<string, string> = {
+  task_assigned: "Task Assignment",
+  task_status_changed: "Task Status Change",
+  invoice_due: "Invoice Due Soon",
+  invoice_overdue: "Invoice Overdue",
+  requisition_approval: "Requisition Approval",
+};
+
+const NOTIF_TYPE_ICONS: Record<string, string> = {
+  task_assigned: "📋",
+  task_status_changed: "🔄",
+  invoice_due: "📧",
+  invoice_overdue: "🔴",
+  requisition_approval: "✅",
+};
+
+function NotificationsTab() {
+  const { profile } = useAuth();
+  const qc = useQueryClient();
+  const [saving, setSaving] = useState(false);
+  const [activeSection, setActiveSection] = useState<"reminders" | "types" | "templates">("reminders");
+  const [editingTemplate, setEditingTemplate] = useState<NotificationTemplateRow | null>(null);
+  const [templateChanges, setTemplateChanges] = useState<Map<string, Partial<NotificationTemplateRow>>>(new Map());
+  const [typeChanges, setTypeChanges] = useState<Map<string, Partial<NotifTypeSettingsRow>>>(new Map());
+
+  // Invoice reminder settings
+  const { data: settings, isLoading } = useQuery({
+    queryKey: ["reminder-settings"],
+    queryFn: async () => {
+      if (!profile?.company_id) return null;
+      try {
+        const { data, error } = await supabase
+          .from("reminder_settings" as never)
+          .select("*" as never)
+          .eq("company_id" as never, profile.company_id)
+          .maybeSingle();
+        if (error || !data) return null;
+        return data as unknown as ReminderSettingsRow;
+      } catch {
+        return null;
+      }
+    },
+    enabled: !!profile?.company_id,
+  });
+
+  // Notification type settings
+  const { data: typeSettings, refetch: refetchTypes } = useQuery({
+    queryKey: ["notification-type-settings"],
+    queryFn: async () => {
+      if (!profile?.company_id) return [] as NotifTypeSettingsRow[];
+      try {
+        const { data, error } = await supabase
+          .from("notification_type_settings" as never)
+          .select("*" as never)
+          .eq("company_id" as never, profile.company_id)
+          .order("type_key");
+        if (error || !data) return [] as NotifTypeSettingsRow[];
+        return data as unknown as NotifTypeSettingsRow[];
+      } catch {
+        return [] as NotifTypeSettingsRow[];
+      }
+    },
+    enabled: !!profile?.company_id,
+  });
+
+  // Notification templates
+  const { data: templates, refetch: refetchTemplates } = useQuery({
+    queryKey: ["notification-templates"],
+    queryFn: async () => {
+      if (!profile?.company_id) return [] as NotificationTemplateRow[];
+      try {
+        const { data, error } = await supabase
+          .from("notification_templates" as never)
+          .select("*" as never)
+          .eq("company_id" as never, profile.company_id)
+          .order("template_key");
+        if (error || !data) return [] as NotificationTemplateRow[];
+        return data as unknown as NotificationTemplateRow[];
+      } catch {
+        return [] as NotificationTemplateRow[];
+      }
+    },
+    enabled: !!profile?.company_id,
+  });
+
+  // --- Invoice reminder settings ---
+  const [local, setLocal] = useState<Partial<ReminderSettingsRow>>({});
+  const cur: ReminderSettingsRow = {
+    company_id: profile?.company_id ?? "",
+    enabled: true,
+    due_soon_days: 3,
+    overdue_first_days: 1,
+    overdue_followup_days: 7,
+    overdue_final_days: 30,
+    recipient_roles: ["super_admin", "company_owner", "director", "accountant"],
+    ...settings,
+    ...local,
+  };
+
+  const update = (patch: Partial<ReminderSettingsRow>) => setLocal((prev) => ({ ...prev, ...patch }));
+
+  const toggleRole = (role: string) => {
+    const roles = cur.recipient_roles.includes(role)
+      ? cur.recipient_roles.filter((r) => r !== role)
+      : [...cur.recipient_roles, role];
+    update({ recipient_roles: roles });
+  };
+
+  // --- Notification type toggle logic ---
+  const getTypeSetting = (typeKey: string): NotifTypeSettingsRow => {
+    const existing = typeSettings?.find((t) => t.type_key === typeKey);
+    const changes = typeChanges.get(typeKey) ?? {};
+    return {
+      company_id: profile?.company_id ?? "",
+      type_key: typeKey,
+      enabled: true,
+      send_email: true,
+      send_in_app: true,
+      recipient_roles: ["super_admin", "company_owner", "director"],
+      ...existing,
+      ...changes,
+    };
+  };
+
+  const updateTypeSetting = (typeKey: string, patch: Partial<NotifTypeSettingsRow>) => {
+    setTypeChanges((prev) => {
+      const next = new Map(prev);
+      next.set(typeKey, { ...(next.get(typeKey) ?? {}), ...patch });
+      return next;
+    });
+  };
+
+  const toggleTypeRole = (typeKey: string, role: string) => {
+    const setting = getTypeSetting(typeKey);
+    const roles = setting.recipient_roles.includes(role)
+      ? setting.recipient_roles.filter((r) => r !== role)
+      : [...setting.recipient_roles, role];
+    updateTypeSetting(typeKey, { recipient_roles: roles });
+  };
+
+  // --- Template editing logic ---
+  const getTemplate = (key: string): NotificationTemplateRow => {
+    const existing = templates?.find((t) => t.template_key === key);
+    const changes = templateChanges.get(key) ?? {};
+    const defaults = TEMPLATE_DEFAULTS[key];
+    return {
+      company_id: profile?.company_id ?? "",
+      template_key: key,
+      subject: defaults?.subject ?? key,
+      body: defaults?.body ?? "",
+      enabled: true,
+      ...existing,
+      ...changes,
+    };
+  };
+
+  const updateTemplate = (key: string, patch: Partial<NotificationTemplateRow>) => {
+    setTemplateChanges((prev) => {
+      const next = new Map(prev);
+      next.set(key, { ...(next.get(key) ?? {}), ...patch });
+      return next;
+    });
+  };
+
+  // --- Save all settings ---
+  const saveAll = async () => {
+    if (!profile?.company_id) return;
+    setSaving(true);
+    try {
+      // 1. Save invoice reminder settings
+      const reminderPayload = {
+        company_id: profile.company_id,
+        enabled: cur.enabled,
+        due_soon_days: cur.due_soon_days,
+        overdue_first_days: cur.overdue_first_days,
+        overdue_followup_days: cur.overdue_followup_days,
+        overdue_final_days: cur.overdue_final_days,
+        recipient_roles: cur.recipient_roles,
+        updated_at: new Date().toISOString(),
+      };
+
+      if (settings?.id) {
+        const { error } = await supabase
+          .from("reminder_settings" as never)
+          .update(reminderPayload as never)
+          .eq("id" as never, settings.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("reminder_settings" as never)
+          .insert(reminderPayload as never);
+        if (error) throw error;
+      }
+
+      // 2. Save notification type settings
+      for (const [typeKey, changes] of typeChanges.entries()) {
+        const existing = typeSettings?.find((t) => t.type_key === typeKey);
+        const payload = {
+          company_id: profile.company_id,
+          type_key: typeKey,
+          enabled: changes.enabled ?? existing?.enabled ?? true,
+          send_email: changes.send_email ?? existing?.send_email ?? true,
+          send_in_app: changes.send_in_app ?? existing?.send_in_app ?? true,
+          recipient_roles: changes.recipient_roles ?? existing?.recipient_roles ?? ["super_admin", "company_owner", "director"],
+          updated_at: new Date().toISOString(),
+        };
+
+        if (existing?.id) {
+          const { error } = await supabase
+            .from("notification_type_settings" as never)
+            .update(payload as never)
+            .eq("id" as never, existing.id);
+          if (error) throw error;
+        } else {
+          const { error } = await supabase
+            .from("notification_type_settings" as never)
+            .insert(payload as never);
+          if (error) throw error;
+        }
+      }
+
+      // 3. Save notification templates
+      for (const [templateKey, changes] of templateChanges.entries()) {
+        const existing = templates?.find((t) => t.template_key === templateKey);
+        const payload = {
+          company_id: profile.company_id,
+          template_key: templateKey,
+          subject: changes.subject ?? existing?.subject ?? TEMPLATE_DEFAULTS[templateKey]?.subject ?? templateKey,
+          body: changes.body ?? existing?.body ?? TEMPLATE_DEFAULTS[templateKey]?.body ?? "",
+          enabled: changes.enabled ?? existing?.enabled ?? true,
+          updated_at: new Date().toISOString(),
+        };
+
+        if (existing?.id) {
+          const { error } = await supabase
+            .from("notification_templates" as never)
+            .update(payload as never)
+            .eq("id" as never, existing.id);
+          if (error) throw error;
+        } else {
+          const { error } = await supabase
+            .from("notification_templates" as never)
+            .insert(payload as never);
+          if (error) throw error;
+        }
+      }
+
+      qc.invalidateQueries({ queryKey: ["reminder-settings"] });
+      qc.invalidateQueries({ queryKey: ["notification-type-settings"] });
+      qc.invalidateQueries({ queryKey: ["notification-templates"] });
+      refetchTypes();
+      refetchTemplates();
+      toast.success("Notification settings saved");
+      setLocal({});
+      setTypeChanges(new Map());
+      setTemplateChanges(new Map());
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to save");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const hasChanges = local && Object.keys(local).length > 0 || typeChanges.size > 0 || templateChanges.size > 0;
+
+  if (isLoading) {
+    return <Card><CardContent className="p-6"><Loader2 className="h-5 w-5 animate-spin" /></CardContent></Card>;
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          onClick={() => setActiveSection("reminders")}
+          className={`rounded-md px-3 py-1.5 text-sm transition ${
+            activeSection === "reminders" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          📧 Invoice Reminders
+        </button>
+        <button
+          onClick={() => setActiveSection("types")}
+          className={`rounded-md px-3 py-1.5 text-sm transition ${
+            activeSection === "types" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          🔔 Notification Types
+        </button>
+        <button
+          onClick={() => setActiveSection("templates")}
+          className={`rounded-md px-3 py-1.5 text-sm transition ${
+            activeSection === "templates" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          ✏️ Email Templates
+        </button>
+      </div>
+
+      {/* Invoice Reminders Section */}
+      {activeSection === "reminders" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base"><Bell className="h-4 w-4" /> Invoice Email Reminders</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Configure when automatic email reminders are sent for overdue invoices.
+              These settings control the Knock notification workflows.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-6 max-w-2xl">
+            {/* Enable/Disable */}
+            <div className="flex items-center justify-between rounded-lg border border-border p-4">
+              <div>
+                <div className="font-medium">Automatic Reminders</div>
+                <div className="text-sm text-muted-foreground">
+                  {cur.enabled ? "Reminders are active — the system will check for overdue invoices on every dashboard load." : "Reminders are paused — no emails will be sent automatically."}
+                </div>
+              </div>
+              <Switch checked={cur.enabled} onCheckedChange={(v) => update({ enabled: v })} />
+            </div>
+
+            {/* Intervals */}
+            <div className="space-y-4">
+              <div className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Reminder Intervals</div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="rounded-lg border border-border p-4 space-y-2">
+                  <Label className="text-sm">Due Soon Reminder</Label>
+                  <p className="text-xs text-muted-foreground">Send when invoice is due within N days</p>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      min={1}
+                      max={30}
+                      className="w-20"
+                      value={cur.due_soon_days}
+                      onChange={(e) => update({ due_soon_days: Number(e.target.value) || 3 })}
+                    />
+                    <span className="text-sm text-muted-foreground">days before due</span>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-border p-4 space-y-2">
+                  <Label className="text-sm">First Overdue Reminder</Label>
+                  <p className="text-xs text-muted-foreground">Send N days after the due date</p>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      min={0}
+                      max={30}
+                      className="w-20"
+                      value={cur.overdue_first_days}
+                      onChange={(e) => update({ overdue_first_days: Number(e.target.value) || 1 })}
+                    />
+                    <span className="text-sm text-muted-foreground">days overdue</span>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-border p-4 space-y-2">
+                  <Label className="text-sm">Follow-up Reminder</Label>
+                  <p className="text-xs text-muted-foreground">Second reminder N days after due date</p>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      min={2}
+                      max={90}
+                      className="w-20"
+                      value={cur.overdue_followup_days}
+                      onChange={(e) => update({ overdue_followup_days: Number(e.target.value) || 7 })}
+                    />
+                    <span className="text-sm text-muted-foreground">days overdue</span>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-border p-4 space-y-2">
+                  <Label className="text-sm">Final Notice</Label>
+                  <p className="text-xs text-muted-foreground">Last reminder N days after due date</p>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      min={7}
+                      max={365}
+                      className="w-20"
+                      value={cur.overdue_final_days}
+                      onChange={(e) => update({ overdue_final_days: Number(e.target.value) || 30 })}
+                    />
+                    <span className="text-sm text-muted-foreground">days overdue</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Recipient Roles */}
+            <div className="space-y-3">
+              <div className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Email Recipients</div>
+              <p className="text-xs text-muted-foreground">Select which roles receive invoice reminder emails.</p>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {ALL_ROLES.map((role) => {
+                  const active = cur.recipient_roles.includes(role);
+                  return (
+                    <button
+                      key={role}
+                      onClick={() => toggleRole(role)}
+                      className={`flex items-center gap-2 rounded-lg border p-3 text-left text-sm transition ${
+                        active ? "border-primary/50 bg-primary/5" : "border-border hover:bg-muted"
+                      }`}
+                    >
+                      <div className={`h-4 w-4 rounded border-2 flex items-center justify-center transition ${
+                        active ? "border-primary bg-primary" : "border-muted-foreground/30"
+                      }`}>
+                        {active && <CheckCircle2 className="h-3 w-3 text-primary-foreground" />}
+                      </div>
+                      <span className="capitalize">{role.replace(/_/g, " ")}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Preview */}
+            <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-2">
+              <div className="text-sm font-medium">Schedule Preview</div>
+              <div className="text-xs text-muted-foreground space-y-1">
+                <div>📧 <strong>Due soon:</strong> {cur.due_soon_days} day{cur.due_soon_days !== 1 ? "s" : ""} before due date</div>
+                <div>🔴 <strong>First overdue:</strong> {cur.overdue_first_days} day{cur.overdue_first_days !== 1 ? "s" : ""} after due date</div>
+                <div>🟡 <strong>Follow-up:</strong> {cur.overdue_followup_days} days after due date</div>
+                <div>🚨 <strong>Final notice:</strong> {cur.overdue_final_days} days after due date</div>
+                <div>👥 <strong>Recipients:</strong> {cur.recipient_roles.length > 0 ? cur.recipient_roles.map((r) => r.replace(/_/g, " ")).join(", ") : "None selected"}</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Notification Types Section */}
+      {activeSection === "types" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">🔔 Notification Types</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Enable or disable specific notification types and configure delivery channels and recipients.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {Object.entries(NOTIF_TYPE_LABELS).map(([typeKey, label]) => {
+              const setting = getTypeSetting(typeKey);
+              return (
+                <div key={typeKey} className="rounded-lg border border-border p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">{NOTIF_TYPE_ICONS[typeKey]}</span>
+                      <div>
+                        <div className="font-medium">{label}</div>
+                        <div className="text-xs text-muted-foreground">{typeKey}</div>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={setting.enabled}
+                      onCheckedChange={(v) => updateTypeSetting(typeKey, { enabled: v })}
+                    />
+                  </div>
+
+                  {setting.enabled && (
+                    <div className="grid gap-3 sm:grid-cols-2 pl-10">
+                      <div className="space-y-2">
+                        <Label className="text-xs font-medium text-muted-foreground">Delivery Channels</Label>
+                        <div className="flex items-center gap-4">
+                          <label className="flex items-center gap-2 text-sm">
+                            <Switch
+                              checked={setting.send_email}
+                              onCheckedChange={(v) => updateTypeSetting(typeKey, { send_email: v })}
+                              className="scale-75"
+                            />
+                            📧 Email
+                          </label>
+                          <label className="flex items-center gap-2 text-sm">
+                            <Switch
+                              checked={setting.send_in_app}
+                              onCheckedChange={(v) => updateTypeSetting(typeKey, { send_in_app: v })}
+                              className="scale-75"
+                            />
+                            🔔 In-app
+                          </label>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-xs font-medium text-muted-foreground">Recipients</Label>
+                        <div className="flex flex-wrap gap-1.5">
+                          {ALL_ROLES.map((role) => {
+                            const active = setting.recipient_roles.includes(role);
+                            return (
+                              <button
+                                key={role}
+                                onClick={() => toggleTypeRole(typeKey, role)}
+                                className={`rounded-full border px-2 py-0.5 text-xs transition ${
+                                  active ? "border-primary/50 bg-primary/10 text-primary" : "border-border text-muted-foreground hover:bg-muted"
+                                }`}
+                              >
+                                {role.replace(/_/g, " ")}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Email Templates Section */}
+      {activeSection === "templates" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">✏️ Email Templates</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Customize the subject and body of notification emails. Use &#123;&#123;variableName&#125;&#125; for dynamic content.
+              Available variables depend on the notification type.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
+              <strong>Template Variables:</strong> {'{{taskName}}'}, {'{{projectName}}'}, {'{{dueDate}}'}, {'{{oldStatus}}'}, {'{{newStatus}}'}, {'{{invoiceNumber}}'}, {'{{amount}}'}, {'{{daysOverdue}}'}, {'{{requisitionNumber}}'} — Use &#123;&#123;#if variable&#125;&#125;...&#123;&#123;/if&#125;&#125; for conditional blocks.
+            </div>
+
+            {Object.entries(TEMPLATE_DEFAULTS).map(([templateKey, defaults]) => {
+              const tpl = getTemplate(templateKey);
+              return (
+                <div key={templateKey} className="rounded-lg border border-border p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Badge variant="outline">{templateKey}</Badge>
+                      <span className="text-sm font-medium">{TEMPLATE_LABELS[templateKey] ?? templateKey}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Switch
+                          checked={tpl.enabled}
+                          onCheckedChange={(v) => updateTemplate(templateKey, { enabled: v })}
+                          className="scale-75"
+                        />
+                        Enabled
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-xs font-medium">Subject</Label>
+                    <Input
+                      value={tpl.subject}
+                      onChange={(e) => updateTemplate(templateKey, { subject: e.target.value })}
+                      placeholder={defaults.subject}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-xs font-medium">Body</Label>
+                    <Textarea
+                      value={tpl.body}
+                      onChange={(e) => updateTemplate(templateKey, { body: e.target.value })}
+                      placeholder={defaults.body}
+                      rows={3}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Global Save Button */}
+      <div className="flex items-center justify-end gap-3 sticky bottom-4 z-10">
+        {(typeChanges.size > 0 || templateChanges.size > 0 || (local && Object.keys(local).length > 0)) && (
+          <div className="text-xs text-muted-foreground bg-background/80 backdrop-blur rounded-md px-3 py-1.5 border border-border">
+            Unsaved changes
+          </div>
+        )}
+        <Button onClick={saveAll} disabled={saving} className="shadow-lg">
+          <Save className="mr-2 h-4 w-4" />
+          {saving ? "Saving…" : "Save All Settings"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ==================== Permissions Tab ====================
+
+type PermissionKeyItem = { key: string; module: string; label: string; description: string | null };
+type UserPermissionItem = { id: string; user_id: string; permission_key: string; granted: boolean };
+
+const DEFAULT_PERMISSIONS: PermissionKeyItem[] = [
+  { key: "dashboard.view", module: "dashboard", label: "View Dashboard", description: "Access the main dashboard" },
+  { key: "projects.view", module: "projects", label: "View Projects", description: "See the projects list" },
+  { key: "projects.create", module: "projects", label: "Create Projects", description: "Create new projects" },
+  { key: "projects.edit", module: "projects", label: "Edit Projects", description: "Edit project details" },
+  { key: "tasks.view", module: "tasks", label: "View Tasks", description: "See the task board" },
+  { key: "tasks.create", module: "tasks", label: "Create Tasks", description: "Create new tasks" },
+  { key: "tasks.edit", module: "tasks", label: "Edit Tasks", description: "Edit task details" },
+  { key: "clients.view", module: "clients", label: "View Clients", description: "See the clients list" },
+  { key: "clients.create", module: "clients", label: "Create Clients", description: "Create new clients" },
+  { key: "employees.view", module: "employees", label: "View Employees", description: "See the employees list" },
+  { key: "employees.edit", module: "employees", label: "Edit Employees", description: "Edit employee details" },
+  { key: "finance.view", module: "finance", label: "View Finance", description: "See financial data" },
+  { key: "finance.invoices", module: "finance", label: "Manage Invoices", description: "Create and edit invoices" },
+  { key: "inventory.view", module: "inventory", label: "View Inventory", description: "See inventory levels" },
+  { key: "inventory.edit", module: "inventory", label: "Edit Inventory", description: "Manage inventory items" },
+  { key: "documents.view", module: "documents", label: "View Documents", description: "See document library" },
+  { key: "documents.upload", module: "documents", label: "Upload Documents", description: "Upload new documents" },
+  { key: "settings.view", module: "settings", label: "View Settings", description: "Access settings page" },
+  { key: "settings.users", module: "settings", label: "Manage Users", description: "Create users and assign roles" },
+  { key: "settings.permissions", module: "settings", label: "Manage Permissions", description: "Configure user permissions" },
+];
+
+function groupPermissions(keys: PermissionKeyItem[]) {
+  const groups: Record<string, PermissionKeyItem[]> = {};
+  keys.forEach((k) => {
+    if (!groups[k.module]) groups[k.module] = [];
+    groups[k.module].push(k);
+  });
+  return groups;
+}
+
+function PermissionsTab() {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeModule, setActiveModule] = useState<string>("dashboard");
+  const [localPermissions, setLocalPermissions] = useState<Map<string, boolean>>(new Map());
+  const [saving, setSaving] = useState(false);
+
+  const { data: profiles } = useQuery({
+    queryKey: ["perm-profiles"],
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("id, full_name, email");
+      return (data ?? []) as Profile[];
+    },
+  });
+
+  const { data: roles } = useQuery({
+    queryKey: ["perm-roles"],
+    queryFn: async () => {
+      const { data } = await supabase.from("user_roles").select("id, user_id, role");
+      return (data ?? []) as UserRole[];
+    },
+  });
+
+  const { data: permissionKeys } = useQuery({
+    queryKey: ["permission-keys"],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase.from("permission_keys" as never).select("key, module, label, description");
+        if (error || !data) return DEFAULT_PERMISSIONS;
+        return data as PermissionKeyItem[];
+      } catch {
+        return DEFAULT_PERMISSIONS;
+      }
+    },
+  });
+
+  const { data: userPermissions, refetch: refetchPermissions } = useQuery({
+    queryKey: ["user-permissions", selectedUserId],
+    queryFn: async () => {
+      if (!selectedUserId) return [];
+      try {
+        const { data, error } = await supabase
+          .from("user_permissions" as never)
+          .select("id, user_id, permission_key, granted")
+          .eq("user_id" as never, selectedUserId as never);
+        if (error || !data) return [];
+        return data as UserPermissionItem[];
+      } catch {
+        return [];
+      }
+    },
+    enabled: !!selectedUserId,
+  });
+
+  useMemo(() => {
+    if (permissionKeys) {
+      const map = new Map<string, boolean>();
+      permissionKeys.forEach((k) => map.set(k.key, false));
+      if (userPermissions) {
+        userPermissions.forEach((p) => map.set(p.permission_key, p.granted));
+      }
+      setLocalPermissions(map);
+    }
+  }, [userPermissions, permissionKeys]);
+
+  const selectedProfile = profiles?.find((p) => p.id === selectedUserId);
+  const selectedRoles = roles?.filter((r) => r.user_id === selectedUserId) ?? [];
+  const groupedPermissions = groupPermissions(permissionKeys ?? []);
+  const modules = Object.keys(groupedPermissions);
+
+  const filteredProfiles = profiles?.filter((p) => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return p.full_name?.toLowerCase().includes(q) || p.email?.toLowerCase().includes(q);
+  });
+
+  const togglePermission = (key: string) => {
+    setLocalPermissions((prev) => {
+      const next = new Map(prev);
+      next.set(key, !next.get(key));
+      return next;
+    });
+  };
+
+  const toggleModule = (module: string, value: boolean) => {
+    setLocalPermissions((prev) => {
+      const next = new Map(prev);
+      groupedPermissions[module]?.forEach((k) => next.set(k.key, value));
+      return next;
+    });
+  };
+
+  const savePermissions = async () => {
+    if (!selectedUserId || !user) return;
+    setSaving(true);
+    try {
+      const { data: profile } = await supabase.from("profiles").select("company_id").eq("id", user.id).single();
+      if (!profile?.company_id) {
+        toast.error("No company associated with your account");
+        return;
+      }
+      await supabase.from("user_permissions" as never).delete().eq("user_id" as never, selectedUserId as never).eq("company_id" as never, profile.company_id as never);
+      const grantedPermissions = Array.from(localPermissions.entries())
+        .filter(([_, granted]) => granted)
+        .map(([key]) => ({ user_id: selectedUserId, company_id: profile.company_id, permission_key: key, granted: true }));
+      if (grantedPermissions.length > 0) {
+        const { error } = await supabase.from("user_permissions" as never).insert(grantedPermissions as never);
+        if (error) throw error;
+      }
+      toast.success("Permissions saved");
+      refetchPermissions();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to save");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const getModuleStatus = (module: string) => {
+    const keys = groupedPermissions[module] ?? [];
+    const grantedCount = keys.filter((k) => localPermissions.get(k.key)).length;
+    if (grantedCount === 0) return "none";
+    if (grantedCount === keys.length) return "all";
+    return "partial";
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base"><ShieldCheck className="h-4 w-4" /> User Permissions</CardTitle>
+        <p className="text-sm text-muted-foreground">Control what each user can see and do. Super admins and company owners always have full access.</p>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-4 lg:grid-cols-[280px_1fr]">
+          {/* User list */}
+          <div className="space-y-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input placeholder="Search users..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9" />
+            </div>
+            <div className="max-h-[400px] space-y-1 overflow-y-auto">
+              {(filteredProfiles ?? []).map((p) => {
+                const userRole = roles?.find((r) => r.user_id === p.id);
+                const isSelected = selectedUserId === p.id;
+                return (
+                  <button key={p.id} onClick={() => setSelectedUserId(p.id)} className={`w-full rounded-lg p-2.5 text-left transition ${isSelected ? "bg-primary/10 border border-primary/30" : "hover:bg-muted border border-transparent"}`}>
+                    <div className="text-sm font-medium truncate">{p.full_name || "Unnamed"}</div>
+                    <div className="text-xs text-muted-foreground truncate">{p.email}</div>
+                    {userRole && <Badge variant="secondary" className="mt-1 text-[10px]">{userRole.role.replace(/_/g, " ")}</Badge>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Permissions */}
+          {!selectedUserId ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <Users className="h-10 w-10 text-muted-foreground" />
+              <p className="mt-3 text-sm text-muted-foreground">Select a user to configure permissions</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-medium">{selectedProfile?.full_name || selectedProfile?.email}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {selectedRoles.length > 0 ? selectedRoles.map((r) => r.role.replace(/_/g, " ")).join(", ") : "No role"}
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => refetchPermissions()}><RefreshCw className="mr-1.5 h-3.5 w-3.5" /> Refresh</Button>
+                  <Button size="sm" onClick={savePermissions} disabled={saving}><Save className="mr-1.5 h-3.5 w-3.5" /> {saving ? "Saving..." : "Save"}</Button>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-1.5">
+                {modules.map((mod) => (
+                  <button key={mod} onClick={() => setActiveModule(mod)} className={`rounded-md px-2.5 py-1 text-xs transition ${activeModule === mod ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"}`}>
+                    {mod.replace(/_/g, " ")}
+                    {getModuleStatus(mod) === "all" && <CheckCircle2 className="ml-1 inline h-3 w-3" />}
+                    {getModuleStatus(mod) === "partial" && <span className="ml-1 inline h-1.5 w-1.5 rounded-full bg-warning" />}
+                  </button>
+                ))}
+              </div>
+
+              <div className="rounded-lg border border-border p-3">
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="text-sm font-medium capitalize">{activeModule.replace(/_/g, " ")}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">
+                      {groupedPermissions[activeModule]?.filter((k) => localPermissions.get(k.key)).length ?? 0} / {groupedPermissions[activeModule]?.length ?? 0}
+                    </span>
+                    <Switch checked={getModuleStatus(activeModule) === "all"} onCheckedChange={(v) => toggleModule(activeModule, v)} />
+                  </div>
+                </div>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {(groupedPermissions[activeModule] ?? []).map((perm) => (
+                    <div key={perm.key} className="flex items-center justify-between rounded-md border border-border p-2.5">
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm">{perm.label}</div>
+                        {perm.description && <div className="text-xs text-muted-foreground truncate">{perm.description}</div>}
+                      </div>
+                      <Switch checked={localPermissions.get(perm.key) ?? false} onCheckedChange={() => togglePermission(perm.key)} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

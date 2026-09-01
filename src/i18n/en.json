@@ -1,0 +1,120 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "projects": "Projects",
+    "contact": "Contact",
+    "login": "Login",
+    "dashboard": "Dashboard"
+  },
+  "hero": {
+    "badge": "Licensed · Bonded · Insured · OSHA Compliant",
+    "title": "Building landmarks of <1>trust</1> since 1998.",
+    "subtitle": "We're BuildFlow Construction — a full-service general contractor delivering commercial, residential, industrial and infrastructure projects across the region. On time. On budget. Built to last.",
+    "cta_quote": "Request a free quote",
+    "cta_projects": "View our projects",
+    "phone_label": "Speak to a project manager today:",
+    "phone_number": "+1 (555) 240-8800"
+  },
+  "stats": {
+    "projects": "Projects delivered",
+    "years": "In business",
+    "value": "Built value",
+    "ontime": "On-time milestones"
+  },
+  "services_section": {
+    "title": "What we build",
+    "subtitle": "From custom homes to multi-tower campuses, our self-perform teams cover every trade in-house.",
+    "view_all": "All services →",
+    "learn_more": "Learn more",
+    "commercial": {
+      "title": "Commercial",
+      "desc": "Offices, retail, hotels and mixed-use towers."
+    },
+    "residential": {
+      "title": "Residential",
+      "desc": "Custom homes, multi-family and renovations."
+    },
+    "industrial": {
+      "title": "Industrial",
+      "desc": "Warehouses, plants and distribution hubs."
+    },
+    "renovation": {
+      "title": "Renovation",
+      "desc": "Restoration, refits and adaptive reuse."
+    }
+  },
+  "featured": {
+    "title": "Featured projects",
+    "subtitle": "A glimpse of recent builds. Explore the full portfolio for case studies and metrics.",
+    "view_all": "See all projects →",
+    "riverside": {
+      "title": "Riverside Tower",
+      "tag": "Commercial · 480k sqft"
+    },
+    "maple": {
+      "title": "Maple Heights Residences",
+      "tag": "Residential · 186 units"
+    },
+    "northgate": {
+      "title": "Northgate Logistics Hub",
+      "tag": "Industrial · 620k sqft"
+    }
+  },
+  "why_us": {
+    "title": "Why owners choose BuildFlow",
+    "subtitle": "We're hands-on, transparent and predictable. The team that wins the work is the team that builds it — no hand-offs, no surprises.",
+    "points": [
+      "Self-perform crews for concrete, framing, finishes and MEP coordination",
+      "Weekly cost & schedule reports, with no hidden line items",
+      "Dedicated project manager from kickoff to 24-month warranty",
+      "Industry-leading safety record (EMR of 0.62)",
+      "Owner-portal access to drawings, RFIs, invoices and photos"
+    ]
+  },
+  "testimonials": {
+    "1": {
+      "quote": "BuildFlow delivered our HQ two weeks early and under budget. Their PM kept us informed every single week.",
+      "author": "Sandra Hill, COO · Northwind Logistics"
+    },
+    "2": {
+      "quote": "Craftsmanship you can feel. Every detail of our home was thoughtful and built to last.",
+      "author": "Daniel & Mia Foster · Hillview Estates"
+    },
+    "3": {
+      "quote": "A safety record and quality discipline that's rare in this industry. We've awarded them three projects in a row.",
+      "author": "Robert Sanchez, Director · Civic Authority"
+    }
+  },
+  "certifications": {
+    "enr": "ENR Top 400 Contractor",
+    "osha": "OSHA SHARP Certified",
+    "leed": "LEED Gold Builder",
+    "iso": "ISO 9001:2015",
+    "agc": "AGC Member"
+  },
+  "cta": {
+    "title": "Ready to start your project?",
+    "subtitle": "Tell us about your build. You'll get a response from a project manager within 24 hours — and a no-obligation budget range.",
+    "quote_btn": "Request a quote",
+    "hi_btn": "Just say hi"
+  },
+  "footer": {
+    "copyright": "© 2024 BuildFlow Construction. All rights reserved.",
+    "description": "Full-service general contractor delivering commercial, residential, industrial and infrastructure projects."
+  },
+  "not_found": {
+    "title": "Page not found",
+    "subtitle": "The page you're looking for doesn't exist.",
+    "go_home": "Go home"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "try_again": "Try again"
+  },
+  "language": {
+    "en": "English",
+    "fr": "Français"
+  }
+}

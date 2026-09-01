@@ -28,6 +28,7 @@ import { Route as AuthenticatedAppProcurementRouteImport } from './routes/_authe
 import { Route as AuthenticatedAppPayrollRouteImport } from './routes/_authenticated/app/payroll'
 import { Route as AuthenticatedAppOnboardingRouteImport } from './routes/_authenticated/app/onboarding'
 import { Route as AuthenticatedAppNotificationsRouteImport } from './routes/_authenticated/app/notifications'
+import { Route as AuthenticatedAppNotificationLogRouteImport } from './routes/_authenticated/app/notification-log'
 import { Route as AuthenticatedAppInvoicesRouteImport } from './routes/_authenticated/app/invoices'
 import { Route as AuthenticatedAppInventoryRouteImport } from './routes/_authenticated/app/inventory'
 import { Route as AuthenticatedAppFinanceRouteImport } from './routes/_authenticated/app/finance'
@@ -147,6 +148,12 @@ const AuthenticatedAppNotificationsRoute =
   AuthenticatedAppNotificationsRouteImport.update({
     id: '/notifications',
     path: '/notifications',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppNotificationLogRoute =
+  AuthenticatedAppNotificationLogRouteImport.update({
+    id: '/notification-log',
+    path: '/notification-log',
     getParentRoute: () => AuthenticatedAppRouteRoute,
   } as any)
 const AuthenticatedAppInvoicesRoute =
@@ -281,6 +288,7 @@ export interface FileRoutesByFullPath {
   '/app/inventory': typeof AuthenticatedAppInventoryRoute
   '/app/invoices': typeof AuthenticatedAppInvoicesRoute
   '/app/notifications': typeof AuthenticatedAppNotificationsRoute
+  '/app/notification-log': typeof AuthenticatedAppNotificationLogRoute
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/payroll': typeof AuthenticatedAppPayrollRoute
   '/app/procurement': typeof AuthenticatedAppProcurementRoute
@@ -319,6 +327,7 @@ export interface FileRoutesByTo {
   '/app/inventory': typeof AuthenticatedAppInventoryRoute
   '/app/invoices': typeof AuthenticatedAppInvoicesRoute
   '/app/notifications': typeof AuthenticatedAppNotificationsRoute
+  '/app/notification-log': typeof AuthenticatedAppNotificationLogRoute
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/payroll': typeof AuthenticatedAppPayrollRoute
   '/app/procurement': typeof AuthenticatedAppProcurementRoute
@@ -473,6 +482,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/inventory'
     | '/_authenticated/app/invoices'
     | '/_authenticated/app/notifications'
+    | '/_authenticated/app/notification-log'
     | '/_authenticated/app/onboarding'
     | '/_authenticated/app/payroll'
     | '/_authenticated/app/procurement'
@@ -638,6 +648,13 @@ declare module '@tanstack/react-router' {
       path: '/notifications'
       fullPath: '/app/notifications'
       preLoaderRoute: typeof AuthenticatedAppNotificationsRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/notification-log': {
+      id: '/_authenticated/app/notification-log'
+      path: '/notification-log'
+      fullPath: '/app/notification-log'
+      preLoaderRoute: typeof AuthenticatedAppNotificationLogRouteImport
       parentRoute: typeof AuthenticatedAppRouteRoute
     }
     '/_authenticated/app/invoices': {
@@ -842,6 +859,7 @@ interface AuthenticatedAppRouteRouteChildren {
   AuthenticatedAppInventoryRoute: typeof AuthenticatedAppInventoryRoute
   AuthenticatedAppInvoicesRoute: typeof AuthenticatedAppInvoicesRoute
   AuthenticatedAppNotificationsRoute: typeof AuthenticatedAppNotificationsRoute
+  AuthenticatedAppNotificationLogRoute: typeof AuthenticatedAppNotificationLogRoute
   AuthenticatedAppOnboardingRoute: typeof AuthenticatedAppOnboardingRoute
   AuthenticatedAppPayrollRoute: typeof AuthenticatedAppPayrollRoute
   AuthenticatedAppProcurementRoute: typeof AuthenticatedAppProcurementRoute
@@ -865,6 +883,7 @@ const AuthenticatedAppRouteRouteChildren: AuthenticatedAppRouteRouteChildren = {
   AuthenticatedAppInventoryRoute: AuthenticatedAppInventoryRoute,
   AuthenticatedAppInvoicesRoute: AuthenticatedAppInvoicesRoute,
   AuthenticatedAppNotificationsRoute: AuthenticatedAppNotificationsRoute,
+  AuthenticatedAppNotificationLogRoute: AuthenticatedAppNotificationLogRoute,
   AuthenticatedAppOnboardingRoute: AuthenticatedAppOnboardingRoute,
   AuthenticatedAppPayrollRoute: AuthenticatedAppPayrollRoute,
   AuthenticatedAppProcurementRoute: AuthenticatedAppProcurementRoute,
