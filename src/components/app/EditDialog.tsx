@@ -87,7 +87,12 @@ export function EditDialog({
     if (!isEdit) return;
     if (!confirm("Delete this record? This cannot be undone.")) return;
     const { error } = await supabase.from(table as never).delete().eq("id", row!.id as string);
-    if (error) return toast.error(error.message);
+    if (error) {
+      const msg = error.message.includes("foreign key constraint")
+        ? "Cannot delete: this record is referenced by other records (invoices, projects, etc.). Remove those references first."
+        : error.message;
+      return toast.error(msg);
+    }
     toast.success("Deleted");
     (invalidate ?? [`module:${table}`]).forEach((k) => qc.invalidateQueries({ queryKey: [k] }));
     qc.invalidateQueries({ queryKey: ["module", table] });

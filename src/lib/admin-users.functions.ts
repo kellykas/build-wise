@@ -148,13 +148,26 @@ export const createCompanyUser = createServerFn({ method: "POST" })
       if (error) throw error;
     }
 
-    if (data.clientId) {
-      const { error } = await supabaseAdmin
-        .from("clients")
-        .update({ user_id: userId, email: data.email })
-        .eq("id", data.clientId)
-        .eq("company_id", companyId);
-      if (error) throw error;
+    if (data.role === "client") {
+      if (data.clientId) {
+        // Link existing client record to this user
+        const { error } = await supabaseAdmin
+          .from("clients")
+          .update({ user_id: userId, email: data.email })
+          .eq("id", data.clientId)
+          .eq("company_id", companyId);
+        if (error) throw error;
+      } else {
+        // Create new client record for invited clients
+        const { error: clientError } = await supabaseAdmin.from("clients").insert({
+          company_id: companyId,
+          user_id: userId,
+          name: data.fullName,
+          email: data.email,
+          phone: data.phone || null,
+        });
+        if (clientError) throw clientError;
+      }
     }
 
     await supabaseAdmin.from("audit_logs").insert({

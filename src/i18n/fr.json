@@ -116,5 +116,6 @@
   "language": {
     "en": "English",
     "fr": "Français"
-  }
+  },
+  "access_denied": "Vous n'avez pas accès à cette page."
 }

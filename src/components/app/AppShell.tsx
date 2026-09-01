@@ -21,6 +21,7 @@ import {
   DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -116,6 +117,7 @@ function NavItem({ to, label, icon: Icon, exact }: { to: string; label: string; 
 
 function MobileNav({ visibleGroups, children }: { visibleGroups: { label: string; items: NavItemDef[] }[]; children: ReactNode }) {
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -169,6 +171,7 @@ function MobileNav({ visibleGroups, children }: { visibleGroups: { label: string
 export function AppShell({ children }: { children: ReactNode }) {
   const { profile, user, signOut, roles, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isMobile = useIsMobile();
   const [searchOpen, setSearchOpen] = useState(false);
   const initials = (profile?.full_name || user?.email || "U").slice(0, 2).toUpperCase();
@@ -248,6 +251,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           {/* Search - mobile toggle */}
           <div className="flex-1 md:hidden" />
 
+          {/* Language */}
+          <LanguageSwitcher />
+
           {/* Notifications */}
           <Button variant="ghost" size="icon" className="relative h-9 w-9 shrink-0" onClick={() => navigate({ to: "/app/notifications" })}>
             <Bell className="h-4 w-4" />
@@ -297,7 +303,6 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="grid grid-cols-4 gap-1 px-2 py-1.5">
               {mobileQuickNav.map((item) => {
                 const Icon = item.icon;
-                const pathname = typeof window !== "undefined" ? window.location.pathname : "";
                 const active = item.exact ? pathname === item.to : pathname.startsWith(item.to);
                 return (
                   <button

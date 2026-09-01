@@ -4,6 +4,7 @@ import { AppShell } from "@/components/app/AppShell";
 import { useAuth } from "@/hooks/use-auth";
 import { canAccess } from "@/lib/rbac";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_authenticated/app")({
   component: AppLayout,
@@ -12,6 +13,7 @@ export const Route = createFileRoute("/_authenticated/app")({
 function AppLayout() {
   const { profile, loading, user, roles, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
@@ -27,10 +29,10 @@ function AppLayout() {
     if (pathname === "/app/onboarding") return;
     if (!canAccess(pathname, roles, { isAdmin, isClientOnly })) {
       const target = isClientOnly ? "/app/client-portal" : "/app";
-      toast.error("Vous n'avez pas accès à cette page.");
+      toast.error(t("access_denied"));
       navigate({ to: target, replace: true });
     }
-  }, [loading, user, profile?.company_id, roles, isAdmin, pathname, navigate]);
+  }, [loading, user, profile?.company_id, roles, isAdmin, pathname, navigate, t]);
 
   return (
     <AppShell>
