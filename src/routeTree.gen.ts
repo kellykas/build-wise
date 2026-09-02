@@ -287,8 +287,8 @@ export interface FileRoutesByFullPath {
   '/app/finance': typeof AuthenticatedAppFinanceRoute
   '/app/inventory': typeof AuthenticatedAppInventoryRoute
   '/app/invoices': typeof AuthenticatedAppInvoicesRoute
-  '/app/notifications': typeof AuthenticatedAppNotificationsRoute
   '/app/notification-log': typeof AuthenticatedAppNotificationLogRoute
+  '/app/notifications': typeof AuthenticatedAppNotificationsRoute
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/payroll': typeof AuthenticatedAppPayrollRoute
   '/app/procurement': typeof AuthenticatedAppProcurementRoute
@@ -326,8 +326,8 @@ export interface FileRoutesByTo {
   '/app/finance': typeof AuthenticatedAppFinanceRoute
   '/app/inventory': typeof AuthenticatedAppInventoryRoute
   '/app/invoices': typeof AuthenticatedAppInvoicesRoute
-  '/app/notifications': typeof AuthenticatedAppNotificationsRoute
   '/app/notification-log': typeof AuthenticatedAppNotificationLogRoute
+  '/app/notifications': typeof AuthenticatedAppNotificationsRoute
   '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/payroll': typeof AuthenticatedAppPayrollRoute
   '/app/procurement': typeof AuthenticatedAppProcurementRoute
@@ -365,6 +365,7 @@ export interface FileRoutesById {
   '/_authenticated/app/finance': typeof AuthenticatedAppFinanceRoute
   '/_authenticated/app/inventory': typeof AuthenticatedAppInventoryRoute
   '/_authenticated/app/invoices': typeof AuthenticatedAppInvoicesRoute
+  '/_authenticated/app/notification-log': typeof AuthenticatedAppNotificationLogRoute
   '/_authenticated/app/notifications': typeof AuthenticatedAppNotificationsRoute
   '/_authenticated/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/_authenticated/app/payroll': typeof AuthenticatedAppPayrollRoute
@@ -406,6 +407,7 @@ export interface FileRouteTypes {
     | '/app/finance'
     | '/app/inventory'
     | '/app/invoices'
+    | '/app/notification-log'
     | '/app/notifications'
     | '/app/onboarding'
     | '/app/payroll'
@@ -444,6 +446,7 @@ export interface FileRouteTypes {
     | '/app/finance'
     | '/app/inventory'
     | '/app/invoices'
+    | '/app/notification-log'
     | '/app/notifications'
     | '/app/onboarding'
     | '/app/payroll'
@@ -481,8 +484,8 @@ export interface FileRouteTypes {
     | '/_authenticated/app/finance'
     | '/_authenticated/app/inventory'
     | '/_authenticated/app/invoices'
-    | '/_authenticated/app/notifications'
     | '/_authenticated/app/notification-log'
+    | '/_authenticated/app/notifications'
     | '/_authenticated/app/onboarding'
     | '/_authenticated/app/payroll'
     | '/_authenticated/app/procurement'
@@ -858,8 +861,8 @@ interface AuthenticatedAppRouteRouteChildren {
   AuthenticatedAppFinanceRoute: typeof AuthenticatedAppFinanceRoute
   AuthenticatedAppInventoryRoute: typeof AuthenticatedAppInventoryRoute
   AuthenticatedAppInvoicesRoute: typeof AuthenticatedAppInvoicesRoute
-  AuthenticatedAppNotificationsRoute: typeof AuthenticatedAppNotificationsRoute
   AuthenticatedAppNotificationLogRoute: typeof AuthenticatedAppNotificationLogRoute
+  AuthenticatedAppNotificationsRoute: typeof AuthenticatedAppNotificationsRoute
   AuthenticatedAppOnboardingRoute: typeof AuthenticatedAppOnboardingRoute
   AuthenticatedAppPayrollRoute: typeof AuthenticatedAppPayrollRoute
   AuthenticatedAppProcurementRoute: typeof AuthenticatedAppProcurementRoute
@@ -882,8 +885,8 @@ const AuthenticatedAppRouteRouteChildren: AuthenticatedAppRouteRouteChildren = {
   AuthenticatedAppFinanceRoute: AuthenticatedAppFinanceRoute,
   AuthenticatedAppInventoryRoute: AuthenticatedAppInventoryRoute,
   AuthenticatedAppInvoicesRoute: AuthenticatedAppInvoicesRoute,
-  AuthenticatedAppNotificationsRoute: AuthenticatedAppNotificationsRoute,
   AuthenticatedAppNotificationLogRoute: AuthenticatedAppNotificationLogRoute,
+  AuthenticatedAppNotificationsRoute: AuthenticatedAppNotificationsRoute,
   AuthenticatedAppOnboardingRoute: AuthenticatedAppOnboardingRoute,
   AuthenticatedAppPayrollRoute: AuthenticatedAppPayrollRoute,
   AuthenticatedAppProcurementRoute: AuthenticatedAppProcurementRoute,

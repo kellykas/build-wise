@@ -48,7 +48,8 @@ function Home_() {
     { v: "98%", l: t("stats.ontime") },
   ];
 
-  const whyPoints = t("why_us.points", { returnObjects: true }) as string[];
+  const whyPointsRaw = t("why_us.points", { returnObjects: true });
+  const whyPoints: string[] = Array.isArray(whyPointsRaw) ? whyPointsRaw : [String(whyPointsRaw)];
 
   return (
     <div className="flex min-h-screen flex-col">
