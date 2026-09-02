@@ -30,7 +30,7 @@ export function LanguageSwitcher() {
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
-            onClick={() => i18n.changeLanguage(lang.code)}
+            onClick={() => { i18n.changeLanguage(lang.code); localStorage.setItem("i18nextLng", lang.code); }}
             className={i18n.language === lang.code ? "bg-accent" : ""}
           >
             <span className="mr-2">{lang.flag}</span>
