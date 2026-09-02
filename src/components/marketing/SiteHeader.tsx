@@ -14,10 +14,8 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link to="/" className="flex items-center gap-2 font-semibold">
-          <span className="grid h-9 w-9 place-items-center rounded-md bg-primary text-primary-foreground">
-            <HardHat className="h-5 w-5" />
-          </span>
-          <span className="text-lg tracking-tight">Scer-L/<span className="text-accent">Construct</span></span>
+          <img src="/scer-logo.svg" alt="Scer-L/Construct Sarl" className="h-10 w-10" />
+          <span className="text-lg tracking-tight">Scer-L/<span className="text-primary">Construct</span></span>
         </Link>
         <nav className="hidden items-center gap-7 md:flex">
           {navKeys.map((key, i) => (
