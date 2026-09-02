@@ -9,7 +9,7 @@ import fr from "@/i18n/fr.json";
 // which is guaranteed to be included in the SSR bundle because it wraps children.
 if (!i18n.isInitialized) {
   const savedLang = typeof window !== "undefined" ? localStorage.getItem("i18nextLng") : null;
-  const detectedLang = savedLang || (typeof navigator !== "undefined" ? navigator.language?.slice(0, 2) : null) || "en";
+  const detectedLang = savedLang || (typeof navigator !== "undefined" ? navigator.language?.slice(0, 2) : null) || "fr";
 
   i18n.use(initReactI18next).init({
     resources: {
@@ -17,7 +17,7 @@ if (!i18n.isInitialized) {
       fr: { translation: fr },
     },
     lng: detectedLang,
-    fallbackLng: "en",
+    fallbackLng: "fr",
     debug: false,
     interpolation: {
       escapeValue: false,
