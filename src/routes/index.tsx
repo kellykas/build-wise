@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 import {
   ArrowRight, Building2, Home, Factory, Hammer, ShieldCheck,
   Award, Quote, CheckCircle2, Phone,
@@ -71,7 +71,7 @@ function Home_() {
               <ShieldCheck className="h-3.5 w-3.5 text-accent" /> {t("hero.badge")}
             </div>
             <h1 className="mt-5 text-4xl font-bold tracking-tight md:text-6xl">
-              {t("hero.title")}
+              <Trans i18nKey="hero.title" components={{ 1: <span className="text-accent" /> }} />
             </h1>
             <p className="mt-5 max-w-xl text-lg text-muted-foreground">
               {t("hero.subtitle")}
