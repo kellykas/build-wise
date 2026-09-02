@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation, Trans } from "react-i18next";
+import scerLogoAsset from "@/assets/scer-logo.png.asset.json";
 import {
   ArrowRight, Building2, Home, Factory, Hammer, ShieldCheck,
   Award, Quote, CheckCircle2, Phone,
