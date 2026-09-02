@@ -25,4 +25,6 @@ i18n.use(initReactI18next).init({
   },
 });
 
-export default i18n;
+// Named export so bundlers cannot tree-shake this side-effect module.
+// The i18n instance is also the default export for convenience.
+export { i18n as default, i18n as i18nInstance };
