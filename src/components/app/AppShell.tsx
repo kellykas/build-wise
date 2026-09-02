@@ -6,7 +6,7 @@ import {
   LayoutDashboard, FolderKanban, ClipboardList, Users, UserCog, ClipboardCheck,
   Truck, ShoppingCart, Boxes, Wrench, Receipt, Wallet, FileText, CalendarDays,
   Settings, Bell, Search, ChevronDown, LogOut, HardHat, Building2, FileSpreadsheet,
-  ShieldCheck, Menu, X, History,
+  ShieldCheck, Menu, X, History, Globe,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/hooks/use-auth";
@@ -186,6 +186,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     { label: t(k.groups.library), items: [
       { to: "/app/documents", label: t(k.nav.documents), icon: FileText },
       { to: "/app/notification-log", label: t(k.nav.notification_log), icon: History, roles: [...ADMIN] },
+      { to: "/app/site-editor", label: t("app.nav.site_editor"), icon: Globe, roles: [...ADMIN, "project_manager"] },
       { to: "/app/settings", label: t(k.nav.settings), icon: Settings },
     ]},
   ];

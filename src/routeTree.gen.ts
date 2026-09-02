@@ -21,6 +21,7 @@ import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticat
 import { Route as ApiPublicKnockWebhookRouteImport } from './routes/api/public/knock-webhook'
 import { Route as AuthenticatedAppTasksRouteImport } from './routes/_authenticated/app/tasks'
 import { Route as AuthenticatedAppSuppliersRouteImport } from './routes/_authenticated/app/suppliers'
+import { Route as AuthenticatedAppSiteEditorRouteImport } from './routes/_authenticated/app/site-editor'
 import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app/settings'
 import { Route as AuthenticatedAppRequisitionsRouteImport } from './routes/_authenticated/app/requisitions'
 import { Route as AuthenticatedAppProjectsRouteImport } from './routes/_authenticated/app/projects'
@@ -107,6 +108,12 @@ const AuthenticatedAppSuppliersRoute =
   AuthenticatedAppSuppliersRouteImport.update({
     id: '/suppliers',
     path: '/suppliers',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppSiteEditorRoute =
+  AuthenticatedAppSiteEditorRouteImport.update({
+    id: '/site-editor',
+    path: '/site-editor',
     getParentRoute: () => AuthenticatedAppRouteRoute,
   } as any)
 const AuthenticatedAppSettingsRoute =
@@ -295,6 +302,7 @@ export interface FileRoutesByFullPath {
   '/app/projects': typeof AuthenticatedAppProjectsRouteWithChildren
   '/app/requisitions': typeof AuthenticatedAppRequisitionsRouteWithChildren
   '/app/settings': typeof AuthenticatedAppSettingsRoute
+  '/app/site-editor': typeof AuthenticatedAppSiteEditorRoute
   '/app/suppliers': typeof AuthenticatedAppSuppliersRoute
   '/app/tasks': typeof AuthenticatedAppTasksRouteWithChildren
   '/api/public/knock-webhook': typeof ApiPublicKnockWebhookRoute
@@ -332,6 +340,7 @@ export interface FileRoutesByTo {
   '/app/payroll': typeof AuthenticatedAppPayrollRoute
   '/app/procurement': typeof AuthenticatedAppProcurementRoute
   '/app/settings': typeof AuthenticatedAppSettingsRoute
+  '/app/site-editor': typeof AuthenticatedAppSiteEditorRoute
   '/app/suppliers': typeof AuthenticatedAppSuppliersRoute
   '/api/public/knock-webhook': typeof ApiPublicKnockWebhookRoute
   '/app': typeof AuthenticatedAppIndexRoute
@@ -373,6 +382,7 @@ export interface FileRoutesById {
   '/_authenticated/app/projects': typeof AuthenticatedAppProjectsRouteWithChildren
   '/_authenticated/app/requisitions': typeof AuthenticatedAppRequisitionsRouteWithChildren
   '/_authenticated/app/settings': typeof AuthenticatedAppSettingsRoute
+  '/_authenticated/app/site-editor': typeof AuthenticatedAppSiteEditorRoute
   '/_authenticated/app/suppliers': typeof AuthenticatedAppSuppliersRoute
   '/_authenticated/app/tasks': typeof AuthenticatedAppTasksRouteWithChildren
   '/api/public/knock-webhook': typeof ApiPublicKnockWebhookRoute
@@ -415,6 +425,7 @@ export interface FileRouteTypes {
     | '/app/projects'
     | '/app/requisitions'
     | '/app/settings'
+    | '/app/site-editor'
     | '/app/suppliers'
     | '/app/tasks'
     | '/api/public/knock-webhook'
@@ -452,6 +463,7 @@ export interface FileRouteTypes {
     | '/app/payroll'
     | '/app/procurement'
     | '/app/settings'
+    | '/app/site-editor'
     | '/app/suppliers'
     | '/api/public/knock-webhook'
     | '/app'
@@ -492,6 +504,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/projects'
     | '/_authenticated/app/requisitions'
     | '/_authenticated/app/settings'
+    | '/_authenticated/app/site-editor'
     | '/_authenticated/app/suppliers'
     | '/_authenticated/app/tasks'
     | '/api/public/knock-webhook'
@@ -602,6 +615,13 @@ declare module '@tanstack/react-router' {
       path: '/suppliers'
       fullPath: '/app/suppliers'
       preLoaderRoute: typeof AuthenticatedAppSuppliersRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/site-editor': {
+      id: '/_authenticated/app/site-editor'
+      path: '/site-editor'
+      fullPath: '/app/site-editor'
+      preLoaderRoute: typeof AuthenticatedAppSiteEditorRouteImport
       parentRoute: typeof AuthenticatedAppRouteRoute
     }
     '/_authenticated/app/settings': {
@@ -869,6 +889,7 @@ interface AuthenticatedAppRouteRouteChildren {
   AuthenticatedAppProjectsRoute: typeof AuthenticatedAppProjectsRouteWithChildren
   AuthenticatedAppRequisitionsRoute: typeof AuthenticatedAppRequisitionsRouteWithChildren
   AuthenticatedAppSettingsRoute: typeof AuthenticatedAppSettingsRoute
+  AuthenticatedAppSiteEditorRoute: typeof AuthenticatedAppSiteEditorRoute
   AuthenticatedAppSuppliersRoute: typeof AuthenticatedAppSuppliersRoute
   AuthenticatedAppTasksRoute: typeof AuthenticatedAppTasksRouteWithChildren
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
@@ -894,6 +915,7 @@ const AuthenticatedAppRouteRouteChildren: AuthenticatedAppRouteRouteChildren = {
   AuthenticatedAppRequisitionsRoute:
     AuthenticatedAppRequisitionsRouteWithChildren,
   AuthenticatedAppSettingsRoute: AuthenticatedAppSettingsRoute,
+  AuthenticatedAppSiteEditorRoute: AuthenticatedAppSiteEditorRoute,
   AuthenticatedAppSuppliersRoute: AuthenticatedAppSuppliersRoute,
   AuthenticatedAppTasksRoute: AuthenticatedAppTasksRouteWithChildren,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
