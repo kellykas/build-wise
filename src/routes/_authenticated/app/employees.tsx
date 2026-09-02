@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ModulePage, type Column } from "@/components/app/ModulePage";
 import { UserCog } from "lucide-react";
 import { EditDialog, type Field } from "@/components/app/EditDialog";
@@ -11,38 +12,41 @@ export const Route = createFileRoute("/_authenticated/app/employees")({
 
 type Employee = { id: string; employee_number: string; full_name: string; email: string; phone: string; position: string; department: string; salary: number; status: string; hourly_rate: number };
 
-const fields: Field[] = [
-  { key: "employee_number", label: "Employee #", required: true },
-  { key: "full_name", label: "Full name", required: true },
-  { key: "email", label: "Email", type: "email" },
-  { key: "phone", label: "Phone", type: "tel" },
-  { key: "position", label: "Position" },
-  { key: "department", label: "Department" },
-  { key: "salary", label: "Monthly salary", type: "number", step: "0.01" },
-  { key: "hourly_rate", label: "Hourly rate", type: "number", step: "0.01" },
-  { key: "employment_date", label: "Hire date", type: "date" },
-  { key: "bank_account", label: "Bank account" },
-  { key: "status", label: "Status", type: "select", options: [
-    { value: "active", label: "Active" }, { value: "on_leave", label: "On leave" }, { value: "inactive", label: "Inactive" },
-  ] },
-];
-
 function EmployeesPage() {
+  const { t } = useTranslation();
   const [editing, setEditing] = useState<Employee | null>(null);
   const [newOpen, setNewOpen] = useState(false);
+
+  const fields: Field[] = [
+    { key: "employee_number", label: t("d.employees.employee_number"), required: true },
+    { key: "full_name", label: t("d.employees.full_name"), required: true },
+    { key: "email", label: t("d.employees.email"), type: "email" },
+    { key: "phone", label: t("d.employees.phone"), type: "tel" },
+    { key: "position", label: t("d.employees.position") },
+    { key: "department", label: t("d.employees.department") },
+    { key: "salary", label: t("d.employees.monthly_salary"), type: "number", step: "0.01" },
+    { key: "hourly_rate", label: t("d.employees.hourly_rate"), type: "number", step: "0.01" },
+    { key: "employment_date", label: t("d.employees.hire_date"), type: "date" },
+    { key: "bank_account", label: t("d.employees.bank_account") },
+    { key: "status", label: t("d.employees.status"), type: "select", options: [
+      { value: "active", label: t("d.employees.active") }, { value: "on_leave", label: t("d.employees.on_leave") }, { value: "inactive", label: t("d.employees.inactive") },
+    ] },
+  ];
+
   const columns: Column<Employee>[] = [
     { key: "employee_number", label: "ID" },
-    { key: "full_name", label: "Name", render: (r) => <span className="font-medium">{r.full_name}</span> },
-    { key: "position", label: "Position" },
-    { key: "department", label: "Department" },
-    { key: "salary", label: "Salary", render: (r) => `$${Number(r.salary || 0).toLocaleString()}` },
-    { key: "status", label: "Status", render: (r) => <Badge variant="secondary">{r.status ?? "active"}</Badge> },
+    { key: "full_name", label: t("d.employees.full_name"), render: (r) => <span className="font-medium">{r.full_name}</span> },
+    { key: "position", label: t("d.employees.position") },
+    { key: "department", label: t("d.employees.department") },
+    { key: "salary", label: t("d.employees.salary"), render: (r) => `$${Number(r.salary || 0).toLocaleString()}` },
+    { key: "status", label: t("d.employees.status"), render: (r) => <Badge variant="secondary">{r.status ?? t("d.employees.active")}</Badge> },
   ];
+
   return (
     <>
       <ModulePage<Employee>
-        title="Employees"
-        description="Click any row to edit, change role, or remove."
+        title={t("d.employees.title")}
+        description={t("d.employees.description")}
         table="employees"
         columns={columns}
         icon={<span className="grid h-9 w-9 place-items-center rounded-md bg-primary/10 text-primary"><UserCog className="h-5 w-5" /></span>}
@@ -53,7 +57,7 @@ function EmployeesPage() {
         open={newOpen || !!editing}
         onOpenChange={(v) => { if (!v) { setNewOpen(false); setEditing(null); } }}
         table="employees"
-        title="employee"
+        title={t("d.employees.title").toLowerCase()}
         fields={fields}
         row={editing as unknown as Record<string, unknown> | null}
       />

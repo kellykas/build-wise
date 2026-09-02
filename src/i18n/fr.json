@@ -28,39 +28,18 @@
     "subtitle": "Des maisons personnalisées aux campus à plusieurs tours, nos équipes couvrent tous les métiers en interne.",
     "view_all": "Tous les services →",
     "learn_more": "En savoir plus",
-    "commercial": {
-      "title": "Commercial",
-      "desc": "Bureaux, commerces, hôtels et immeubles mixtes."
-    },
-    "residential": {
-      "title": "Résidentiel",
-      "desc": "Maisons personnalisées, immeubles multi-familiaux et rénovations."
-    },
-    "industrial": {
-      "title": "Industriel",
-      "desc": "Entrepôts, usines et centres de distribution."
-    },
-    "renovation": {
-      "title": "Rénovation",
-      "desc": "Restauration, réaménagement et réutilisation adaptative."
-    }
+    "commercial": { "title": "Commercial", "desc": "Bureaux, commerces, hôtels et immeubles mixtes." },
+    "residential": { "title": "Résidentiel", "desc": "Maisons personnalisées, immeubles multi-familiaux et rénovations." },
+    "industrial": { "title": "Industriel", "desc": "Entrepôts, usines et centres de distribution." },
+    "renovation": { "title": "Rénovation", "desc": "Restauration, réaménagement et réutilisation adaptative." }
   },
   "featured": {
     "title": "Projets en vedette",
     "subtitle": "Un aperçu des constructions récentes. Explorez le portfolio complet pour les études de cas et les métriques.",
     "view_all": "Voir tous les projets →",
-    "riverside": {
-      "title": "Tour Riverside",
-      "tag": "Commercial · 44 500 m²"
-    },
-    "maple": {
-      "title": "Résidences Maple Heights",
-      "tag": "Résidentiel · 186 unités"
-    },
-    "northgate": {
-      "title": "Centre logistique Northgate",
-      "tag": "Industriel · 57 500 m²"
-    }
+    "riverside": { "title": "Tour Riverside", "tag": "Commercial · 44 500 m²" },
+    "maple": { "title": "Résidences Maple Heights", "tag": "Résidentiel · 186 unités" },
+    "northgate": { "title": "Centre logistique Northgate", "tag": "Industriel · 57 500 m²" }
   },
   "why_us": {
     "title": "Pourquoi les propriétaires choisissent Scer-L/Construct",
@@ -74,18 +53,9 @@
     ]
   },
   "testimonials": {
-    "1": {
-      "quote": "BuildFlow a livré notre siège social deux semaines plus tôt et sous budget. Leur chef de projet nous a tenus informés chaque semaine.",
-      "author": "Sandra Hill, PDG · Northwind Logistics"
-    },
-    "2": {
-      "quote": "Un savoir-faire que l'on ressent. Chaque détail de notre maison était réfléchi et construit pour durer.",
-      "author": "Daniel et Mia Foster · Hillview Estates"
-    },
-    "3": {
-      "quote": "Un bilan de sécurité et une discipline qualité rares dans cette industrie. Nous leur avons attribué trois projets consécutifs.",
-      "author": "Robert Sanchez, Directeur · Civic Authority"
-    }
+    "1": { "quote": "BuildFlow a livré notre siège social deux semaines plus tôt et sous budget. Leur chef de projet nous a tenus informés chaque semaine.", "author": "Sandra Hill, PDG · Northwind Logistics" },
+    "2": { "quote": "Un savoir-faire que l'on ressent. Chaque détail de notre maison était réfléchi et construit pour durer.", "author": "Daniel et Mia Foster · Hillview Estates" },
+    "3": { "quote": "Un bilan de sécurité et une discipline qualité rares dans cette industrie. Nous leur avons attribué trois projets consécutifs.", "author": "Robert Sanchez, Directeur · Civic Authority" }
   },
   "certifications": {
     "enr": "ENR Top 400 Contractor",
@@ -104,19 +74,9 @@
     "copyright": "© 2024 Scer-L/Construct Sarl. Tous droits réservés.",
     "description": "Entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure. Engagés pour construire vos rêves."
   },
-  "not_found": {
-    "title": "Page non trouvée",
-    "subtitle": "La page que vous recherchez n'existe pas.",
-    "go_home": "Retour à l'accueil"
-  },
-  "error": {
-    "title": "Une erreur s'est produite",
-    "try_again": "Réessayer"
-  },
-  "language": {
-    "en": "English",
-    "fr": "Français"
-  },
+  "not_found": { "title": "Page non trouvée", "subtitle": "La page que vous recherchez n'existe pas.", "go_home": "Retour à l'accueil" },
+  "error": { "title": "Une erreur s'est produite", "try_again": "Réessayer" },
+  "language": { "en": "English", "fr": "Français" },
   "access_denied": "Vous n'avez pas accès à cette page.",
   "app": {
     "brand": "Scer-L/Construct",
@@ -161,6 +121,328 @@
       "tasks": "Tâches",
       "projects": "Projets",
       "alerts": "Alertes"
+    }
+  },
+  "d": {
+    "dashboard": {
+      "title": "Tableau de bord",
+      "subtitle": "Vue d'ensemble des opérations en cours.",
+      "live": "En direct",
+      "view_more": "Voir plus",
+      "tasks_to_do": "Tâches à exécuter",
+      "requisitions": "États de besoin",
+      "team_members": "Membres de l'équipe",
+      "active_projects": "Projets actifs",
+      "urgencies": "Urgences",
+      "attendance": "Présence",
+      "finances_to_justify": "Finances à justifier",
+      "notifications": "Notifications",
+      "revenue_vs_expenses": "Revenus vs Dépenses",
+      "task_status": "Statut des tâches",
+      "tasks_this_week": "Tâches cette semaine",
+      "recent_activity": "Activité récente",
+      "view_all": "Tout voir",
+      "no_activity": "Aucune activité récente",
+      "alerts": "Alertes",
+      "no_overdue": "Aucune facture en retard",
+      "all_on_track": "Toutes les tâches à jour",
+      "inventory_normal": "Niveaux de stock normaux",
+      "in_progress": "En cours",
+      "pending": "En attente",
+      "completed": "Terminé",
+      "overdue": "En retard",
+      "done": "Terminé",
+      "open": "Ouvert",
+      "finance": "Finance",
+      "operations": "Opérations",
+      "supply_chain": "Chaîne d'approvisionnement",
+      "task": "Tâche",
+      "requisition": "État de besoin",
+      "invoice": "Facture",
+      "overdue_invoice": "facture en retard",
+      "urgent_task": "Tâche urgente",
+      "low_stock": "Stock faible",
+      "facture": "Facture",
+      "task_urgente": "Tâche urgente",
+      "stock_faible": "Stock faible"
+    },
+    "clients": {
+      "title": "Clients",
+      "description": "Votre base de données clients.",
+      "invite": "Inviter un client",
+      "name": "Nom",
+      "company": "Entreprise",
+      "email": "E-mail",
+      "phone": "Téléphone",
+      "address": "Adresse",
+      "tax_number": "Numéro fiscal",
+      "notes": "Notes",
+      "actions": "Actions"
+    },
+    "projects": {
+      "title": "Projets",
+      "description": "Tous les projets de votre portefeuille. Cliquez sur une ligne pour ouvrir les détails.",
+      "list": "Liste",
+      "timeline": "Calendrier",
+      "project": "Projet",
+      "location": "Emplacement",
+      "status": "Statut",
+      "priority": "Priorité",
+      "budget": "Budget",
+      "progress": "Progression",
+      "edit": "Modifier",
+      "planning": "Planification",
+      "in_progress": "En cours",
+      "on_hold": "En attente",
+      "completed": "Terminé",
+      "cancelled": "Annulé",
+      "low": "Faible",
+      "medium": "Moyen",
+      "high": "Élevé",
+      "urgent": "Urgent"
+    },
+    "tasks": {
+      "new_task": "Nouvelle tâche",
+      "task": "Tâche",
+      "description": "Description",
+      "status": "Statut",
+      "priority": "Priorité",
+      "assignee": "Assigné à",
+      "project": "Projet",
+      "due_date": "Date d'échéance",
+      "progress": "Progression",
+      "pending": "En attente",
+      "in_progress": "En cours",
+      "completed": "Terminé",
+      "overdue": "En retard",
+      "low": "Faible",
+      "medium": "Moyen",
+      "high": "Élevé",
+      "urgent": "Urgent",
+      "no_tasks": "Aucune tâche",
+      "tasks": "Tâches",
+      "my_tasks": "Mes tâches",
+      "supervised": "Supervisées",
+      "urgent_tasks": "Tâches urgentes",
+      "approval": "Approbation",
+      "execution": "Exécution"
+    },
+    "employees": {
+      "title": "Employés",
+      "description": "Cliquez sur une ligne pour modifier, changer le rôle ou supprimer.",
+      "employee_number": "N° d'employé",
+      "full_name": "Nom complet",
+      "email": "E-mail",
+      "phone": "Téléphone",
+      "position": "Poste",
+      "department": "Département",
+      "salary": "Salaire",
+      "monthly_salary": "Salaire mensuel",
+      "hourly_rate": "Taux horaire",
+      "hire_date": "Date d'embauche",
+      "bank_account": "Compte bancaire",
+      "status": "Statut",
+      "active": "Actif",
+      "on_leave": "En congé",
+      "inactive": "Inactif"
+    },
+    "invoices": {
+      "title": "Factures",
+      "description": "Émettre, suivre et encaisser les paiements. Paiements en ligne via Stripe, ou enregistrement manuel.",
+      "invoice": "Facture",
+      "amount": "Montant",
+      "paid": "Payé",
+      "due": "Échéance",
+      "status": "Statut",
+      "pay_online": "Payer en ligne",
+      "record": "Enregistrer",
+      "send_reminders": "Envoyer les rappels",
+      "sending": "Envoi…",
+      "draft": "Brouillon",
+      "sent": "Envoyé",
+      "paid_status": "Payé",
+      "overdue": "En retard",
+      "cancelled": "Annulé",
+      "record_payment": "Enregistrer le paiement",
+      "outstanding": "Solde dû",
+      "amount_due": "Montant dû",
+      "setting_up": "Configuration du paiement sécurisé…",
+      "continue_to_payment": "Passer au paiement",
+      "setting_up_short": "Configuration…",
+      "payment_recorded": "Paiement enregistré, revenu comptabilisé",
+      "enter_amount": "Entrez un montant",
+      "reminders_sent": "rappel(s) envoyé(s) avec succès",
+      "no_overdue": "Aucune facture en retard à rappeler",
+      "failed_reminders": "Échec de l'envoi des rappels",
+      "notes": "Notes"
+    },
+    "notifications": {
+      "title": "Notifications internes",
+      "subtitle": "Communiquez en temps réel avec vos équipes.",
+      "new_notification": "Nouvelle notification",
+      "type": "Type",
+      "title_label": "Titre",
+      "title_placeholder": "ex. Validation requise sur EB-001234",
+      "message": "Message",
+      "link_optional": "Lien (optionnel)",
+      "send_to": "Envoyer à",
+      "recipients": "Destinataires",
+      "search_recipient": "Rechercher un destinataire…",
+      "no_results": "Aucun résultat",
+      "add": "+ ajouter",
+      "no_recipient_selected": "Aucun destinataire sélectionné.",
+      "inbox": "Boîte de réception",
+      "sent_history": "Historique envoyé",
+      "no_notifications": "Aucune notification.",
+      "no_sends": "Aucun envoi.",
+      "from": "De",
+      "system": "Système",
+      "mark_read": "Marquer lu",
+      "read": "Lu",
+      "unread": "Non lu",
+      "information": "Information",
+      "task": "Tâche",
+      "requisition": "État de besoin",
+      "approval": "Approbation",
+      "urgent": "Urgence"
+    },
+    "settings": {
+      "title": "Paramètres",
+      "description": "Profil, équipe et rôles, règles de paie, informations de l'entreprise.",
+      "my_profile": "Mon profil",
+      "users_roles": "Utilisateurs et rôles",
+      "permissions": "Permissions",
+      "payroll_rules": "Règles de paie",
+      "company": "Entreprise",
+      "notifications": "Notifications",
+      "upload_checks": "Vérifications de téléchargement",
+      "audit_log": "Journal d'audit",
+      "admins_only": "Admins uniquement.",
+      "email": "E-mail",
+      "full_name": "Nom complet",
+      "phone": "Téléphone",
+      "save": "Enregistrer",
+      "profile_updated": "Profil mis à jour",
+      "team_members": "Membres de l'équipe",
+      "create_user": "Créer un utilisateur",
+      "create_account": "Créer un compte utilisateur",
+      "create_account_desc": "Créer un accès employé ou client et le lier à un enregistrement employé/client.",
+      "temporary_password": "Mot de passe temporaire",
+      "role": "Rôle",
+      "link_employee": "Lier un employé",
+      "no_employee_link": "Pas de lien employé",
+      "link_client_portal": "Lier au portail client",
+      "no_client_link": "Pas de lien client",
+      "optional": "Optionnel",
+      "cancel": "Annuler",
+      "creating": "Création…",
+      "create": "Créer le compte",
+      "user_created": "Utilisateur créé et rôle assigné",
+      "role_assigned": "Rôle assigné",
+      "assign_role": "+ Assigner un rôle",
+      "knock_id": "ID Knock :",
+      "knock_saved": "ID Knock enregistré",
+      "rules_saved": "Règles enregistrées",
+      "currency": "Devise",
+      "recent_activity": "Activité récente",
+      "when": "Quand",
+      "actor": "Acteur",
+      "action": "Action",
+      "target": "Cible",
+      "details": "Détails",
+      "no_activity": "Aucune activité pour le moment.",
+      "upload_permissions_check": "Vérification des permissions de téléchargement",
+      "project_for_portal": "Projet pour le test photo portail",
+      "run_checks": "Lancer les vérifications",
+      "current_role_set": "Ensemble de rôles actuel",
+      "no_company": "Votre compte n'est pas lié à un espace de travail d'entreprise.",
+      "checks_completed": "Vérifications des permissions de téléchargement terminées",
+      "pass": "Réussi",
+      "fail": "Échoué",
+      "run_checks_desc": "Lancez les vérifications pour valider les téléchargements et la visibilité pour votre rôle actuel.",
+      "project_visibility": "Visibilité de la page projet",
+      "doc_upload": "Téléversement dans le stockage de documents",
+      "doc_rls": "RLS de la base de données documents",
+      "doc_preview": "Aperçu/téléchargement du document",
+      "portal_photo_upload": "Téléversement photo portail dans le stockage",
+      "portal_photo_rls": "RLS photo portail de la base de données",
+      "portal_gallery": "Visibilité de la galerie portail",
+      "no_project_selected": "Créez ou sélectionnez un projet avant de tester les photos portail.",
+      "all": "Tout",
+      "uploads": "Téléversements",
+      "documents": "Documents",
+      "photos": "Photos portail",
+      "access": "Utilisateurs et rôles"
+    },
+    "attendance": {
+      "title": "Présence",
+      "description": "Suivre les pointages quotidiens et les heures de travail."
+    },
+    "calendar": {
+      "title": "Agenda",
+      "description": "Jalons de projet, échéances et événements.",
+      "event": "événement"
+    },
+    "finance": {
+      "title": "Trésorerie",
+      "description": "Flux de trésorerie, transactions et rapprochement."
+    },
+    "documents": {
+      "title": "Documents",
+      "description": "Téléverser, organiser et partager les fichiers de projet.",
+      "new_folder": "Nouveau dossier",
+      "folder_placeholder": "ex. Photos chantier, Phase 2",
+      "preview": "Aperçu",
+      "download": "Télécharger",
+      "delete": "Supprimer"
+    },
+    "suppliers": {
+      "title": "Fournisseurs",
+      "description": "Répertoire et performance des fournisseurs."
+    },
+    "procurement": {
+      "title": "Achats",
+      "description": "Approuver ou rejeter les bons de commande. Les BC approuvés comptabilisent une dépense en Trésorerie."
+    },
+    "inventory": {
+      "title": "Stock",
+      "description": "Modifier les niveaux de stock, le statut et les prix. Cliquez sur une ligne pour modifier.",
+      "item": "article"
+    },
+    "equipment": {
+      "title": "Équipement",
+      "description": "Suivre les machines et les calendriers de maintenance.",
+      "equipment": "équipement"
+    },
+    "payroll": {
+      "title": "Paie",
+      "description": "Exécuter la paie, consulter les bulletins et gérer les déductions."
+    },
+    "client_portal": {
+      "title": "Portail Client",
+      "description": "Consultez l'avancement du projet, les photos et les documents partagés avec vous.",
+      "select_project": "Sélectionnez un projet…",
+      "caption": "Légende",
+      "uploading": "Téléversement…",
+      "add_photos": "Ajouter des photos"
+    },
+    "common": {
+      "loading": "Chargement…",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "delete": "Supprimer",
+      "edit": "Modifier",
+      "create": "Créer",
+      "search": "Rechercher…",
+      "no_data": "Aucune donnée",
+      "confirm": "Confirmer",
+      "back": "Retour",
+      "next": "Suivant",
+      "yes": "Oui",
+      "no": "Non",
+      "required": "Obligatoire",
+      "optional": "Optionnel",
+      "select": "Sélectionner…"
     }
   }
 }

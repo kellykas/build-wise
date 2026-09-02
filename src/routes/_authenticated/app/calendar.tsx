@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,24 +16,25 @@ export const Route = createFileRoute("/_authenticated/app/calendar")({
   component: CalendarPage,
 });
 
-const eventFields: Field[] = [
-  { key: "title", label: "Title", required: true, span: 2 },
-  { key: "event_date", label: "Date", type: "date", required: true },
-  { key: "start_time", label: "Start", type: "time" },
-  { key: "end_time", label: "End", type: "time" },
-  { key: "location", label: "Location" },
-  { key: "description", label: "Notes", type: "textarea" },
-];
-
 type Event = { id: string; title: string; event_date: string; start_time: string | null; location: string | null };
 type Task = { id: string; name: string; due_date: string | null; status: string; priority: string };
 
 function CalendarPage() {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const [selected, setSelected] = useState<Date>(new Date());
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Event | null>(null);
   const qc = useQueryClient();
+
+  const eventFields: Field[] = [
+    { key: "title", label: t("d.calendar.title_label"), required: true, span: 2 },
+    { key: "event_date", label: t("d.calendar.date"), type: "date", required: true },
+    { key: "start_time", label: t("d.calendar.start"), type: "time" },
+    { key: "end_time", label: t("d.calendar.end"), type: "time" },
+    { key: "location", label: t("d.calendar.location") },
+    { key: "description", label: t("d.calendar.notes"), type: "textarea" },
+  ];
 
   const { data: events } = useQuery({
     queryKey: ["agenda-events"],
@@ -61,11 +63,11 @@ function CalendarPage() {
         <div className="flex items-center gap-3">
           <span className="grid h-9 w-9 place-items-center rounded-md bg-primary/10 text-primary"><CalIcon className="h-5 w-5" /></span>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Agenda</h1>
-            <p className="text-sm text-muted-foreground">Everything happening today and in the days ahead.</p>
+            <h1 className="text-2xl font-bold tracking-tight">{t("d.calendar.title")}</h1>
+            <p className="text-sm text-muted-foreground">{t("d.calendar.description")}</p>
           </div>
         </div>
-        <Button onClick={() => { setEditing(null); setOpen(true); }}><Plus className="mr-2 h-4 w-4" /> New event</Button>
+        <Button onClick={() => { setEditing(null); setOpen(true); }}><Plus className="mr-2 h-4 w-4" /> {t("d.calendar.new_event")}</Button>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
@@ -87,22 +89,22 @@ function CalendarPage() {
             <CardHeader><CardTitle className="text-base">{format(selected, "EEEE, MMMM d")}</CardTitle></CardHeader>
             <CardContent className="space-y-2">
               {todayEvents.length === 0 && todayTasks.length === 0 && (
-                <div className="rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground">Nothing scheduled for this day.</div>
+                <div className="rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground">{t("d.calendar.nothing_scheduled")}</div>
               )}
               {todayEvents.map((e) => (
                 <button key={e.id} onClick={() => setEditing(e)} className="flex w-full items-center justify-between rounded-md border border-border p-3 text-left hover:bg-muted/40">
                   <div>
                     <div className="text-sm font-medium">{e.title}</div>
-                    <div className="text-xs text-muted-foreground">{e.start_time ?? "All day"} · {e.location ?? "—"}</div>
+                    <div className="text-xs text-muted-foreground">{e.start_time ?? t("d.calendar.all_day")} · {e.location ?? "—"}</div>
                   </div>
-                  <Badge variant="secondary">Event</Badge>
+                  <Badge variant="secondary">{t("d.calendar.event")}</Badge>
                 </button>
               ))}
               {todayTasks.map((t) => (
                 <div key={t.id} className="flex items-center justify-between rounded-md border border-border p-3">
                   <div>
                     <div className="text-sm font-medium">{t.name}</div>
-                    <div className="text-xs text-muted-foreground">Task · {t.priority}</div>
+                    <div className="text-xs text-muted-foreground">{t("d.calendar.task")} · {t.priority}</div>
                   </div>
                   <Badge>{t.status}</Badge>
                 </div>
@@ -111,16 +113,16 @@ function CalendarPage() {
           </Card>
 
           <Card>
-            <CardHeader><CardTitle className="text-base">Upcoming</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base">{t("d.calendar.upcoming")}</CardTitle></CardHeader>
             <CardContent className="space-y-2">
-              {upcoming.length === 0 && <div className="text-sm text-muted-foreground">Nothing on the horizon.</div>}
+              {upcoming.length === 0 && <div className="text-sm text-muted-foreground">{t("d.calendar.nothing_horizon")}</div>}
               {upcoming.map((x) => (
                 <div key={`${x.kind}-${x.id}`} className="flex items-center justify-between rounded-md border border-border p-3">
                   <div>
                     <div className="text-sm font-medium">{x.title}</div>
                     <div className="text-xs text-muted-foreground">{x.date}</div>
                   </div>
-                  <Badge variant={x.kind === "event" ? "secondary" : "outline"}>{x.kind}</Badge>
+                  <Badge variant={x.kind === "event" ? "secondary" : "outline"}>{x.kind === "event" ? t("d.calendar.event") : t("d.calendar.task")}</Badge>
                 </div>
               ))}
             </CardContent>
@@ -132,7 +134,7 @@ function CalendarPage() {
         open={open || !!editing}
         onOpenChange={(v) => { if (!v) { setOpen(false); setEditing(null); } qc.invalidateQueries({ queryKey: ["agenda-events"] }); }}
         table="agenda_events"
-        title="event"
+        title={t("d.calendar.event")}
         fields={eventFields}
         row={editing as unknown as Record<string, unknown> | null}
         extra={!editing ? { event_date: dayKey, created_by: profile?.id } : undefined}

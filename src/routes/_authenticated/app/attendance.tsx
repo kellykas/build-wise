@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,7 @@ type Employee = { id: string; full_name: string; position: string | null; status
 type Attendance = { id: string; employee_id: string; work_date: string; clock_in: string | null; clock_out: string | null; hours_worked: number };
 
 function AttendancePage() {
+  const { t } = useTranslation();
   const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const { profile } = useAuth();
   const qc = useQueryClient();
@@ -44,7 +46,7 @@ function AttendancePage() {
     });
     if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["attendance", date] });
-    toast.success("Clocked in");
+    toast.success(t("d.attendance.clocked_in"));
   };
 
   const clockOut = async (rec: Attendance) => {
@@ -53,7 +55,7 @@ function AttendancePage() {
     const { error } = await supabase.from("attendance").update({ clock_out: out, hours_worked: Math.round(hours * 100) / 100 }).eq("id", rec.id);
     if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["attendance", date] });
-    toast.success(`Clocked out · ${hours.toFixed(2)}h`);
+    toast.success(`${t("d.attendance.clocked_out")} · ${hours.toFixed(2)}h`);
   };
 
   const totalHoursToday = (records ?? []).reduce((s, r) => s + Number(r.hours_worked || 0), 0);
@@ -65,31 +67,31 @@ function AttendancePage() {
         <div className="flex items-center gap-3">
           <span className="grid h-9 w-9 place-items-center rounded-md bg-primary/10 text-primary"><ClipboardCheck className="h-5 w-5" /></span>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Attendance</h1>
-            <p className="text-sm text-muted-foreground">Clock employees in and out. Hours feed monthly payroll.</p>
+            <h1 className="text-2xl font-bold tracking-tight">{t("d.attendance.title")}</h1>
+            <p className="text-sm text-muted-foreground">{t("d.attendance.description")}</p>
           </div>
         </div>
         <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-44" />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card><CardContent className="p-4"><div className="text-xs uppercase text-muted-foreground">Active employees</div><div className="mt-1 text-2xl font-bold">{employees?.length ?? 0}</div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="text-xs uppercase text-muted-foreground">Present today</div><div className="mt-1 text-2xl font-bold">{presentCount}</div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="text-xs uppercase text-muted-foreground">Total hours</div><div className="mt-1 text-2xl font-bold">{totalHoursToday.toFixed(1)}h</div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-xs uppercase text-muted-foreground">{t("d.attendance.active_employees")}</div><div className="mt-1 text-2xl font-bold">{employees?.length ?? 0}</div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-xs uppercase text-muted-foreground">{t("d.attendance.present_today")}</div><div className="mt-1 text-2xl font-bold">{presentCount}</div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-xs uppercase text-muted-foreground">{t("d.attendance.total_hours")}</div><div className="mt-1 text-2xl font-bold">{totalHoursToday.toFixed(1)}h</div></CardContent></Card>
       </div>
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Daily roster · {date}</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">{t("d.attendance.daily_roster")} · {date}</CardTitle></CardHeader>
         <CardContent className="p-0">
           <table className="w-full text-sm">
             <thead className="border-b bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
-                <th className="px-4 py-3 text-left">Employee</th>
-                <th className="px-4 py-3 text-left">Position</th>
-                <th className="px-4 py-3 text-left">Clock in</th>
-                <th className="px-4 py-3 text-left">Clock out</th>
-                <th className="px-4 py-3 text-left">Hours</th>
-                <th className="px-4 py-3 text-right">Action</th>
+                <th className="px-4 py-3 text-left">{t("d.attendance.employee")}</th>
+                <th className="px-4 py-3 text-left">{t("d.attendance.position")}</th>
+                <th className="px-4 py-3 text-left">{t("d.attendance.clock_in")}</th>
+                <th className="px-4 py-3 text-left">{t("d.attendance.clock_out")}</th>
+                <th className="px-4 py-3 text-left">{t("d.attendance.hours")}</th>
+                <th className="px-4 py-3 text-right">{t("d.attendance.action")}</th>
               </tr>
             </thead>
             <tbody>
@@ -103,15 +105,15 @@ function AttendancePage() {
                     <td className="px-4 py-3">{rec?.clock_out ? format(new Date(rec.clock_out), "HH:mm") : "—"}</td>
                     <td className="px-4 py-3">{rec?.hours_worked ? `${Number(rec.hours_worked).toFixed(2)}h` : "—"}</td>
                     <td className="px-4 py-3 text-right">
-                      {!rec ? <Button size="sm" onClick={() => clockIn(emp.id)}>Clock in</Button>
-                        : !rec.clock_out ? <Button size="sm" variant="outline" onClick={() => clockOut(rec)}>Clock out</Button>
-                        : <Badge variant="secondary">Done</Badge>}
+                      {!rec ? <Button size="sm" onClick={() => clockIn(emp.id)}>{t("d.attendance.clock_in")}</Button>
+                        : !rec.clock_out ? <Button size="sm" variant="outline" onClick={() => clockOut(rec)}>{t("d.attendance.clock_out")}</Button>
+                        : <Badge variant="secondary">{t("d.attendance.done")}</Badge>}
                     </td>
                   </tr>
                 );
               })}
               {(employees?.length ?? 0) === 0 && (
-                <tr><td colSpan={6} className="px-4 py-12 text-center text-sm text-muted-foreground">No active employees.</td></tr>
+                <tr><td colSpan={6} className="px-4 py-12 text-center text-sm text-muted-foreground">{t("d.attendance.no_active_employees")}</td></tr>
               )}
             </tbody>
           </table>

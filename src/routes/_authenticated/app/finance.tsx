@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/_authenticated/app/finance")({
 type Tx = { id: string; type: "income" | "expense"; category: string | null; amount: number; transaction_date: string; description: string | null };
 
 function FinancePage() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<"income" | "expense">("income");
@@ -41,7 +43,6 @@ function FinancePage() {
   const profit = income - expense;
   const ar = (invoices ?? []).reduce((s, i) => s + (Number(i.amount) - Number(i.paid_amount || 0)), 0);
 
-  // Trend by month
   const byMonth = new Map<string, { income: number; expense: number }>();
   (tx ?? []).forEach((t) => {
     const m = (t.transaction_date ?? "").slice(0, 7);
@@ -57,22 +58,22 @@ function FinancePage() {
         <div className="flex items-center gap-3">
           <span className="grid h-9 w-9 place-items-center rounded-md bg-primary/10 text-primary"><Wallet className="h-5 w-5" /></span>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Finance</h1>
-            <p className="text-sm text-muted-foreground">Income, expenses, invoices and payments — all syncing with the dashboard.</p>
+            <h1 className="text-2xl font-bold tracking-tight">{t("d.finance.title")}</h1>
+            <p className="text-sm text-muted-foreground">{t("d.finance.description")}</p>
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => { setType("expense"); setOpen(true); }}><TrendingDown className="mr-1 h-4 w-4" /> Add expense</Button>
-          <Button onClick={() => { setType("income"); setOpen(true); }}><TrendingUp className="mr-1 h-4 w-4" /> Add income</Button>
+          <Button variant="outline" onClick={() => { setType("expense"); setOpen(true); }}><TrendingDown className="mr-1 h-4 w-4" /> {t("d.finance.add_expense")}</Button>
+          <Button onClick={() => { setType("income"); setOpen(true); }}><TrendingUp className="mr-1 h-4 w-4" /> {t("d.finance.add_income")}</Button>
         </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { l: "Income", v: income, tone: "text-success" },
-          { l: "Expenses", v: expense, tone: "text-destructive" },
-          { l: "Net profit", v: profit, tone: profit >= 0 ? "text-success" : "text-destructive" },
-          { l: "Accounts receivable", v: ar, tone: "text-warning" },
+          { l: t("d.finance.income"), v: income, tone: "text-success" },
+          { l: t("d.finance.expenses"), v: expense, tone: "text-destructive" },
+          { l: t("d.finance.net_profit"), v: profit, tone: profit >= 0 ? "text-success" : "text-destructive" },
+          { l: t("d.finance.accounts_receivable"), v: ar, tone: "text-warning" },
         ].map((c) => (
           <Card key={c.l}><CardContent className="p-5">
             <div className="text-xs uppercase tracking-wide text-muted-foreground">{c.l}</div>
@@ -82,7 +83,7 @@ function FinancePage() {
       </div>
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Cash flow</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">{t("d.finance.cash_flow")}</CardTitle></CardHeader>
         <CardContent className="h-72">
           <ResponsiveContainer>
             <LineChart data={trend}>
@@ -100,9 +101,9 @@ function FinancePage() {
 
       <Tabs defaultValue="all">
         <TabsList>
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="income">Income</TabsTrigger>
-          <TabsTrigger value="expense">Expenses</TabsTrigger>
+          <TabsTrigger value="all">{t("d.finance.all")}</TabsTrigger>
+          <TabsTrigger value="income">{t("d.finance.income")}</TabsTrigger>
+          <TabsTrigger value="expense">{t("d.finance.expenses")}</TabsTrigger>
         </TabsList>
         {(["all", "income", "expense"] as const).map((tab) => (
           <TabsContent key={tab} value={tab}>
@@ -110,11 +111,11 @@ function FinancePage() {
               <table className="w-full text-sm">
                 <thead className="border-b bg-muted/40 text-xs uppercase text-muted-foreground">
                   <tr>
-                    <th className="px-4 py-3 text-left">Date</th>
-                    <th className="px-4 py-3 text-left">Type</th>
-                    <th className="px-4 py-3 text-left">Category</th>
-                    <th className="px-4 py-3 text-left">Description</th>
-                    <th className="px-4 py-3 text-right">Amount</th>
+                    <th className="px-4 py-3 text-left">{t("d.finance.date")}</th>
+                    <th className="px-4 py-3 text-left">{t("d.finance.type")}</th>
+                    <th className="px-4 py-3 text-left">{t("d.finance.category")}</th>
+                    <th className="px-4 py-3 text-left">{t("d.finance.description")}</th>
+                    <th className="px-4 py-3 text-right">{t("d.finance.amount")}</th>
                     <th className="px-4 py-3"></th>
                   </tr>
                 </thead>
@@ -122,20 +123,20 @@ function FinancePage() {
                   {(tx ?? []).filter((t) => tab === "all" || t.type === tab).map((t) => (
                     <tr key={t.id} className="border-b last:border-0">
                       <td className="px-4 py-3">{t.transaction_date}</td>
-                      <td className="px-4 py-3"><Badge variant={t.type === "income" ? "secondary" : "outline"}>{t.type}</Badge></td>
+                      <td className="px-4 py-3"><Badge variant={t.type === "income" ? "secondary" : "outline"}>{t.type === "income" ? t("d.finance.income") : t("d.finance.expenses")}</Badge></td>
                       <td className="px-4 py-3">{t.category ?? "—"}</td>
                       <td className="px-4 py-3 text-muted-foreground">{t.description ?? "—"}</td>
                       <td className={`px-4 py-3 text-right font-medium ${t.type === "income" ? "text-success" : "text-destructive"}`}>{t.type === "income" ? "+" : "−"}${Number(t.amount).toLocaleString()}</td>
                       <td className="px-4 py-3 text-right">
                         <button className="text-xs text-destructive hover:underline" onClick={async () => {
-                          if (!confirm("Delete transaction?")) return;
+                          if (!confirm(t("d.finance.delete_confirm"))) return;
                           await supabase.from("transactions").delete().eq("id", t.id);
                           qc.invalidateQueries({ queryKey: ["transactions"] });
-                        }}>Delete</button>
+                        }}>{t("d.finance.delete")}</button>
                       </td>
                     </tr>
                   ))}
-                  {(tx?.length ?? 0) === 0 && <tr><td colSpan={6} className="px-4 py-12 text-center text-muted-foreground">No transactions yet.</td></tr>}
+                  {(tx?.length ?? 0) === 0 && <tr><td colSpan={6} className="px-4 py-12 text-center text-muted-foreground">{t("d.finance.no_transactions")}</td></tr>}
                 </tbody>
               </table>
             </CardContent></Card>
@@ -149,6 +150,7 @@ function FinancePage() {
 }
 
 function TxDialog({ open, onClose, type }: { open: boolean; onClose: () => void; type: "income" | "expense" }) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const qc = useQueryClient();
   const [v, setV] = useState<Record<string, unknown>>({ transaction_date: format(new Date(), "yyyy-MM-dd") });
@@ -157,28 +159,28 @@ function TxDialog({ open, onClose, type }: { open: boolean; onClose: () => void;
     const { error } = await supabase.from("transactions").insert({ ...v, type, company_id: profile.company_id } as never);
     if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["transactions"] });
-    toast.success(`${type === "income" ? "Income" : "Expense"} added`);
+    toast.success(type === "income" ? t("d.finance.income_added") : t("d.finance.expense_added"));
     setV({ transaction_date: format(new Date(), "yyyy-MM-dd") });
     onClose();
   };
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent>
-        <DialogHeader><DialogTitle>New {type}</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{t("d.finance.new")} {type === "income" ? t("d.finance.income") : t("d.finance.expenses")}</DialogTitle></DialogHeader>
         <div className="space-y-3">
-          <div><Label>Amount</Label><Input type="number" step="0.01" value={String(v.amount ?? "")} onChange={(e) => setV({ ...v, amount: Number(e.target.value) })} /></div>
-          <div><Label>Category</Label>
+          <div><Label>{t("d.finance.amount")}</Label><Input type="number" step="0.01" value={String(v.amount ?? "")} onChange={(e) => setV({ ...v, amount: Number(e.target.value) })} /></div>
+          <div><Label>{t("d.finance.category")}</Label>
             <Select value={String(v.category ?? "")} onValueChange={(val) => setV({ ...v, category: val })}>
-              <SelectTrigger><SelectValue placeholder="Select…" /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder={t("d.common.select")} /></SelectTrigger>
               <SelectContent>
-                {(type === "income" ? ["Invoice payment", "Other"] : ["Payroll", "Procurement", "Materials", "Equipment", "Utilities", "Other"]).map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                {(type === "income" ? ["Paiement facture", "Autre"] : ["Paie", "Achats", "Matériaux", "Équipement", "Services publics", "Autre"]).map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
-          <div><Label>Date</Label><Input type="date" value={String(v.transaction_date ?? "")} onChange={(e) => setV({ ...v, transaction_date: e.target.value })} /></div>
-          <div><Label>Description</Label><Input value={String(v.description ?? "")} onChange={(e) => setV({ ...v, description: e.target.value })} /></div>
+          <div><Label>{t("d.finance.date")}</Label><Input type="date" value={String(v.transaction_date ?? "")} onChange={(e) => setV({ ...v, transaction_date: e.target.value })} /></div>
+          <div><Label>{t("d.finance.description")}</Label><Input value={String(v.description ?? "")} onChange={(e) => setV({ ...v, description: e.target.value })} /></div>
         </div>
-        <DialogFooter><Button onClick={save}>Add {type}</Button></DialogFooter>
+        <DialogFooter><Button onClick={save}>{t("d.finance.add")}</Button></DialogFooter>
       </DialogContent>
     </Dialog>
   );

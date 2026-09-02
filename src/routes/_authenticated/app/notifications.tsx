@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,15 +19,8 @@ export const Route = createFileRoute("/_authenticated/app/notifications")({
   component: NotificationsPage,
 });
 
-const TYPES = [
-  { v: "info", label: "Information" },
-  { v: "task", label: "Tâche" },
-  { v: "requisition", label: "État de besoin" },
-  { v: "approval", label: "Approbation" },
-  { v: "urgent", label: "Urgence" },
-];
-
 function NotificationsPage() {
+  const { t } = useTranslation();
   const { user, profile } = useAuth();
   const qc = useQueryClient();
   const [type, setType] = useState("info");
@@ -35,6 +29,14 @@ function NotificationsPage() {
   const [link, setLink] = useState("");
   const [recipients, setRecipients] = useState<{ id: string; name: string }[]>([]);
   const [search, setSearch] = useState("");
+
+  const TYPES = [
+    { v: "info", label: t("d.notifications.information") },
+    { v: "task", label: t("d.notifications.task") },
+    { v: "requisition", label: t("d.notifications.requisition") },
+    { v: "approval", label: t("d.notifications.approval") },
+    { v: "urgent", label: t("d.notifications.urgent") },
+  ];
 
   const { data: profiles } = useQuery({
     queryKey: ["profiles-pickable"],
@@ -56,7 +58,7 @@ function NotificationsPage() {
   const send = useMutation({
     mutationFn: async () => {
       if (!profile?.company_id) throw new Error("No company");
-      if (recipients.length === 0) throw new Error("Choisissez au moins un destinataire");
+      if (recipients.length === 0) throw new Error(t("d.notifications.select_recipient_error"));
       const companyId = profile.company_id;
       const rows = recipients.map((r) => ({
         company_id: companyId, sender_id: user!.id, recipient_id: r.id,
@@ -66,7 +68,7 @@ function NotificationsPage() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success(`Notification envoyée à ${recipients.length} destinataire(s)`);
+      toast.success(`${t("d.notifications.sent_to")} ${recipients.length} ${t("d.notifications.recipients_count")}`);
       qc.invalidateQueries({ queryKey: ["my-sent-notifs"] });
       setTitle(""); setMessage(""); setLink(""); setRecipients([]);
     },
@@ -90,48 +92,48 @@ function NotificationsPage() {
       <div className="flex items-center gap-3">
         <span className="grid h-9 w-9 place-items-center rounded-md bg-primary/10 text-primary"><Bell className="h-5 w-5" /></span>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Notifications internes</h1>
-          <p className="text-sm text-muted-foreground">Communiquez en temps réel avec vos équipes.</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t("d.notifications.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("d.notifications.subtitle")}</p>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
         <Card>
-          <CardHeader><CardTitle className="text-base">Nouvelle notification</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">{t("d.notifications.new_notification")}</CardTitle></CardHeader>
           <CardContent className="grid gap-4">
             <div className="grid gap-2">
-              <Label>Type</Label>
+              <Label>{t("d.notifications.type")}</Label>
               <Select value={type} onValueChange={setType}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>{TYPES.map((t) => <SelectItem key={t.v} value={t.v}>{t.label}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div className="grid gap-2">
-              <Label>Titre *</Label>
-              <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="ex. Validation requise sur EB-001234" />
+              <Label>{t("d.notifications.title_label")} *</Label>
+              <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("d.notifications.title_placeholder")} />
             </div>
             <div className="grid gap-2">
-              <Label>Message</Label>
+              <Label>{t("d.notifications.message")}</Label>
               <Textarea rows={3} value={message} onChange={(e) => setMessage(e.target.value)} />
             </div>
             <div className="grid gap-2">
-              <Label>Lien (optionnel)</Label>
+              <Label>{t("d.notifications.link_optional")}</Label>
               <Input value={link} onChange={(e) => setLink(e.target.value)} placeholder="/app/requisitions/…" />
             </div>
             <Button className="w-fit" onClick={() => send.mutate()} disabled={!title || recipients.length === 0 || send.isPending}>
-              <Send className="mr-2 h-4 w-4" /> Envoyer à {recipients.length || 0} destinataire(s)
+              <Send className="mr-2 h-4 w-4" /> {t("d.notifications.send_to")} {recipients.length || 0} {t("d.notifications.recipients_count")}
             </Button>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">Destinataires</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">{t("d.notifications.recipients")}</CardTitle></CardHeader>
           <CardContent className="space-y-3">
-            <Input placeholder="Rechercher un destinataire…" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Input placeholder={t("d.notifications.search_recipient")} value={search} onChange={(e) => setSearch(e.target.value)} />
             {search && (
               <div className="rounded-md border border-border divide-y divide-border">
                 {filteredProfiles.length === 0 ? (
-                  <div className="p-3 text-center text-xs text-muted-foreground">Aucun résultat</div>
+                  <div className="p-3 text-center text-xs text-muted-foreground">{t("d.notifications.no_results")}</div>
                 ) : filteredProfiles.map((p: any) => (
                   <button key={p.id} className="flex w-full items-center justify-between p-2 text-sm hover:bg-muted/50"
                     onClick={() => {
@@ -140,14 +142,14 @@ function NotificationsPage() {
                       setSearch("");
                     }}>
                     <span>{p.full_name ?? p.email}</span>
-                    <span className="text-xs text-muted-foreground">+ ajouter</span>
+                    <span className="text-xs text-muted-foreground">{t("d.notifications.add")}</span>
                   </button>
                 ))}
               </div>
             )}
             <div className="flex flex-wrap gap-2">
               {recipients.length === 0 ? (
-                <div className="text-xs text-muted-foreground">Aucun destinataire sélectionné.</div>
+                <div className="text-xs text-muted-foreground">{t("d.notifications.no_recipient_selected")}</div>
               ) : recipients.map((r) => (
                 <span key={r.id} className="inline-flex items-center gap-1 rounded-full bg-primary/10 text-primary px-2.5 py-1 text-xs font-medium">
                   {r.name}
@@ -161,14 +163,14 @@ function NotificationsPage() {
 
       <Tabs defaultValue="inbox">
         <TabsList>
-          <TabsTrigger value="inbox">Boîte de réception</TabsTrigger>
-          <TabsTrigger value="sent">Historique envoyé</TabsTrigger>
+          <TabsTrigger value="inbox">{t("d.notifications.inbox")}</TabsTrigger>
+          <TabsTrigger value="sent">{t("d.notifications.sent_history")}</TabsTrigger>
         </TabsList>
         <TabsContent value="inbox">
           <Card><CardContent className="p-0">
             <div className="divide-y divide-border">
               {(inbox ?? []).length === 0 ? (
-                <div className="p-10 text-center text-sm text-muted-foreground">Aucune notification.</div>
+                <div className="p-10 text-center text-sm text-muted-foreground">{t("d.notifications.no_notifications")}</div>
               ) : inbox!.map((n: any) => (
                 <div key={n.id} className={`flex items-start gap-4 p-4 ${!n.read_at ? "bg-primary/5" : ""}`}>
                   <div className="flex-1">
@@ -179,10 +181,10 @@ function NotificationsPage() {
                     </div>
                     {n.message && <p className="mt-1 text-sm text-muted-foreground">{n.message}</p>}
                     <div className="mt-1 text-xs text-muted-foreground">
-                      De {n.sender?.full_name ?? "Système"} · {new Date(n.created_at).toLocaleString()}
+                      {t("d.notifications.from")} {n.sender?.full_name ?? t("d.notifications.system")} · {new Date(n.created_at).toLocaleString()}
                     </div>
                   </div>
-                  {!n.read_at && <Button size="sm" variant="outline" onClick={() => markRead.mutate(n.id)}>Marquer lu</Button>}
+                  {!n.read_at && <Button size="sm" variant="outline" onClick={() => markRead.mutate(n.id)}>{t("d.notifications.mark_read")}</Button>}
                 </div>
               ))}
             </div>
@@ -192,14 +194,14 @@ function NotificationsPage() {
           <Card><CardContent className="p-0">
             <div className="divide-y divide-border">
               {(sent ?? []).length === 0 ? (
-                <div className="p-10 text-center text-sm text-muted-foreground">Aucun envoi.</div>
+                <div className="p-10 text-center text-sm text-muted-foreground">{t("d.notifications.no_sends")}</div>
               ) : sent!.map((n: any) => (
                 <div key={n.id} className="flex items-start gap-4 p-4">
                   <div className="flex-1">
                     <div className="font-medium">{n.title}</div>
                     {n.message && <p className="mt-1 text-sm text-muted-foreground">{n.message}</p>}
                     <div className="mt-1 text-xs text-muted-foreground">
-                      À {n.recipient?.full_name ?? "—"} · {new Date(n.created_at).toLocaleString()} · {n.read_at ? "Lu" : "Non lu"}
+                      {t("d.notifications.to")} {n.recipient?.full_name ?? "—"} · {new Date(n.created_at).toLocaleString()} · {n.read_at ? t("d.notifications.read") : t("d.notifications.unread")}
                     </div>
                   </div>
                 </div>
