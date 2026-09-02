@@ -11,7 +11,7 @@
   "hero": {
     "badge": "Licensed · Bonded · Insured · OSHA Compliant",
     "title": "<1>Engagés pour construire</1> vos rêves.",
-    "subtitle": "Scer-L/Construct Sarl — a full-service general contractor delivering commercial, residential, industrial and infrastructure projects across the region. On time. On budget. Built to last.",
+    "subtitle": "Scer-L/Construct Sarl, a full-service general contractor delivering commercial, residential, industrial and infrastructure projects across the region. On time. On budget. Built to last.",
     "cta_quote": "Request a free quote",
     "cta_projects": "View our projects",
     "phone_label": "Speak to a project manager today:",
@@ -64,7 +64,7 @@
   },
   "why_us": {
     "title": "Why owners choose Scer-L/Construct",
-    "subtitle": "We're hands-on, transparent and predictable. The team that wins the work is the team that builds it — no hand-offs, no surprises.",
+    "subtitle": "We're hands-on, transparent and predictable. The team that wins the work is the team that builds it, no hand-offs, no surprises.",
     "points": [
       "Self-perform crews for concrete, framing, finishes and MEP coordination",
       "Weekly cost & schedule reports, with no hidden line items",
@@ -96,7 +96,7 @@
   },
   "cta": {
     "title": "Ready to start your project?",
-    "subtitle": "Tell us about your build. You'll get a response from a project manager within 24 hours — and a no-obligation budget range.",
+    "subtitle": "Tell us about your build. You'll get a response from a project manager within 24 hours, and a no-obligation budget range.",
     "quote_btn": "Request a quote",
     "hi_btn": "Just say hi"
   },
@@ -120,7 +120,7 @@
   "access_denied": "You do not have access to this page.",
   "app": {
     "brand": "Scer-L/Construct",
-    "subtitle": "Sarl — Construction ERP",
+    "subtitle": "Sarl, Construction ERP",
     "search_placeholder": "Search projects, tasks, clients…",
     "settings": "Settings",
     "sign_out": "Sign out",

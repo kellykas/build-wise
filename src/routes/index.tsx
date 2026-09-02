@@ -10,7 +10,7 @@ import { SiteHeader, SiteFooter } from "@/components/marketing/SiteHeader";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Scer-L/Construct Sarl — Engagés pour construire vos rêves" },
+      { title: "Scer-L/Construct Sarl, Engagés pour construire vos rêves" },
       { name: "description", content: "Full-service general contractor delivering commercial, residential, industrial and infrastructure projects on time and on budget. Engagés pour construire vos rêves." },
     ],
   }),
@@ -174,7 +174,7 @@ function Home_() {
               <figure key={key} className="rounded-2xl border border-border bg-card p-6">
                 <Quote className="h-5 w-5 text-primary" />
                 <blockquote className="mt-3 text-sm text-foreground">“{t(`testimonials.${key}.quote`)}”</blockquote>
-                <figcaption className="mt-3 text-xs text-muted-foreground">— {t(`testimonials.${key}.author`)}</figcaption>
+                <figcaption className="mt-3 text-xs text-muted-foreground">{t(`testimonials.${key}.author`)}</figcaption>
               </figure>
             ))}
           </div>

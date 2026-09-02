@@ -223,7 +223,7 @@ function SiteEditorPage() {
           <Globe className="h-5 w-5" />
         </span>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t("app.nav.settings")} — Site Editor</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t("app.nav.settings")} / Site Editor</h1>
           <p className="text-sm text-muted-foreground">
             Edit all public-facing content on your website
           </p>

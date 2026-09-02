@@ -11,7 +11,7 @@
   "hero": {
     "badge": "Licencié · cautionné · assuré · conforme OSHA",
     "title": "<1>Engagés pour construire</1> vos rêves.",
-    "subtitle": "Scer-L/Construct Sarl — un entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure dans toute la région. À temps. Dans le budget. Conçu pour durer.",
+    "subtitle": "Scer-L/Construct Sarl, un entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure dans toute la région. À temps. Dans le budget. Conçu pour durer.",
     "cta_quote": "Demander un devis gratuit",
     "cta_projects": "Voir nos projets",
     "phone_label": "Parlez à un chef de projet aujourd'hui :",
@@ -64,7 +64,7 @@
   },
   "why_us": {
     "title": "Pourquoi les propriétaires choisissent Scer-L/Construct",
-    "subtitle": "Nous sommes directs, transparents et prévisibles. L'équipe qui remporte le travail est celle qui le construit — sans intermédiaires, sans surprises.",
+    "subtitle": "Nous sommes directs, transparents et prévisibles. L'équipe qui remporte le travail est celle qui le construit, sans intermédiaires, sans surprises.",
     "points": [
       "Équipes d'exécution pour béton, charpente, finitions et coordination MEP",
       "Rapports hebdomadaires sur les coûts et l'horaire, sans postes cachés",
@@ -96,7 +96,7 @@
   },
   "cta": {
     "title": "Prêt à démarrer votre projet ?",
-    "subtitle": "Parlez-nous de votre construction. Vous recevrez la réponse d'un chef de projet dans les 24 heures — et une estimation budgétaire sans engagement.",
+    "subtitle": "Parlez-nous de votre construction. Vous recevrez la réponse d'un chef de projet dans les 24 heures, et une estimation budgétaire sans engagement.",
     "quote_btn": "Demander un devis",
     "hi_btn": "Juste dire bonjour"
   },
@@ -120,7 +120,7 @@
   "access_denied": "Vous n'avez pas accès à cette page.",
   "app": {
     "brand": "Scer-L/Construct",
-    "subtitle": "Sarl — ERP Construction",
+    "subtitle": "Sarl, ERP Construction",
     "search_placeholder": "Rechercher projets, tâches, clients…",
     "settings": "Paramètres",
     "sign_out": "Déconnexion",

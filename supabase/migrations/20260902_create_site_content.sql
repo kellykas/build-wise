@@ -35,7 +35,7 @@ CREATE INDEX idx_site_content_section ON public.site_content(section, company_id
 INSERT INTO public.site_content (section, key, value, company_id) VALUES
   ('hero', 'badge', '"Licensed · Bonded · Insured · OSHA Compliant"', NULL),
   ('hero', 'title', '"Engagés pour construire vos rêves"', NULL),
-  ('hero', 'subtitle', '"Scer-L/Construct Sarl — a full-service general contractor delivering commercial, residential, industrial and infrastructure projects across the region."', NULL),
+  ('hero', 'subtitle', '"Scer-L/Construct Sarl, a full-service general contractor delivering commercial, residential, industrial and infrastructure projects across the region."', NULL),
   ('hero', 'cta_quote', '"Request a free quote"', NULL),
   ('hero', 'cta_projects', '"View our projects"', NULL),
   ('hero', 'phone_label', '"Speak to a project manager today:"', NULL),
@@ -48,7 +48,7 @@ INSERT INTO public.site_content (section, key, value, company_id) VALUES
   ('featured', 'subtitle', '"A glimpse of recent builds. Explore the full portfolio for case studies and metrics."', NULL),
   ('featured', 'items', '[{"title":"Riverside Tower","tag":"Commercial · 480k sqft"},{"title":"Maple Heights Residences","tag":"Residential · 186 units"},{"title":"Northgate Logistics Hub","tag":"Industrial · 620k sqft"}]', NULL),
   ('why_us', 'title', '"Why owners choose Scer-L/Construct"', NULL),
-  ('why_us', 'subtitle', '"We''re hands-on, transparent and predictable. The team that wins the work is the team that builds it — no hand-offs, no surprises."', NULL),
+  ('why_us', 'subtitle', '"We''re hands-on, transparent and predictable. The team that wins the work is the team that builds it, no hand-offs, no surprises."', NULL),
   ('why_us', 'points', '["Self-perform crews for concrete, framing, finishes and MEP coordination","Weekly cost & schedule reports, with no hidden line items","Dedicated project manager from kickoff to 24-month warranty","Industry-leading safety record (EMR of 0.62)","Owner-portal access to drawings, RFIs, invoices and photos"]', NULL),
   ('testimonials', 'items', '[{"quote":"BuildFlow delivered our HQ two weeks early and under budget. Their PM kept us informed every single week.","author":"Sandra Hill, COO · Northwind Logistics"},{"quote":"Craftsmanship you can feel. Every detail of our home was thoughtful and built to last.","author":"Daniel & Mia Foster · Hillview Estates"},{"quote":"A safety record and quality discipline that''s rare in this industry. We''ve awarded them three projects in a row.","author":"Robert Sanchez, Director · Civic Authority"}]', NULL),
   ('cta', 'title', '"Ready to start your project?"', NULL),
