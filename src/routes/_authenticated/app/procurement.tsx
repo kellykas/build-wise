@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_authenticated/app/procurement")({
   component: ProcurementPage,
@@ -21,6 +22,7 @@ type PO = { id: string; po_number: string; supplier_id: string | null; total_amo
 type Supplier = { id: string; name: string };
 
 function ProcurementPage() {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -50,12 +52,12 @@ function ProcurementPage() {
   };
 
   const columns: Column<PO>[] = [
-    { key: "po_number", label: "PO #", render: (r) => <span className="font-medium">{r.po_number}</span> },
-    { key: "supplier_id", label: "Supplier", render: (r) => suppliers?.find((s) => s.id === r.supplier_id)?.name ?? "—" },
-    { key: "total_amount", label: "Total", render: (r) => `$${Number(r.total_amount).toLocaleString()}` },
-    { key: "request_date", label: "Requested" },
-    { key: "status", label: "Status", render: (r) => <Badge variant="secondary">{r.status}</Badge> },
-    { key: "_actions", label: "Action", render: (r) => (
+    { key: "po_number", label: t("d.procurement.po_number"), render: (r: PO) => <span className="font-medium">{r.po_number}</span> },
+    { key: "supplier_id", label: t("d.procurement.supplier"), render: (r: PO) => suppliers?.find((s) => s.id === r.supplier_id)?.name ?? "—" },
+    { key: "total_amount", label: t("d.procurement.total"), render: (r: PO) => `$${Number(r.total_amount).toLocaleString()}` },
+    { key: "request_date", label: t("d.procurement.requested") },
+    { key: "status", label: t("d.procurement.status"), render: (r: PO) => <Badge variant="secondary">{r.status}</Badge> },
+    { key: "_actions", label: t("d.procurement.action"), render: (r: PO) => (
       <div className="flex gap-1 justify-end" onClick={(e) => e.stopPropagation()}>
         {r.status === "pending" && (
           <>
@@ -63,7 +65,7 @@ function ProcurementPage() {
             <Button size="sm" variant="outline" onClick={() => { const reason = prompt("Rejection reason?"); if (reason) setStatus(r.id, "rejected", reason); }}><X className="h-3.5 w-3.5" /></Button>
           </>
         )}
-        {r.status === "approved" && <Button size="sm" variant="ghost" onClick={() => setStatus(r.id, "received")}>Mark received</Button>}
+        {r.status === "approved" && <Button size="sm" variant="ghost" onClick={() => setStatus(r.id, "received")}>{t("d.procurement.mark_received")}</Button>}
       </div>
     )},
   ];
@@ -71,8 +73,8 @@ function ProcurementPage() {
   return (
     <>
       <ModulePage<PO>
-        title="Procurement"
-        description="Approve or reject purchase orders. Approved POs post an expense to Finance."
+        title={t("d.procurement.title")}
+        description={t("d.procurement.description")}
         table="purchase_orders"
         columns={columns}
         icon={<span className="grid h-9 w-9 place-items-center rounded-md bg-primary/10 text-primary"><ShoppingCart className="h-5 w-5" /></span>}
@@ -85,6 +87,7 @@ function ProcurementPage() {
 }
 
 function PODialog({ open, onClose, row, suppliers }: { open: boolean; onClose: () => void; row: PO | null; suppliers: Supplier[] }) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const qc = useQueryClient();
   const [v, setV] = useState<Record<string, unknown>>({});
@@ -109,19 +112,19 @@ function PODialog({ open, onClose, row, suppliers }: { open: boolean; onClose: (
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) { setV({}); onClose(); } }}>
       <DialogContent>
-        <DialogHeader><DialogTitle>{row ? "Edit purchase order" : "New purchase order"}</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{row ? t("d.procurement.edit_po") : t("d.procurement.new_po")}</DialogTitle></DialogHeader>
         <div className="grid gap-3">
-          <div><Label>PO number</Label><Input value={String(v.po_number ?? "")} onChange={(e) => setV({ ...v, po_number: e.target.value })} /></div>
-          <div><Label>Supplier</Label>
+          <div><Label>{t("d.procurement.po_number_label")}</Label><Input value={String(v.po_number ?? "")} onChange={(e) => setV({ ...v, po_number: e.target.value })} /></div>
+          <div><Label>{t("d.procurement.supplier")}</Label>
             <Select value={String(v.supplier_id ?? "")} onValueChange={(val) => setV({ ...v, supplier_id: val })}>
-              <SelectTrigger><SelectValue placeholder="Select…" /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder={t("d.procurement.select_supplier")} /></SelectTrigger>
               <SelectContent>{suppliers.map((s) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}</SelectContent>
             </Select>
           </div>
-          <div><Label>Total amount</Label><Input type="number" value={String(v.total_amount ?? "")} onChange={(e) => setV({ ...v, total_amount: Number(e.target.value) })} /></div>
-          <div><Label>Request date</Label><Input type="date" value={String(v.request_date ?? "")} onChange={(e) => setV({ ...v, request_date: e.target.value })} /></div>
+          <div><Label>{t("d.procurement.total_amount")}</Label><Input type="number" value={String(v.total_amount ?? "")} onChange={(e) => setV({ ...v, total_amount: Number(e.target.value) })} /></div>
+          <div><Label>{t("d.procurement.request_date")}</Label><Input type="date" value={String(v.request_date ?? "")} onChange={(e) => setV({ ...v, request_date: e.target.value })} /></div>
         </div>
-        <DialogFooter><Button onClick={save}>Save</Button></DialogFooter>
+        <DialogFooter><Button onClick={save}>{t("d.common.save")}</Button></DialogFooter>
       </DialogContent>
     </Dialog>
   );

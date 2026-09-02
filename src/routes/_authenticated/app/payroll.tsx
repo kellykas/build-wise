@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Wallet, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_authenticated/app/payroll")({
   component: PayrollPage,
@@ -20,6 +21,7 @@ type Rules = { standard_hours_per_day: number; working_days_per_month: number; o
 type Payslip = { id: string; employee_id: string; base_salary: number; hours_worked: number; overtime_pay: number; bonus: number; deductions: number; tax: number; net_pay: number; status: string };
 
 function PayrollPage() {
+  const { t } = useTranslation();
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
@@ -96,21 +98,21 @@ function PayrollPage() {
         <div className="flex items-center gap-3">
           <span className="grid h-9 w-9 place-items-center rounded-md bg-primary/10 text-primary"><Wallet className="h-5 w-5" /></span>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Payroll</h1>
-            <p className="text-sm text-muted-foreground">Generate payslips from attendance × payroll rules.</p>
+            <h1 className="text-2xl font-bold tracking-tight">{t("d.payroll.title")}</h1>
+            <p className="text-sm text-muted-foreground">{t("d.payroll.description")}</p>
           </div>
         </div>
         <div className="flex gap-2">
           <Input type="number" value={month} onChange={(e) => setMonth(Number(e.target.value))} className="w-20" min={1} max={12} />
           <Input type="number" value={year} onChange={(e) => setYear(Number(e.target.value))} className="w-28" />
-          <Button onClick={generate}>Generate payslips</Button>
+          <Button onClick={generate}>{t("d.payroll.generate_payslips")}</Button>
         </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card><CardContent className="p-4"><div className="text-xs uppercase text-muted-foreground">Payslips</div><div className="mt-1 text-2xl font-bold">{payslips?.length ?? 0}</div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="text-xs uppercase text-muted-foreground">Total net</div><div className="mt-1 text-2xl font-bold">${totalNet.toLocaleString()}</div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="text-xs uppercase text-muted-foreground">Paid</div><div className="mt-1 text-2xl font-bold">{(payslips ?? []).filter((p) => p.status === "paid").length}</div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-xs uppercase text-muted-foreground">{t("d.payroll.payslips")}</div><div className="mt-1 text-2xl font-bold">{payslips?.length ?? 0}</div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-xs uppercase text-muted-foreground">{t("d.payroll.total_net")}</div><div className="mt-1 text-2xl font-bold">${totalNet.toLocaleString()}</div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-xs uppercase text-muted-foreground">{t("d.payroll.paid")}</div><div className="mt-1 text-2xl font-bold">{(payslips ?? []).filter((p) => p.status === "paid").length}</div></CardContent></Card>
       </div>
 
       <Card>
@@ -119,14 +121,14 @@ function PayrollPage() {
           <table className="w-full text-sm">
             <thead className="border-b bg-muted/40 text-xs uppercase text-muted-foreground">
               <tr>
-                <th className="px-4 py-3 text-left">Employee</th>
-                <th className="px-4 py-3 text-left">Base</th>
-                <th className="px-4 py-3 text-left">Hours</th>
-                <th className="px-4 py-3 text-left">Overtime</th>
-                <th className="px-4 py-3 text-left">Tax</th>
-                <th className="px-4 py-3 text-left">Net pay</th>
-                <th className="px-4 py-3 text-left">Status</th>
-                <th className="px-4 py-3 text-right">Action</th>
+                <th className="px-4 py-3 text-left">{t("d.payroll.employee")}</th>
+                <th className="px-4 py-3 text-left">{t("d.payroll.base")}</th>
+                <th className="px-4 py-3 text-left">{t("d.payroll.hours")}</th>
+                <th className="px-4 py-3 text-left">{t("d.payroll.overtime_pay")}</th>
+                <th className="px-4 py-3 text-left">{t("d.payroll.tax")}</th>
+                <th className="px-4 py-3 text-left">{t("d.payroll.net_pay")}</th>
+                <th className="px-4 py-3 text-left">{t("d.payroll.status")}</th>
+                <th className="px-4 py-3 text-right">{t("d.payroll.action")}</th>
               </tr>
             </thead>
             <tbody>
@@ -141,7 +143,7 @@ function PayrollPage() {
                   <td className="px-4 py-3"><Badge variant={p.status === "paid" ? "secondary" : "outline"}>{p.status}</Badge></td>
                   <td className="px-4 py-3 text-right">
                     {p.status !== "paid" ? (
-                      <Button size="sm" onClick={() => markPaid(p)}>Mark paid</Button>
+                      <Button size="sm" onClick={() => markPaid(p)}>{t("d.payroll.mark_paid")}</Button>
                     ) : (
                       <Button size="sm" variant="outline" onClick={() => window.print()}><Printer className="h-3.5 w-3.5" /></Button>
                     )}
@@ -149,7 +151,7 @@ function PayrollPage() {
                 </tr>
               ))}
               {(payslips?.length ?? 0) === 0 && (
-                <tr><td colSpan={8} className="px-4 py-12 text-center text-sm text-muted-foreground">No payslips for this period — click Generate.</td></tr>
+                <tr><td colSpan={8} className="px-4 py-12 text-center text-sm text-muted-foreground">{t("d.payroll.no_payslips")}</td></tr>
               )}
             </tbody>
           </table>

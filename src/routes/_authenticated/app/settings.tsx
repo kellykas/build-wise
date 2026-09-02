@@ -19,6 +19,7 @@ import { CheckCircle2, Loader2, Settings as SettingsIcon, ShieldCheck, UserPlus,
 import { toast } from "sonner";
 import { recordAudit } from "@/lib/audit";
 import { TEMPLATE_DEFAULTS, TEMPLATE_LABELS } from "@/lib/notification-templates";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_authenticated/app/settings")({
   head: () => ({
@@ -41,6 +42,7 @@ type UserRole = { id: string; user_id: string; role: string };
 type CheckResult = { name: string; ok: boolean; message: string };
 
 function SettingsPage() {
+  const { t } = useTranslation();
   const { isAdmin, hasRole } = useAuth();
   const canManageUsers = isAdmin || hasRole("director", "hr_manager");
 
@@ -49,25 +51,25 @@ function SettingsPage() {
       <div className="flex items-center gap-3">
         <span className="grid h-9 w-9 place-items-center rounded-md bg-primary/10 text-primary"><SettingsIcon className="h-5 w-5" /></span>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Parameters</h1>
-          <p className="text-sm text-muted-foreground">Profile, team & roles, payroll rules, company info.</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t("d.settings.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("d.settings.description")}</p>
         </div>
       </div>
 
       <Tabs defaultValue="profile">
         <TabsList>
-          <TabsTrigger value="profile">My profile</TabsTrigger>
-          <TabsTrigger value="users">Users & roles</TabsTrigger>
-          {isAdmin && <TabsTrigger value="permissions">Permissions</TabsTrigger>}
-          <TabsTrigger value="payroll">Payroll rules</TabsTrigger>
-          <TabsTrigger value="company">Company</TabsTrigger>
-          {isAdmin && <TabsTrigger value="notifications">Notifications</TabsTrigger>}
-          {isAdmin && <TabsTrigger value="checks">Upload checks</TabsTrigger>}
-          {isAdmin && <TabsTrigger value="audit">Audit log</TabsTrigger>}
+          <TabsTrigger value="profile">{t("d.settings.my_profile")}</TabsTrigger>
+          <TabsTrigger value="users">{t("d.settings.users_roles")}</TabsTrigger>
+          {isAdmin && <TabsTrigger value="permissions">{t("d.settings.permissions")}</TabsTrigger>}
+          <TabsTrigger value="payroll">{t("d.settings.payroll_rules")}</TabsTrigger>
+          <TabsTrigger value="company">{t("d.settings.company")}</TabsTrigger>
+          {isAdmin && <TabsTrigger value="notifications">{t("d.settings.notifications")}</TabsTrigger>}
+          {isAdmin && <TabsTrigger value="checks">{t("d.settings.upload_checks")}</TabsTrigger>}
+          {isAdmin && <TabsTrigger value="audit">{t("d.settings.audit_log")}</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="profile"><ProfileTab /></TabsContent>
-        <TabsContent value="users">{canManageUsers ? <UsersTab /> : <div className="text-sm text-muted-foreground">Admins only.</div>}</TabsContent>
+        <TabsContent value="users">        {canManageUsers ? <UsersTab /> : <div className="text-sm text-muted-foreground">{t("d.settings.admins_only")}</div>}</TabsContent>
         {isAdmin && <TabsContent value="permissions"><PermissionsTab /></TabsContent>}
         <TabsContent value="payroll"><PayrollRulesTab /></TabsContent>
         <TabsContent value="company"><CompanyTab /></TabsContent>
@@ -80,6 +82,7 @@ function SettingsPage() {
 }
 
 function UploadChecksTab() {
+  const { t } = useTranslation();
   const { profile, user, roles } = useAuth();
   const [projectId, setProjectId] = useState("");
   const [running, setRunning] = useState(false);
@@ -187,19 +190,19 @@ function UploadChecksTab() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base"><ShieldCheck className="h-4 w-4" /> Upload permissions check</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-base"><ShieldCheck className="h-4 w-4" /> {t("d.settings.upload_permissions")}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
           <div>
-            <Label>Project for portal photo test</Label>
+            <Label>{t("d.settings.upload_permissions")}</Label>
             <Select value={projectId || projects?.[0]?.id || ""} onValueChange={setProjectId}>
               <SelectTrigger className="mt-1"><SelectValue placeholder="Select a project" /></SelectTrigger>
               <SelectContent>{(projects ?? []).map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent>
             </Select>
           </div>
           <div className="flex items-end">
-            <Button onClick={runChecks} disabled={running || !profile?.company_id}>{running ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />} Run checks</Button>
+            <Button onClick={runChecks} disabled={running || !profile?.company_id}>{running ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ShieldCheck className="mr-2 h-4 w-4" />} {t("d.settings.run_checks")}</Button>
           </div>
         </div>
         <div className="rounded-md border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
@@ -232,6 +235,7 @@ const AUDIT_FILTERS: Array<{ key: string; label: string; match: (a: string) => b
 ];
 
 function AuditTab() {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState("all");
   const { data: logs } = useQuery({
     queryKey: ["audit-logs"],
@@ -301,6 +305,7 @@ function AuditTab() {
 }
 
 function ProfileTab() {
+  const { t } = useTranslation();
   const { profile, user } = useAuth();
   const qc = useQueryClient();
   const [v, setV] = useState({ full_name: profile?.full_name ?? "", phone: profile?.phone ?? "" });
@@ -312,16 +317,17 @@ function ProfileTab() {
     toast.success("Profile updated");
   };
   return (
-    <Card><CardHeader><CardTitle className="text-base">My profile</CardTitle></CardHeader><CardContent className="space-y-3 max-w-lg">
-      <div><Label>Email</Label><Input value={profile?.email ?? ""} disabled className="mt-1" /></div>
+    <Card><CardHeader>          <CardTitle className="text-base">{t("d.settings.my_profile")}</CardTitle></CardHeader><CardContent className="space-y-3 max-w-lg">
+      <div><Label>{t("d.common.email")}</Label><Input value={profile?.email ?? ""} disabled className="mt-1" /></div>
       <div><Label>Full name</Label><Input value={v.full_name} onChange={(e) => setV({ ...v, full_name: e.target.value })} className="mt-1" /></div>
       <div><Label>Phone</Label><Input value={v.phone} onChange={(e) => setV({ ...v, phone: e.target.value })} className="mt-1" /></div>
-      <Button onClick={save}>Save</Button>
+      <Button onClick={save}>{t("d.common.save")}</Button>
     </CardContent></Card>
   );
 }
 
 function UsersTab() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const createUser = useServerFn(createCompanyUser);
   const [createOpen, setCreateOpen] = useState(false);
@@ -389,7 +395,7 @@ function UsersTab() {
   };
 
   return (
-    <Card><CardHeader className="flex flex-row items-center justify-between gap-3"><CardTitle className="text-base">Team members</CardTitle><Button size="sm" onClick={() => setCreateOpen(true)}><UserPlus className="mr-2 h-4 w-4" /> Create user</Button></CardHeader><CardContent className="space-y-3">
+    <Card><CardHeader className="flex flex-row items-center justify-between gap-3"><CardTitle className="text-base">{t("d.settings.users_roles")}</CardTitle><Button size="sm" onClick={() => setCreateOpen(true)}><UserPlus className="mr-2 h-4 w-4" /> {t("d.settings.create_user")}</Button></CardHeader><CardContent className="space-y-3">
       <div className="space-y-2">
         {(profiles ?? []).map((p) => (
           <div key={p.id} className="rounded-md border border-border p-3">
@@ -427,21 +433,21 @@ function UsersTab() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Create user account</DialogTitle>
-            <DialogDescription>Create staff or client access and link it to an employee/client record.</DialogDescription>
+            <DialogTitle>{t("d.settings.create_user_account")}</DialogTitle>
+            <DialogDescription>{t("d.settings.create_description")}</DialogDescription>
           </DialogHeader>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div><Label>Full name</Label><Input className="mt-1" value={draft.fullName} onChange={(e) => setDraft({ ...draft, fullName: e.target.value })} /></div>
-            <div><Label>Email</Label><Input className="mt-1" type="email" value={draft.email} onChange={(e) => setDraft({ ...draft, email: e.target.value })} /></div>
-            <div><Label>Temporary password</Label><Input className="mt-1" type="password" value={draft.password} onChange={(e) => setDraft({ ...draft, password: e.target.value })} /></div>
-            <div><Label>Phone</Label><Input className="mt-1" value={draft.phone} onChange={(e) => setDraft({ ...draft, phone: e.target.value })} /></div>
-            <div><Label>Role</Label><Select value={draft.role} onValueChange={(role) => setDraft({ ...draft, role })}><SelectTrigger className="mt-1"><SelectValue /></SelectTrigger><SelectContent>{ROLES.map((r) => <SelectItem key={r} value={r}>{r.replace(/_/g, " ")}</SelectItem>)}</SelectContent></Select></div>
-            <div><Label>Link employee</Label><Select value={draft.employeeId || "none"} onValueChange={(employeeId) => setDraft({ ...draft, employeeId: employeeId === "none" ? "" : employeeId })}><SelectTrigger className="mt-1"><SelectValue placeholder="Optional" /></SelectTrigger><SelectContent><SelectItem value="none">No employee link</SelectItem>{(employees ?? []).map((e) => <SelectItem key={e.id} value={e.id}>{e.full_name}</SelectItem>)}</SelectContent></Select></div>
-            <div className="sm:col-span-2"><Label>Link client portal</Label><Select value={draft.clientId || "none"} onValueChange={(clientId) => setDraft({ ...draft, clientId: clientId === "none" ? "" : clientId, role: clientId === "none" ? draft.role : "client" })}><SelectTrigger className="mt-1"><SelectValue placeholder="Optional" /></SelectTrigger><SelectContent><SelectItem value="none">No client link</SelectItem>{(clients ?? []).map((c) => <SelectItem key={c.id} value={c.id}>{c.name} {c.email ? `· ${c.email}` : ""}</SelectItem>)}</SelectContent></Select></div>
+            <div><Label>{t("d.common.full_name")}</Label><Input className="mt-1" value={draft.fullName} onChange={(e) => setDraft({ ...draft, fullName: e.target.value })} /></div>
+            <div><Label>{t("d.common.email")}</Label><Input className="mt-1" type="email" value={draft.email} onChange={(e) => setDraft({ ...draft, email: e.target.value })} /></div>
+            <div><Label>{t("d.settings.temporary_password")}</Label><Input className="mt-1" type="password" value={draft.password} onChange={(e) => setDraft({ ...draft, password: e.target.value })} /></div>
+            <div><Label>{t("d.common.phone")}</Label><Input className="mt-1" value={draft.phone} onChange={(e) => setDraft({ ...draft, phone: e.target.value })} /></div>
+            <div><Label>{t("d.common.role")}</Label><Select value={draft.role} onValueChange={(role) => setDraft({ ...draft, role })}><SelectTrigger className="mt-1"><SelectValue /></SelectTrigger><SelectContent>{ROLES.map((r) => <SelectItem key={r} value={r}>{r.replace(/_/g, " ")}</SelectItem>)}</SelectContent></Select></div>
+            <div><Label>{t("d.settings.link_employee")}</Label><Select value={draft.employeeId || "none"} onValueChange={(employeeId) => setDraft({ ...draft, employeeId: employeeId === "none" ? "" : employeeId })}><SelectTrigger className="mt-1"><SelectValue placeholder="Optional" /></SelectTrigger>              <SelectContent><SelectItem value="none">{t("d.settings.no_employee_link")}</SelectItem>{(employees ?? []).map((e) => <SelectItem key={e.id} value={e.id}>{e.full_name}</SelectItem>)}</SelectContent></Select></div>
+            <div className="sm:col-span-2"><Label>{t("d.settings.link_client")}</Label><Select value={draft.clientId || "none"} onValueChange={(clientId) => setDraft({ ...draft, clientId: clientId === "none" ? "" : clientId, role: clientId === "none" ? draft.role : "client" })}><SelectTrigger className="mt-1"><SelectValue placeholder="Optional" /></SelectTrigger>              <SelectContent><SelectItem value="none">{t("d.settings.no_client_link")}</SelectItem>{(clients ?? []).map((c) => <SelectItem key={c.id} value={c.id}>{c.name} {c.email ? `· ${c.email}` : ""}</SelectItem>)}</SelectContent></Select></div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-            <Button onClick={submitCreate} disabled={creating || !draft.email || !draft.password || !draft.fullName}>{creating ? "Creating…" : "Create account"}</Button>
+            <Button onClick={submitCreate} disabled={creating || !draft.email || !draft.password || !draft.fullName}>{creating ? t("d.settings.creating") : t("d.settings.create_account")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -450,6 +456,7 @@ function UsersTab() {
 }
 
 function PayrollRulesTab() {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const qc = useQueryClient();
   const { data: rules } = useQuery({
@@ -474,7 +481,7 @@ function PayrollRulesTab() {
     </div>
   );
   return (
-    <Card><CardHeader><CardTitle className="text-base">Payroll rules</CardTitle></CardHeader>
+    <Card><CardHeader>        <CardTitle className="text-base">{t("d.settings.payroll_rules")}</CardTitle></CardHeader>
       <CardContent className="grid gap-3 max-w-2xl sm:grid-cols-2">
         {num("standard_hours_per_day")}
         {num("working_days_per_month")}
@@ -485,13 +492,14 @@ function PayrollRulesTab() {
         <div className="sm:col-span-2"><Label>Currency</Label>
           <Input className="mt-1" value={String(cur.currency ?? "USD")} onChange={(e) => setV({ ...v, currency: e.target.value })} />
         </div>
-        <div className="sm:col-span-2"><Button onClick={save}>Save rules</Button></div>
+        <div className="sm:col-span-2"><Button onClick={save}>{t("d.settings.save_rules")}</Button></div>
       </CardContent>
     </Card>
   );
 }
 
 function CompanyTab() {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const qc = useQueryClient();
   const { data: c } = useQuery({

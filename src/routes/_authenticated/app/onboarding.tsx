@@ -7,12 +7,14 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_authenticated/app/onboarding")({
   component: Onboarding,
 });
 
 function Onboarding() {
+  const { t } = useTranslation();
   const { user, refresh } = useAuth();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
@@ -47,13 +49,13 @@ function Onboarding() {
     <div className="mx-auto max-w-lg py-10">
       <Card>
         <CardHeader>
-          <CardTitle>Create your company workspace</CardTitle>
-          <CardDescription>One workspace per construction company. You'll be the Owner.</CardDescription>
+          <CardTitle>{t("d.onboarding.title")}</CardTitle>
+          <CardDescription>{t("d.onboarding.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit} className="space-y-4">
-            <div><Label>Company name</Label><Input required name="name" className="mt-1" placeholder="Acme Construction Ltd" /></div>
-            <Button disabled={busy} type="submit" className="w-full">Create workspace</Button>
+            <div><Label>{t("d.onboarding.company_name")}</Label><Input required name="name" className="mt-1" placeholder={t("d.onboarding.placeholder")} /></div>
+            <Button disabled={busy} type="submit" className="w-full">{t("d.onboarding.create_workspace")}</Button>
           </form>
         </CardContent>
       </Card>

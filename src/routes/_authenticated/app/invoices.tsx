@@ -26,6 +26,7 @@ import {
 import { useStripePayment } from "@/hooks/use-stripe-payment";
 import { useManualInvoiceReminders } from "@/hooks/use-invoice-reminders";
 import { Mail } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/_authenticated/app/invoices")({
   component: InvoicesPage,
@@ -41,34 +42,26 @@ type Inv = {
   due_date: string;
 };
 
-const fields: Field[] = [
-  { key: "invoice_number", label: "Invoice #", required: true },
-  {
-    key: "amount",
-    label: "Amount",
-    type: "number",
-    step: "0.01",
-    required: true,
-  },
-  { key: "paid_amount", label: "Paid", type: "number", step: "0.01" },
-  { key: "issue_date", label: "Issue date", type: "date" },
-  { key: "due_date", label: "Due date", type: "date" },
-  {
-    key: "status",
-    label: "Status",
-    type: "select",
-    options: [
-      { value: "draft", label: "Draft" },
-      { value: "sent", label: "Sent" },
-      { value: "paid", label: "Paid" },
-      { value: "overdue", label: "Overdue" },
-      { value: "cancelled", label: "Cancelled" },
-    ],
-  },
-  { key: "notes", label: "Notes", type: "textarea" },
-];
+function useInvoiceFields() {
+  const { t } = useTranslation();
+  return [
+    { key: "invoice_number", label: t("d.invoices.invoice_number"), required: true },
+    { key: "amount", label: t("d.common.amount"), type: "number" as const, step: "0.01", required: true },
+    { key: "paid_amount", label: t("d.invoices.paid_amount"), type: "number" as const, step: "0.01" },
+    { key: "issue_date", label: t("d.invoices.issue_date"), type: "date" as const },
+    { key: "due_date", label: t("d.invoices.due_date"), type: "date" as const },
+    { key: "status", label: t("d.common.status"), type: "select" as const, options: [
+      { value: "draft", label: t("d.invoices.draft") }, { value: "sent", label: t("d.invoices.sent") },
+      { value: "paid", label: t("d.common.paid") }, { value: "overdue", label: t("d.invoices.overdue") },
+      { value: "cancelled", label: t("d.invoices.cancelled") },
+    ] },
+    { key: "notes", label: t("d.invoices.notes"), type: "textarea" as const },
+  ];
+}
 
 function InvoicesPage() {
+  const { t } = useTranslation();
+  const fields = useInvoiceFields();
   const [editing, setEditing] = useState<Inv | null>(null);
   const [newOpen, setNewOpen] = useState(false);
   const [paying, setPaying] = useState<Inv | null>(null);
@@ -95,26 +88,26 @@ function InvoicesPage() {
   const columns: Column<Inv>[] = [
     {
       key: "invoice_number",
-      label: "Invoice",
-      render: (r) => (
+      label: t("d.invoices.invoice"),
+      render: (r: Inv) => (
         <span className="font-medium">{r.invoice_number}</span>
       ),
     },
     {
       key: "amount",
-      label: "Amount",
-      render: (r) => `$${Number(r.amount).toLocaleString()}`,
+      label: t("d.common.amount"),
+      render: (r: Inv) => `$${Number(r.amount).toLocaleString()}`,
     },
     {
       key: "paid_amount",
-      label: "Paid",
-      render: (r) => `$${Number(r.paid_amount || 0).toLocaleString()}`,
+      label: t("d.common.paid"),
+      render: (r: Inv) => `$${Number(r.paid_amount || 0).toLocaleString()}`,
     },
-    { key: "due_date", label: "Due" },
+    { key: "due_date", label: t("d.invoices.due") },
     {
       key: "status",
-      label: "Status",
-      render: (r) => <Badge variant="secondary">{r.status}</Badge>,
+      label: t("d.common.status"),
+      render: (r: Inv) => <Badge variant="secondary">{r.status}</Badge>,
     },
     {
       key: "_actions",
@@ -128,14 +121,14 @@ function InvoicesPage() {
                 onClick={() => setPayingOnline(r)}
                 className="bg-primary"
               >
-                <CreditCard className="mr-1 h-3 w-3" /> Pay online
+                <CreditCard className="mr-1 h-3 w-3" /> {t("d.invoices.pay_online")}
               </Button>
               <Button
                 size="sm"
                 variant="outline"
                 onClick={() => setPaying(r)}
               >
-                Record
+                {t("d.invoices.record")}
               </Button>
             </>
           )}
@@ -147,8 +140,8 @@ function InvoicesPage() {
   return (
     <>
       <ModulePage<Inv>
-        title="Invoices"
-        description="Issue, track and collect payments. Online payments powered by Stripe — or record manually."
+        title={t("d.invoices.title")}
+        description={t("d.invoices.description")}
         table="invoices"
         columns={columns}
         icon={
@@ -164,7 +157,7 @@ function InvoicesPage() {
             disabled={sendingReminders}
           >
             <Mail className="mr-1.5 h-3.5 w-3.5" />
-            {sendingReminders ? "Sending…" : "Send Reminders"}
+            {sendingReminders ? t("d.invoices.sending") : t("d.invoices.send_reminders")}
           </Button>
         }
         onNew={() => {
@@ -182,7 +175,7 @@ function InvoicesPage() {
           }
         }}
         table="invoices"
-        title="invoice"
+        title={t("d.invoices.invoice")}
         fields={fields}
         row={editing as unknown as Record<string, unknown> | null}
       />
@@ -204,6 +197,7 @@ function PaymentDialog({
   inv: Inv | null;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const [amount, setAmount] = useState("");
   const { profile } = useAuth();
   const qc = useQueryClient();
@@ -239,18 +233,18 @@ function PaymentDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            Record payment · {inv?.invoice_number}
+            {t("d.invoices.record_payment")} · {inv?.invoice_number}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-3">
           <div className="text-sm text-muted-foreground">
-            Outstanding: $
+            {t("d.invoices.outstanding")}: $
             {(
               Number(inv?.amount || 0) - Number(inv?.paid_amount || 0)
             ).toLocaleString()}
           </div>
           <div>
-            <Label>Amount</Label>
+            <Label>{t("d.common.amount")}</Label>
             <Input
               type="number"
               step="0.01"
@@ -260,7 +254,7 @@ function PaymentDialog({
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={save}>Record</Button>
+          <Button onClick={save}>{t("d.invoices.record")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -274,6 +268,7 @@ function OnlinePaymentDialog({
   inv: Inv | null;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const { clientSecret, loading, error, createPaymentIntent, reset } =
     useStripePayment();
   const { profile } = useAuth();
@@ -327,12 +322,12 @@ function OnlinePaymentDialog({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <CreditCard className="h-5 w-5" />
-                Pay Invoice {inv?.invoice_number}
+                {t("d.invoices.pay_invoice")} {inv?.invoice_number}
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div className="rounded-lg border bg-muted/30 p-3 text-sm">
-                <div className="text-muted-foreground">Amount due</div>
+                <div className="text-muted-foreground">{t("d.invoices.amount_due")}</div>
                 <div className="text-2xl font-bold">
                   ${outstanding.toLocaleString()}
                 </div>
@@ -340,7 +335,7 @@ function OnlinePaymentDialog({
               {loading && !clientSecret ? (
                 <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                  Setting up secure payment…
+                  {t("d.invoices.setting_up")}
                 </div>
               ) : clientSecret ? (
                 <StripePaymentForm
@@ -359,7 +354,7 @@ function OnlinePaymentDialog({
                     className="w-full"
                   >
                     <CreditCard className="mr-2 h-4 w-4" />
-                    {loading ? "Setting up…" : "Continue to payment"}
+                    {loading ? t("d.invoices.setting_up") : t("d.invoices.continue_to_payment")}
                   </Button>
                 </div>
               )}
