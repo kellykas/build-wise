@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation, Trans } from "react-i18next";
+import scerLogoAsset from "@/assets/scer-logo.png.asset.json";
 import {
   ArrowRight, Building2, Home, Factory, Hammer, ShieldCheck,
   Award, Quote, CheckCircle2, Phone,
@@ -67,7 +68,7 @@ function Home_() {
         </div>
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-24 sm:px-6 md:py-32">
           <div className="max-w-2xl">
-            <img src="/scer-logo.svg" alt="Scer-L/Construct Sarl" className="h-24 w-24 mb-6" />
+            <img src={scerLogoAsset.url} alt="Scer-L/Construct Sarl" className="h-24 w-24 mb-6" />
             <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
               <ShieldCheck className="h-3.5 w-3.5 text-accent" /> {t("hero.badge")}
             </div>

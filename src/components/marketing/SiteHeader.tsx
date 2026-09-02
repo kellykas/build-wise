@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import scerLogoAsset from "@/assets/scer-logo.png.asset.json";
 import { HardHat, Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
@@ -14,7 +15,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link to="/" className="flex items-center gap-2 font-semibold">
-          <img src="/scer-logo.svg" alt="Scer-L/Construct Sarl" className="h-10 w-10" />
+          <img src={scerLogoAsset.url} alt="Scer-L/Construct Sarl" className="h-10 w-10" />
           <span className="text-lg tracking-tight">Scer-L/<span className="text-primary">Construct</span></span>
         </Link>
         <nav className="hidden items-center gap-7 md:flex">
