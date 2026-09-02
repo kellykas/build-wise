@@ -10,8 +10,8 @@
   },
   "hero": {
     "badge": "Licensed · Bonded · Insured · OSHA Compliant",
-    "title": "Building landmarks of <1>trust</1> since 1998.",
-    "subtitle": "We're BuildFlow Construction — a full-service general contractor delivering commercial, residential, industrial and infrastructure projects across the region. On time. On budget. Built to last.",
+    "title": "<1>Engagés pour construire</1> vos rêves.",
+    "subtitle": "Scer-L/Construct Sarl — a full-service general contractor delivering commercial, residential, industrial and infrastructure projects across the region. On time. On budget. Built to last.",
     "cta_quote": "Request a free quote",
     "cta_projects": "View our projects",
     "phone_label": "Speak to a project manager today:",
@@ -63,7 +63,7 @@
     }
   },
   "why_us": {
-    "title": "Why owners choose BuildFlow",
+    "title": "Why owners choose Scer-L/Construct",
     "subtitle": "We're hands-on, transparent and predictable. The team that wins the work is the team that builds it — no hand-offs, no surprises.",
     "points": [
       "Self-perform crews for concrete, framing, finishes and MEP coordination",
@@ -101,8 +101,8 @@
     "hi_btn": "Just say hi"
   },
   "footer": {
-    "copyright": "© 2024 BuildFlow Construction. All rights reserved.",
-    "description": "Full-service general contractor delivering commercial, residential, industrial and infrastructure projects."
+    "copyright": "© 2024 Scer-L/Construct Sarl. All rights reserved.",
+    "description": "Full-service general contractor delivering commercial, residential, industrial and infrastructure projects. Engagés pour construire vos rêves."
   },
   "not_found": {
     "title": "Page not found",
@@ -119,8 +119,8 @@
   },
   "access_denied": "You do not have access to this page.",
   "app": {
-    "brand": "BuildFlow",
-    "subtitle": "Construction ERP",
+    "brand": "Scer-L/Construct",
+    "subtitle": "Sarl — Construction ERP",
     "search_placeholder": "Search projects, tasks, clients…",
     "settings": "Settings",
     "sign_out": "Sign out",

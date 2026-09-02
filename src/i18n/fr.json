@@ -10,8 +10,8 @@
   },
   "hero": {
     "badge": "Licencié · cautionné · assuré · conforme OSHA",
-    "title": "Construire des repères de <1>confiance</1> depuis 1998.",
-    "subtitle": "Nous sommes BuildFlow Construction — un entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure dans toute la région. À temps. Dans le budget. Conçu pour durer.",
+    "title": "<1>Engagés pour construire</1> vos rêves.",
+    "subtitle": "Scer-L/Construct Sarl — un entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure dans toute la région. À temps. Dans le budget. Conçu pour durer.",
     "cta_quote": "Demander un devis gratuit",
     "cta_projects": "Voir nos projets",
     "phone_label": "Parlez à un chef de projet aujourd'hui :",
@@ -63,8 +63,8 @@
     }
   },
   "why_us": {
-    "title": "Pourquoi les propriétaires choisissent BuildFlow",
-    "subtitle": "Nous sommes directs, transparents et prévisibles. L'équipe qui remporte le travail est celle qui le construit — sansintermédiaires, sans surprises.",
+    "title": "Pourquoi les propriétaires choisissent Scer-L/Construct",
+    "subtitle": "Nous sommes directs, transparents et prévisibles. L'équipe qui remporte le travail est celle qui le construit — sans intermédiaires, sans surprises.",
     "points": [
       "Équipes d'exécution pour béton, charpente, finitions et coordination MEP",
       "Rapports hebdomadaires sur les coûts et l'horaire, sans postes cachés",
@@ -101,8 +101,8 @@
     "hi_btn": "Juste dire bonjour"
   },
   "footer": {
-    "copyright": "© 2024 BuildFlow Construction. Tous droits réservés.",
-    "description": "Entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure."
+    "copyright": "© 2024 Scer-L/Construct Sarl. Tous droits réservés.",
+    "description": "Entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure. Engagés pour construire vos rêves."
   },
   "not_found": {
     "title": "Page non trouvée",
@@ -119,8 +119,8 @@
   },
   "access_denied": "Vous n'avez pas accès à cette page.",
   "app": {
-    "brand": "BuildFlow",
-    "subtitle": "ERP Construction",
+    "brand": "Scer-L/Construct",
+    "subtitle": "Sarl — ERP Construction",
     "search_placeholder": "Rechercher projets, tâches, clients…",
     "settings": "Paramètres",
     "sign_out": "Déconnexion",

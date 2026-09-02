@@ -17,7 +17,7 @@ export function SiteHeader() {
           <span className="grid h-9 w-9 place-items-center rounded-md bg-primary text-primary-foreground">
             <HardHat className="h-5 w-5" />
           </span>
-          <span className="text-lg tracking-tight">BuildFlow<span className="text-accent"> Construction</span></span>
+          <span className="text-lg tracking-tight">Scer-L/<span className="text-accent">Construct</span></span>
         </Link>
         <nav className="hidden items-center gap-7 md:flex">
           {navKeys.map((key, i) => (
@@ -53,7 +53,7 @@ export function SiteFooter() {
             <span className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground">
               <HardHat className="h-4 w-4" />
             </span>
-            BuildFlow Construction
+            Scer-L/Construct Sarl
           </div>
           <p className="mt-3 text-sm text-muted-foreground">
             {t("footer.description")}

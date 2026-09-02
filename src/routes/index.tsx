@@ -10,8 +10,8 @@ import { SiteHeader, SiteFooter } from "@/components/marketing/SiteHeader";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "BuildFlow Construction — Commercial, Residential & Industrial Builders" },
-      { name: "description", content: "Full-service general contractor delivering commercial, residential, industrial and infrastructure projects on time and on budget. Request a free quote today." },
+      { title: "Scer-L/Construct Sarl — Engagés pour construire vos rêves" },
+      { name: "description", content: "Full-service general contractor delivering commercial, residential, industrial and infrastructure projects on time and on budget. Engagés pour construire vos rêves." },
     ],
   }),
   component: Home_,
