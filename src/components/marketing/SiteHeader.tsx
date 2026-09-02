@@ -14,7 +14,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link to="/" className="flex items-center gap-2 font-semibold">
-          <img src="/scer-logo.svg" alt="Scer-L/Construct Sarl" className="h-10 w-10" />
+          <img src="/logo.png" alt="Scer-L/Construct Sarl" className="h-10 w-10 rounded-full" />
           <span className="text-lg tracking-tight">Scer-L/<span className="text-primary">Construct</span></span>
         </Link>
         <nav className="hidden items-center gap-7 md:flex">
@@ -48,9 +48,7 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-4">
         <div>
           <div className="flex items-center gap-2 font-semibold">
-            <span className="grid h-8 w-8 place-items-center rounded-md bg-primary text-primary-foreground">
-              <HardHat className="h-4 w-4" />
-            </span>
+            <img src="/logo.png" alt="Scer-L/Construct Sarl" className="h-8 w-8 rounded-full" />
             Scer-L/Construct Sarl
           </div>
           <p className="mt-3 text-sm text-muted-foreground">
