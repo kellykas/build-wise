@@ -142,6 +142,38 @@ function AboutPage() {
           </div>
         </section>
 
+        <section className="border-y border-border bg-card/40">
+          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+            <h2 className="text-3xl font-bold tracking-tight">Informations légales</h2>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="rounded-xl border border-border bg-card p-5">
+                <div className="text-sm font-semibold text-primary">Registre du commerce</div>
+                <p className="mt-2 text-sm text-muted-foreground">CD/KIS/RCCM/21.8-00068</p>
+              </div>
+              <div className="rounded-xl border border-border bg-card p-5">
+                <div className="text-sm font-semibold text-primary">Numéro Impôt</div>
+                <p className="mt-2 text-sm text-muted-foreground">A2213934W</p>
+              </div>
+              <div className="rounded-xl border border-border bg-card p-5">
+                <div className="text-sm font-semibold text-primary">ID NAT</div>
+                <p className="mt-2 text-sm text-muted-foreground">25-F4200-N84176G</p>
+              </div>
+              <div className="rounded-xl border border-border bg-card p-5">
+                <div className="text-sm font-semibold text-primary">NUMERO</div>
+                <p className="mt-2 text-sm text-muted-foreground">1015361000</p>
+              </div>
+              <div className="rounded-xl border border-border bg-card p-5">
+                <div className="text-sm font-semibold text-primary">Certificat INPP</div>
+                <p className="mt-2 text-sm text-muted-foreground">N° DG/DF/DIREC/GU/7022/2021</p>
+              </div>
+              <div className="rounded-xl border border-border bg-card p-5">
+                <div className="text-sm font-semibold text-primary">ONEM</div>
+                <p className="mt-2 text-sm text-muted-foreground">060255A21</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="border-t border-border bg-primary text-primary-foreground">
           <div className="mx-auto max-w-5xl px-4 py-16 text-center sm:px-6">
             <h2 className="text-3xl font-bold md:text-4xl">{t("about.cta_title", "Let's build the next one together.")}</h2>

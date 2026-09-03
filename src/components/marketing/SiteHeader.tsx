@@ -78,8 +78,38 @@ export function SiteFooter() {
           <Link to="/contact" search={{ type: "quote" }}><Button size="sm" className="mt-3">{t("hero.cta_quote")}</Button></Link>
         </div>
       </div>
-      <div className="border-t border-border py-4 text-center text-xs text-muted-foreground">
-        {t("footer.copyright")}
+      <div className="border-t border-border">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+          <div className="grid gap-6 text-xs text-muted-foreground md:grid-cols-2 lg:grid-cols-3">
+            <div>
+              <div className="font-semibold text-foreground">Informations légales</div>
+              <ul className="mt-2 space-y-1">
+                <li>CD/KIS/RCCM/21.8-00068</li>
+                <li>Numéro Impôt : A2213934W</li>
+                <li>ID NAT : 25-F4200-N84176G</li>
+                <li>NUMERO : 1015361000</li>
+              </ul>
+            </div>
+            <div>
+              <div className="font-semibold text-foreground">Certifications</div>
+              <ul className="mt-2 space-y-1">
+                <li>Certificat d'immatriculation à l'INPP N° DG/DF/DIREC/GU/7022/2021</li>
+                <li>ONEM : 060255A21</li>
+              </ul>
+            </div>
+            <div>
+              <div className="font-semibold text-foreground">Coordonnées</div>
+              <ul className="mt-2 space-y-1">
+                <li>+1 (555) 240-8800</li>
+                <li>hello@buildflow.co</li>
+                <li>240 Riverside Ave, Suite 1100</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div className="border-t border-border py-4 text-center text-xs text-muted-foreground">
+          {t("footer.copyright")}
+        </div>
       </div>
     </footer>
   );
