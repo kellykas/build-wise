@@ -47,15 +47,15 @@ function CalendarPage() {
 
   const dayKey = format(selected, "yyyy-MM-dd");
   const todayEvents = (events ?? []).filter((e) => e.event_date === dayKey);
-  const todayTasks = (tasks ?? []).filter((t) => t.due_date === dayKey);
+  const todayTasks = (tasks ?? []).filter((task) => task.due_date === dayKey);
 
   const upcoming = [...(events ?? []).map((e) => ({ kind: "event" as const, date: e.event_date, title: e.title, id: e.id })),
-                    ...(tasks ?? []).map((t) => ({ kind: "task" as const, date: t.due_date!, title: t.name, id: t.id }))]
+                    ...(tasks ?? []).map((task) => ({ kind: "task" as const, date: task.due_date!, title: task.name, id: task.id }))]
     .filter((x) => x.date >= dayKey)
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(0, 30);
 
-  const eventDays = new Set([...(events ?? []).map((e) => e.event_date), ...(tasks ?? []).map((t) => t.due_date!).filter(Boolean)]);
+  const eventDays = new Set([...(events ?? []).map((e) => e.event_date), ...(tasks ?? []).map((task) => task.due_date!).filter(Boolean)]);
 
   return (
     <div className="space-y-6">
@@ -100,13 +100,13 @@ function CalendarPage() {
                   <Badge variant="secondary">{t("d.calendar.event")}</Badge>
                 </button>
               ))}
-              {todayTasks.map((t) => (
-                <div key={t.id} className="flex items-center justify-between rounded-md border border-border p-3">
+              {todayTasks.map((task) => (
+                <div key={task.id} className="flex items-center justify-between rounded-md border border-border p-3">
                   <div>
-                    <div className="text-sm font-medium">{t.name}</div>
-                    <div className="text-xs text-muted-foreground">{t("d.calendar.task")} · {t.priority}</div>
+                    <div className="text-sm font-medium">{task.name}</div>
+                    <div className="text-xs text-muted-foreground">{t("d.calendar.task")} · {task.priority}</div>
                   </div>
-                  <Badge>{t.status}</Badge>
+                  <Badge>{task.status}</Badge>
                 </div>
               ))}
             </CardContent>
