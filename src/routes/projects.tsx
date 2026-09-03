@@ -23,6 +23,7 @@ import {
   FolderOpen,
 } from "lucide-react";
 import { useMemo, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 
 /* ------------------------------------------------------------------ */
 /* Types & data                                                        */
@@ -149,26 +150,7 @@ const projects: Project[] = [
 /* Filter / sort config                                                */
 /* ------------------------------------------------------------------ */
 
-const categoryFilters: { key: Category; label: string; icon: React.ElementType }[] = [
-  { key: "all", label: "All projects", icon: SlidersHorizontal },
-  { key: "commercial", label: "Commercial", icon: Building2 },
-  { key: "residential", label: "Residential", icon: Home },
-  { key: "industrial", label: "Industrial", icon: Factory },
-  { key: "renovation", label: "Renovation", icon: Hammer },
-  { key: "infrastructure", label: "Infrastructure", icon: Waves },
-];
 
-const statusFilters: { key: Status; label: string }[] = [
-  { key: "all", label: "All" },
-  { key: "completed", label: "Completed" },
-  { key: "in-progress", label: "In progress" },
-];
-
-const sortOptions: { key: SortKey; label: string }[] = [
-  { key: "newest", label: "Newest first" },
-  { key: "oldest", label: "Oldest first" },
-  { key: "az", label: "A → Z" },
-];
 
 /* ------------------------------------------------------------------ */
 /* Route definition with search params                                 */
@@ -206,8 +188,30 @@ export const Route = createFileRoute("/projects")({
 /* ------------------------------------------------------------------ */
 
 function ProjectsPage() {
+  const { t } = useTranslation();
   const search = useSearch({ from: "/projects" });
   const navigate = useNavigate({ from: "/projects" });
+
+  const categoryFilters: { key: Category; label: string; icon: React.ElementType }[] = [
+    { key: "all", label: t("projects_page.all"), icon: SlidersHorizontal },
+    { key: "commercial", label: t("projects_page.commercial"), icon: Building2 },
+    { key: "residential", label: t("projects_page.residential"), icon: Home },
+    { key: "industrial", label: t("projects_page.industrial"), icon: Factory },
+    { key: "renovation", label: t("projects_page.renovation"), icon: Hammer },
+    { key: "infrastructure", label: t("projects_page.infrastructure"), icon: Waves },
+  ];
+
+  const statusFilters: { key: Status; label: string }[] = [
+    { key: "all", label: t("projects_page.filter_all") },
+    { key: "completed", label: t("projects_page.filter_completed") },
+    { key: "in-progress", label: t("projects_page.filter_in_progress") },
+  ];
+
+  const sortOptions: { key: SortKey; label: string }[] = [
+    { key: "newest", label: t("projects_page.sort_newest") },
+    { key: "oldest", label: t("projects_page.sort_oldest") },
+    { key: "az", label: t("projects_page.sort_az") },
+  ];
 
   const q = search.q ?? "";
   const category = (search.category ?? "all") as Category;
@@ -274,11 +278,10 @@ function ProjectsPage() {
         <section className="border-b border-border bg-gradient-to-b from-primary/5 to-transparent">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
             <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
-              Selected projects
+              {t("projects_page.title")}
             </h1>
             <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-              Explore our portfolio of delivered and in-progress builds. Use the
-              filters below to narrow by category, status or name.
+              {t("projects_page.subtitle")}
             </p>
           </div>
         </section>
@@ -293,7 +296,7 @@ function ProjectsPage() {
                 <Input
                   value={q}
                   onChange={(e) => updateParam("q", e.target.value)}
-                  placeholder="Search projects…"
+                  placeholder={t("projects_page.search")}
                   className="pl-9"
                 />
               </div>
@@ -315,7 +318,7 @@ function ProjectsPage() {
                   onClick={clearAll}
                   className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground hover:text-foreground"
                 >
-                  <X className="h-3 w-3" /> Clear filters
+                  <X className="h-3 w-3" /> {t("projects_page.clear_filters")}
                 </button>
               )}
             </div>
@@ -356,8 +359,8 @@ function ProjectsPage() {
 
             {/* Result count */}
             <p className="text-xs text-muted-foreground">
-              {filtered.length} project{filtered.length !== 1 ? "s" : ""}
-              {isFiltered ? " found" : " total"}
+              {filtered.length} {t("projects_page.projects_suffix")}
+              {isFiltered ? t("projects_page.found") : t("projects_page.total")}
             </p>
           </div>
         </section>
@@ -366,12 +369,12 @@ function ProjectsPage() {
         {filtered.length === 0 && (
           <section className="mx-auto max-w-7xl px-4 py-24 text-center sm:px-6">
             <FolderOpen className="mx-auto h-12 w-12 text-muted-foreground/40" />
-            <h2 className="mt-4 text-xl font-semibold">No projects match</h2>
+            <h2 className="mt-4 text-xl font-semibold">{t("projects_page.no_match")}</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Try adjusting your search or filters.
+              {t("projects_page.try_adjusting")}
             </p>
             <Button onClick={clearAll} variant="outline" className="mt-6">
-              Clear all filters
+              {t("projects_page.clear_all")}
             </Button>
           </section>
         )}
@@ -424,7 +427,7 @@ function ProjectsPage() {
                     </div>
                   </div>
                   <div className="mt-6 inline-flex items-center text-sm font-medium text-primary opacity-0 transition group-hover:opacity-100">
-                    View details <ArrowRight className="ml-1 h-4 w-4" />
+                    {t("projects_page.view_details")} <ArrowRight className="ml-1 h-4 w-4" />
                   </div>
                 </div>
               </div>
@@ -487,14 +490,13 @@ function ProjectsPage() {
         {/* ---- CTA ---- */}
         <section className="border-t border-border bg-card/40">
           <div className="mx-auto max-w-5xl px-4 py-16 text-center sm:px-6">
-            <h2 className="text-3xl font-bold">Inspired by something here?</h2>
+            <h2 className="text-3xl font-bold">{t("projects_page.cta_title")}</h2>
             <p className="mt-3 text-muted-foreground">
-              Tell us about your project and we'll share comparable references
-              and a budget range.
+              {t("projects_page.cta_subtitle")}
             </p>
             <Link to="/contact" search={{ type: "quote" }}>
               <Button size="lg" className="mt-6">
-                Request a quote <ArrowRight className="ml-2 h-4 w-4" />
+                {t("projects_page.cta_button")} <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
           </div>

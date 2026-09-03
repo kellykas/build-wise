@@ -5,64 +5,69 @@ import {
   Building2, Home, Factory, Hammer, Ruler, Truck,
   ArrowRight, CheckCircle2, ShieldCheck,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
-const services = [
-  {
-    icon: Building2,
-    title: "Commercial Construction",
-    desc: "Office towers, retail centres, hotels and mixed-use developments delivered turnkey.",
-    points: ["Ground-up construction", "Tenant fit-outs", "LEED & green building", "Design-build delivery"],
-  },
-  {
-    icon: Home,
-    title: "Residential Builds",
-    desc: "Custom homes, multi-family residences and high-end renovations crafted to your vision.",
-    points: ["Custom luxury homes", "Multi-family housing", "Whole-home renovations", "Additions & extensions"],
-  },
-  {
-    icon: Factory,
-    title: "Industrial & Infrastructure",
-    desc: "Warehouses, manufacturing plants, civil works and heavy infrastructure projects.",
-    points: ["Warehouses & distribution", "Manufacturing facilities", "Roads, bridges & utilities", "Site development"],
-  },
-  {
-    icon: Hammer,
-    title: "Renovation & Restoration",
-    desc: "Adaptive reuse, heritage restoration and full interior refits with minimal disruption.",
-    points: ["Heritage restoration", "Adaptive reuse", "Interior remodelling", "Seismic upgrades"],
-  },
-  {
-    icon: Ruler,
-    title: "Design-Build & Pre-Construction",
-    desc: "From concept and feasibility to permits and budgeting — one team, one accountable contract.",
-    points: ["Feasibility & site selection", "Architectural coordination", "Permitting & approvals", "Cost & value engineering"],
-  },
-  {
-    icon: Truck,
-    title: "Project & Construction Management",
-    desc: "Full-service CM, owner's representation and on-site supervision for complex programmes.",
-    points: ["Schedule & cost control", "Subcontractor management", "Quality & safety oversight", "Closeout & handover"],
-  },
-];
-
-const process = [
-  { n: "01", t: "Consult", d: "We meet on-site, listen to your goals and assess constraints." },
-  { n: "02", t: "Design & price", d: "Drawings, specifications and a transparent itemised proposal." },
-  { n: "03", t: "Build", d: "Daily logs, weekly reports and a dedicated PM through completion." },
-  { n: "04", t: "Handover & care", d: "Punch-list, warranty and a 24-month post-build support plan." },
-];
+const serviceIcons = [Building2, Home, Factory, Hammer, Ruler, Truck];
 
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Construction Services — BuildFlow Construction" },
-      { name: "description", content: "Commercial, residential, industrial and renovation construction services. Design-build, CM and pre-construction expertise." },
+      { title: "Construction Services - Scer-L/Construct Sarl" },
+      { name: "description", content: "Commercial, residential, industrial and renovation construction services." },
     ],
   }),
   component: ServicesPage,
 });
 
 function ServicesPage() {
+  const { t } = useTranslation();
+
+  const services = [
+    {
+      icon: serviceIcons[0],
+      title: t("services_page.s_commercial"),
+      desc: t("services_page.s_commercial_d"),
+      points: [t("services_page.s_commercial_p1"), t("services_page.s_commercial_p2"), t("services_page.s_commercial_p3"), t("services_page.s_commercial_p4")],
+    },
+    {
+      icon: serviceIcons[1],
+      title: t("services_page.s_residential"),
+      desc: t("services_page.s_residential_d"),
+      points: [t("services_page.s_residential_p1"), t("services_page.s_residential_p2"), t("services_page.s_residential_p3"), t("services_page.s_residential_p4")],
+    },
+    {
+      icon: serviceIcons[2],
+      title: t("services_page.s_industrial"),
+      desc: t("services_page.s_industrial_d"),
+      points: [t("services_page.s_industrial_p1"), t("services_page.s_industrial_p2"), t("services_page.s_industrial_p3"), t("services_page.s_industrial_p4")],
+    },
+    {
+      icon: serviceIcons[3],
+      title: t("services_page.s_renovation"),
+      desc: t("services_page.s_renovation_d"),
+      points: [t("services_page.s_renovation_p1"), t("services_page.s_renovation_p2"), t("services_page.s_renovation_p3"), t("services_page.s_renovation_p4")],
+    },
+    {
+      icon: serviceIcons[4],
+      title: t("services_page.s_designbuild"),
+      desc: t("services_page.s_designbuild_d"),
+      points: [t("services_page.s_designbuild_p1"), t("services_page.s_designbuild_p2"), t("services_page.s_designbuild_p3"), t("services_page.s_designbuild_p4")],
+    },
+    {
+      icon: serviceIcons[5],
+      title: t("services_page.s_cm"),
+      desc: t("services_page.s_cm_d"),
+      points: [t("services_page.s_cm_p1"), t("services_page.s_cm_p2"), t("services_page.s_cm_p3"), t("services_page.s_cm_p4")],
+    },
+  ];
+
+  const process = [
+    { n: "01", t: t("services_page.step1_title"), d: t("services_page.step1_d") },
+    { n: "02", t: t("services_page.step2_title"), d: t("services_page.step2_d") },
+    { n: "03", t: t("services_page.step3_title"), d: t("services_page.step3_d") },
+    { n: "04", t: t("services_page.step4_title"), d: t("services_page.step4_d") },
+  ];
+
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
@@ -71,15 +76,15 @@ function ServicesPage() {
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
             <div className="max-w-3xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">
-                <ShieldCheck className="h-3.5 w-3.5 text-accent" /> Licensed · Bonded · Insured
+                <ShieldCheck className="h-3.5 w-3.5 text-accent" /> {t("services_page.badge")}
               </div>
-              <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">Construction services, end to end.</h1>
+              <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">{t("services_page.title")}</h1>
               <p className="mt-4 text-lg text-muted-foreground">
-                From a single-family renovation to a multi-tower campus, our integrated team handles design, pre-construction, build and handover under one roof.
+                {t("services_page.subtitle")}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link to="/contact" search={{ type: "quote" }}><Button size="lg">Request a quote <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
-                <Link to="/projects"><Button size="lg" variant="outline">See completed projects</Button></Link>
+                <Link to="/contact" search={{ type: "quote" }}><Button size="lg">{t("services_page.request_quote")} <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
+                <Link to="/projects"><Button size="lg" variant="outline">{t("services_page.see_projects")}</Button></Link>
               </div>
             </div>
           </div>
@@ -100,7 +105,7 @@ function ServicesPage() {
                   ))}
                 </ul>
                 <Link to="/contact" search={{ type: "quote" }} className="mt-5 inline-flex items-center text-sm font-medium text-primary group-hover:underline">
-                  Get a quote for this <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                  {t("services_page.quote_for")} <ArrowRight className="ml-1 h-3.5 w-3.5" />
                 </Link>
               </div>
             ))}
@@ -110,8 +115,8 @@ function ServicesPage() {
         <section className="border-y border-border bg-card/40">
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
             <div className="max-w-2xl">
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">How we deliver</h2>
-              <p className="mt-3 text-muted-foreground">A predictable, transparent process refined over 25 years and 500+ completed builds.</p>
+              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{t("services_page.how_title")}</h2>
+              <p className="mt-3 text-muted-foreground">{t("services_page.how_subtitle")}</p>
             </div>
             <div className="mt-12 grid gap-6 md:grid-cols-4">
               {process.map((p) => (
@@ -126,9 +131,9 @@ function ServicesPage() {
         </section>
 
         <section className="mx-auto max-w-5xl px-4 py-20 text-center sm:px-6">
-          <h2 className="text-3xl font-bold md:text-4xl">Have a project in mind?</h2>
-          <p className="mt-3 text-muted-foreground">Send us the brief — we'll respond within 24 hours with next steps and a no-obligation budget range.</p>
-          <Link to="/contact" search={{ type: "quote" }}><Button size="lg" className="mt-6">Request a quote <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
+          <h2 className="text-3xl font-bold md:text-4xl">{t("services_page.have_project")}</h2>
+          <p className="mt-3 text-muted-foreground">{t("services_page.have_project_d")}</p>
+          <Link to="/contact" search={{ type: "quote" }}><Button size="lg" className="mt-6">{t("services_page.request_quote")} <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
         </section>
       </main>
       <SiteFooter />
