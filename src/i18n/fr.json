@@ -28,18 +28,39 @@
     "subtitle": "Des maisons personnalisées aux campus à plusieurs tours, nos équipes couvrent tous les métiers en interne.",
     "view_all": "Tous les services →",
     "learn_more": "En savoir plus",
-    "commercial": { "title": "Commercial", "desc": "Bureaux, commerces, hôtels et immeubles mixtes." },
-    "residential": { "title": "Résidentiel", "desc": "Maisons personnalisées, immeubles multi-familiaux et rénovations." },
-    "industrial": { "title": "Industriel", "desc": "Entrepôts, usines et centres de distribution." },
-    "renovation": { "title": "Rénovation", "desc": "Restauration, réaménagement et réutilisation adaptative." }
+    "commercial": {
+      "title": "Commercial",
+      "desc": "Bureaux, commerces, hôtels et immeubles mixtes."
+    },
+    "residential": {
+      "title": "Résidentiel",
+      "desc": "Maisons personnalisées, immeubles multi-familiaux et rénovations."
+    },
+    "industrial": {
+      "title": "Industriel",
+      "desc": "Entrepôts, usines et centres de distribution."
+    },
+    "renovation": {
+      "title": "Rénovation",
+      "desc": "Restauration, réaménagement et réutilisation adaptative."
+    }
   },
   "featured": {
     "title": "Projets en vedette",
     "subtitle": "Un aperçu des constructions récentes. Explorez le portfolio complet pour les études de cas et les métriques.",
     "view_all": "Voir tous les projets →",
-    "riverside": { "title": "Tour Riverside", "tag": "Commercial · 44 500 m²" },
-    "maple": { "title": "Résidences Maple Heights", "tag": "Résidentiel · 186 unités" },
-    "northgate": { "title": "Centre logistique Northgate", "tag": "Industriel · 57 500 m²" }
+    "riverside": {
+      "title": "Tour Riverside",
+      "tag": "Commercial · 44 500 m²"
+    },
+    "maple": {
+      "title": "Résidences Maple Heights",
+      "tag": "Résidentiel · 186 unités"
+    },
+    "northgate": {
+      "title": "Centre logistique Northgate",
+      "tag": "Industriel · 57 500 m²"
+    }
   },
   "why_us": {
     "title": "Pourquoi les propriétaires choisissent Scer-L/Construct",
@@ -53,9 +74,18 @@
     ]
   },
   "testimonials": {
-    "1": { "quote": "BuildFlow a livré notre siège social deux semaines plus tôt et sous budget. Leur chef de projet nous a tenus informés chaque semaine.", "author": "Sandra Hill, PDG · Northwind Logistics" },
-    "2": { "quote": "Un savoir-faire que l'on ressent. Chaque détail de notre maison était réfléchi et construit pour durer.", "author": "Daniel et Mia Foster · Hillview Estates" },
-    "3": { "quote": "Un bilan de sécurité et une discipline qualité rares dans cette industrie. Nous leur avons attribué trois projets consécutifs.", "author": "Robert Sanchez, Directeur · Civic Authority" }
+    "1": {
+      "quote": "BuildFlow a livré notre siège social deux semaines plus tôt et sous budget. Leur chef de projet nous a tenus informés chaque semaine.",
+      "author": "Sandra Hill, PDG · Northwind Logistics"
+    },
+    "2": {
+      "quote": "Un savoir-faire que l'on ressent. Chaque détail de notre maison était réfléchi et construit pour durer.",
+      "author": "Daniel et Mia Foster · Hillview Estates"
+    },
+    "3": {
+      "quote": "Un bilan de sécurité et une discipline qualité rares dans cette industrie. Nous leur avons attribué trois projets consécutifs.",
+      "author": "Robert Sanchez, Directeur · Civic Authority"
+    }
   },
   "certifications": {
     "enr": "ENR Top 400 Contractor",
@@ -74,9 +104,19 @@
     "copyright": "© 2024 Scer-L/Construct Sarl. Tous droits réservés.",
     "description": "Entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure. Engagés pour construire vos rêves."
   },
-  "not_found": { "title": "Page non trouvée", "subtitle": "La page que vous recherchez n'existe pas.", "go_home": "Retour à l'accueil" },
-  "error": { "title": "Une erreur s'est produite", "try_again": "Réessayer" },
-  "language": { "en": "English", "fr": "Français" },
+  "not_found": {
+    "title": "Page non trouvée",
+    "subtitle": "La page que vous recherchez n'existe pas.",
+    "go_home": "Retour à l'accueil"
+  },
+  "error": {
+    "title": "Une erreur s'est produite",
+    "try_again": "Réessayer"
+  },
+  "language": {
+    "en": "English",
+    "fr": "Français"
+  },
   "access_denied": "Vous n'avez pas accès à cette page.",
   "app": {
     "brand": "Scer-L/Construct",
@@ -249,32 +289,27 @@
     "invoices": {
       "title": "Factures",
       "description": "Émettre, suivre et encaisser les paiements. Paiements en ligne via Stripe, ou enregistrement manuel.",
+      "invoice_number": "N° facture",
+      "paid_amount": "Payé",
+      "issue_date": "Date d'émission",
+      "due_date": "Date d'échéance",
+      "draft": "Brouillon",
+      "sent": "Envoyée",
+      "overdue": "En retard",
+      "cancelled": "Annulée",
+      "notes": "Notes",
       "invoice": "Facture",
-      "amount": "Montant",
-      "paid": "Payé",
       "due": "Échéance",
-      "status": "Statut",
       "pay_online": "Payer en ligne",
-      "record": "Enregistrer",
+      "record_payment": "Enregistrer le paiement",
+      "outstanding": "Montant dû",
       "send_reminders": "Envoyer les rappels",
       "sending": "Envoi…",
-      "draft": "Brouillon",
-      "sent": "Envoyé",
-      "paid_status": "Payé",
-      "overdue": "En retard",
-      "cancelled": "Annulé",
-      "record_payment": "Enregistrer le paiement",
-      "outstanding": "Solde dû",
-      "amount_due": "Montant dû",
+      "record": "Enregistrer",
       "setting_up": "Configuration du paiement sécurisé…",
-      "continue_to_payment": "Passer au paiement",
-      "setting_up_short": "Configuration…",
-      "payment_recorded": "Paiement enregistré, revenu comptabilisé",
-      "enter_amount": "Entrez un montant",
-      "reminders_sent": "rappel(s) envoyé(s) avec succès",
-      "no_overdue": "Aucune facture en retard à rappeler",
-      "failed_reminders": "Échec de l'envoi des rappels",
-      "notes": "Notes"
+      "continue_to_payment": "Continuer vers le paiement",
+      "pay_invoice": "Payer la facture",
+      "amount_due": "Montant dû"
     },
     "notifications": {
       "title": "Notifications internes",
@@ -317,62 +352,20 @@
       "notifications": "Notifications",
       "upload_checks": "Vérifications de téléchargement",
       "audit_log": "Journal d'audit",
-      "admins_only": "Admins uniquement.",
-      "email": "E-mail",
-      "full_name": "Nom complet",
-      "phone": "Téléphone",
-      "save": "Enregistrer",
-      "profile_updated": "Profil mis à jour",
-      "team_members": "Membres de l'équipe",
       "create_user": "Créer un utilisateur",
-      "create_account": "Créer un compte utilisateur",
-      "create_account_desc": "Créer un accès employé ou client et le lier à un enregistrement employé/client.",
+      "create_user_account": "Créer un compte utilisateur",
+      "create_description": "Créer un accès employé ou client et le lier à un enregistrement employé/client.",
       "temporary_password": "Mot de passe temporaire",
-      "role": "Rôle",
-      "link_employee": "Lier un employé",
-      "no_employee_link": "Pas de lien employé",
-      "link_client_portal": "Lier au portail client",
-      "no_client_link": "Pas de lien client",
-      "optional": "Optionnel",
-      "cancel": "Annuler",
+      "link_employee": "Lier à un employé",
+      "no_employee_link": "Aucun lien employé",
+      "link_client": "Lier au portail client",
+      "no_client_link": "Aucun lien client",
       "creating": "Création…",
-      "create": "Créer le compte",
-      "user_created": "Utilisateur créé et rôle assigné",
-      "role_assigned": "Rôle assigné",
-      "assign_role": "+ Assigner un rôle",
-      "knock_id": "ID Knock :",
-      "knock_saved": "ID Knock enregistré",
-      "rules_saved": "Règles enregistrées",
-      "currency": "Devise",
-      "recent_activity": "Activité récente",
-      "when": "Quand",
-      "actor": "Acteur",
-      "action": "Action",
-      "target": "Cible",
-      "details": "Détails",
-      "no_activity": "Aucune activité pour le moment.",
-      "upload_permissions_check": "Vérification des permissions de téléchargement",
-      "project_for_portal": "Projet pour le test photo portail",
+      "create_account": "Créer le compte",
+      "save_rules": "Enregistrer les règles",
+      "admins_only": "Administrateurs uniquement.",
       "run_checks": "Lancer les vérifications",
-      "current_role_set": "Ensemble de rôles actuel",
-      "no_company": "Votre compte n'est pas lié à un espace de travail d'entreprise.",
-      "checks_completed": "Vérifications des permissions de téléchargement terminées",
-      "pass": "Réussi",
-      "fail": "Échoué",
-      "run_checks_desc": "Lancez les vérifications pour valider les téléchargements et la visibilité pour votre rôle actuel.",
-      "project_visibility": "Visibilité de la page projet",
-      "doc_upload": "Téléversement dans le stockage de documents",
-      "doc_rls": "RLS de la base de données documents",
-      "doc_preview": "Aperçu/téléchargement du document",
-      "portal_photo_upload": "Téléversement photo portail dans le stockage",
-      "portal_photo_rls": "RLS photo portail de la base de données",
-      "portal_gallery": "Visibilité de la galerie portail",
-      "no_project_selected": "Créez ou sélectionnez un projet avant de tester les photos portail.",
-      "all": "Tout",
-      "uploads": "Téléversements",
-      "documents": "Documents",
-      "photos": "Photos portail",
-      "access": "Utilisateurs et rôles"
+      "upload_permissions": "Vérification des permissions de téléchargement"
     },
     "attendance": {
       "title": "Présence",
@@ -401,8 +394,21 @@
       "description": "Répertoire et performance des fournisseurs."
     },
     "procurement": {
-      "title": "Achats",
-      "description": "Approuver ou rejeter les bons de commande. Les BC approuvés comptabilisent une dépense en Trésorerie."
+      "title": "Approvisionnement",
+      "description": "Approuver ou rejeter les bons de commande. Les BC approuvés sont comptabilisés en dépenses.",
+      "po_number": "N° BC",
+      "supplier": "Fournisseur",
+      "total": "Total",
+      "requested": "Demandé",
+      "status": "Statut",
+      "action": "Action",
+      "mark_received": "Marquer reçu",
+      "new_po": "Nouveau bon de commande",
+      "edit_po": "Modifier le bon de commande",
+      "po_number_label": "Numéro du BC",
+      "total_amount": "Montant total",
+      "request_date": "Date de demande",
+      "select_supplier": "Sélectionner…"
     },
     "inventory": {
       "title": "Stock",
@@ -416,7 +422,22 @@
     },
     "payroll": {
       "title": "Paie",
-      "description": "Exécuter la paie, consulter les bulletins et gérer les déductions."
+      "description": "Générer les bulletins de paie à partir des présences et des règles de paie.",
+      "generate_payslips": "Générer les bulletins",
+      "payslips": "Bulletins",
+      "total_net": "Total net",
+      "paid": "Payé",
+      "period": "Période",
+      "mark_paid": "Marquer payé",
+      "no_payslips": "Aucun bulletin pour cette période, cliquez sur Générer.",
+      "employee": "Employé",
+      "base": "Base",
+      "hours": "Heures",
+      "overtime_pay": "Heures sup.",
+      "tax": "Impôt",
+      "net_pay": "Net à payer",
+      "status": "Statut",
+      "action": "Action"
     },
     "client_portal": {
       "title": "Portail Client",
@@ -465,99 +486,172 @@
       "password": "Mot de passe",
       "role": "Rôle"
     },
-    "invoices": {
-      "title": "Factures",
-      "description": "Émettre, suivre et encaisser les paiements. Paiements en ligne via Stripe, ou enregistrement manuel.",
-      "invoice_number": "N° facture",
-      "paid_amount": "Payé",
-      "issue_date": "Date d'émission",
-      "due_date": "Date d'échéance",
-      "draft": "Brouillon",
-      "sent": "Envoyée",
-      "overdue": "En retard",
-      "cancelled": "Annulée",
-      "notes": "Notes",
-      "invoice": "Facture",
-      "due": "Échéance",
-      "pay_online": "Payer en ligne",
-      "record_payment": "Enregistrer le paiement",
-      "outstanding": "Montant dû",
-      "send_reminders": "Envoyer les rappels",
-      "sending": "Envoi…",
-      "record": "Enregistrer",
-      "setting_up": "Configuration du paiement sécurisé…",
-      "continue_to_payment": "Continuer vers le paiement",
-      "pay_invoice": "Payer la facture",
-      "amount_due": "Montant dû"
-    },
     "onboarding": {
       "title": "Créez votre espace de travail",
       "description": "Un espace par entreprise de construction. Vous serez le propriétaire.",
       "company_name": "Nom de l'entreprise",
       "placeholder": "Acme Construction SARL",
       "create_workspace": "Créer l'espace"
-    },
-    "payroll": {
-      "title": "Paie",
-      "description": "Générer les bulletins de paie à partir des présences et des règles de paie.",
-      "generate_payslips": "Générer les bulletins",
-      "payslips": "Bulletins",
-      "total_net": "Total net",
-      "paid": "Payé",
-      "period": "Période",
-      "mark_paid": "Marquer payé",
-      "no_payslips": "Aucun bulletin pour cette période, cliquez sur Générer.",
-      "employee": "Employé",
-      "base": "Base",
-      "hours": "Heures",
-      "overtime_pay": "Heures sup.",
-      "tax": "Impôt",
-      "net_pay": "Net à payer",
-      "status": "Statut",
-      "action": "Action"
-    },
-    "procurement": {
-      "title": "Approvisionnement",
-      "description": "Approuver ou rejeter les bons de commande. Les BC approuvés sont comptabilisés en dépenses.",
-      "po_number": "N° BC",
-      "supplier": "Fournisseur",
-      "total": "Total",
-      "requested": "Demandé",
-      "status": "Statut",
-      "action": "Action",
-      "mark_received": "Marquer reçu",
-      "new_po": "Nouveau bon de commande",
-      "edit_po": "Modifier le bon de commande",
-      "po_number_label": "Numéro du BC",
-      "total_amount": "Montant total",
-      "request_date": "Date de demande",
-      "select_supplier": "Sélectionner…"
-    },
-    "settings": {
-      "title": "Paramètres",
-      "description": "Profil, équipe et rôles, règles de paie, informations de l'entreprise.",
-      "my_profile": "Mon profil",
-      "users_roles": "Utilisateurs et rôles",
-      "permissions": "Permissions",
-      "payroll_rules": "Règles de paie",
-      "company": "Entreprise",
-      "notifications": "Notifications",
-      "upload_checks": "Vérifications de téléchargement",
-      "audit_log": "Journal d'audit",
-      "create_user": "Créer un utilisateur",
-      "create_user_account": "Créer un compte utilisateur",
-      "create_description": "Créer un accès employé ou client et le lier à un enregistrement employé/client.",
-      "temporary_password": "Mot de passe temporaire",
-      "link_employee": "Lier à un employé",
-      "no_employee_link": "Aucun lien employé",
-      "link_client": "Lier au portail client",
-      "no_client_link": "Aucun lien client",
-      "creating": "Création…",
-      "create_account": "Créer le compte",
-      "save_rules": "Enregistrer les règles",
-      "admins_only": "Administrateurs uniquement.",
-      "run_checks": "Lancer les vérifications",
-      "upload_permissions": "Vérification des permissions de téléchargement"
     }
+  },
+  "services_page": {
+    "meta_title": "Services de construction — Scer-L/Construct Sarl",
+    "meta_desc": "Construction commerciale, résidentielle, industrielle et rénovation. Conception-réalisation, gestion de projet et pré-construction.",
+    "badge": "Agréé · Cautionné · Assuré",
+    "title": "Services de construction, de A à Z.",
+    "subtitle": "De la rénovation d'une maison à un campus de plusieurs tours, notre équipe intégrée gère la conception, la pré-construction, les travaux et la réception.",
+    "cta_quote": "Demander un devis",
+    "cta_projects": "Voir nos réalisations",
+    "quote_for_this": "Demander un devis pour ce service",
+    "process_title": "Notre méthode",
+    "process_subtitle": "Un processus prévisible et transparent, affiné en 25 ans et plus de 500 chantiers livrés.",
+    "final_title": "Un projet en tête ?",
+    "final_subtitle": "Envoyez-nous votre cahier des charges — nous répondons sous 24 heures avec les prochaines étapes et une fourchette budgétaire sans engagement.",
+    "items": {
+      "commercial": {
+        "title": "Construction commerciale",
+        "desc": "Tours de bureaux, centres commerciaux, hôtels et immeubles mixtes livrés clé en main.",
+        "p1": "Construction neuve",
+        "p2": "Aménagement de locaux",
+        "p3": "Bâtiment durable & LEED",
+        "p4": "Conception-réalisation"
+      },
+      "residential": {
+        "title": "Construction résidentielle",
+        "desc": "Maisons personnalisées, immeubles multi-familiaux et rénovations haut de gamme.",
+        "p1": "Maisons de prestige sur mesure",
+        "p2": "Logements multi-familiaux",
+        "p3": "Rénovations complètes",
+        "p4": "Agrandissements & extensions"
+      },
+      "industrial": {
+        "title": "Industriel & infrastructures",
+        "desc": "Entrepôts, usines, travaux de génie civil et grandes infrastructures.",
+        "p1": "Entrepôts & distribution",
+        "p2": "Unités de production",
+        "p3": "Routes, ponts & réseaux",
+        "p4": "Aménagement de sites"
+      },
+      "renovation": {
+        "title": "Rénovation & restauration",
+        "desc": "Réutilisation adaptative, restauration patrimoniale et réaménagements intérieurs complets.",
+        "p1": "Restauration patrimoniale",
+        "p2": "Réutilisation adaptative",
+        "p3": "Réaménagement intérieur",
+        "p4": "Renforcement parasismique"
+      },
+      "design": {
+        "title": "Conception-réalisation & pré-construction",
+        "desc": "Du concept et de la faisabilité aux permis et au budget — une seule équipe, un seul contrat responsable.",
+        "p1": "Faisabilité & choix du site",
+        "p2": "Coordination architecturale",
+        "p3": "Permis & autorisations",
+        "p4": "Coûts & ingénierie de la valeur"
+      },
+      "management": {
+        "title": "Gestion de projet & de chantier",
+        "desc": "Maîtrise d'œuvre complète, assistance au maître d'ouvrage et supervision de chantier.",
+        "p1": "Maîtrise des délais & des coûts",
+        "p2": "Gestion des sous-traitants",
+        "p3": "Qualité & sécurité",
+        "p4": "Réception & livraison"
+      }
+    },
+    "process": {
+      "s1_t": "Consultation",
+      "s1_d": "Nous venons sur site, écoutons vos objectifs et évaluons les contraintes.",
+      "s2_t": "Conception & chiffrage",
+      "s2_d": "Plans, spécifications et une offre détaillée et transparente.",
+      "s3_t": "Réalisation",
+      "s3_d": "Journaux quotidiens, rapports hebdomadaires et un chef de projet dédié.",
+      "s4_t": "Réception & suivi",
+      "s4_d": "Levée des réserves, garantie et 24 mois d'accompagnement après livraison."
+    }
+  },
+  "projects_page": {
+    "meta_title": "Nos projets — Scer-L/Construct Sarl",
+    "meta_desc": "Projets de construction : commercial, résidentiel, industriel, infrastructures et restauration patrimoniale.",
+    "title": "Projets sélectionnés",
+    "subtitle": "Découvrez notre portefeuille de chantiers livrés et en cours. Utilisez les filtres pour affiner par catégorie, statut ou nom.",
+    "search_placeholder": "Rechercher un projet…",
+    "clear_filters": "Effacer les filtres",
+    "clear_all": "Effacer tous les filtres",
+    "count_found": "{{count}} projet(s) trouvé(s)",
+    "count_total": "{{count}} projet(s) au total",
+    "empty_title": "Aucun projet correspondant",
+    "empty_desc": "Essayez d'ajuster votre recherche ou vos filtres.",
+    "featured": "À la une",
+    "view_details": "Voir le détail",
+    "cta_title": "Un projet vous inspire ?",
+    "cta_desc": "Parlez-nous de votre projet et nous partagerons des références comparables et une fourchette budgétaire.",
+    "cta_button": "Demander un devis",
+    "cat": {
+      "all": "Tous les projets",
+      "commercial": "Commercial",
+      "residential": "Résidentiel",
+      "industrial": "Industriel",
+      "renovation": "Rénovation",
+      "infrastructure": "Infrastructures"
+    },
+    "status": {
+      "all": "Tous",
+      "completed": "Livré",
+      "in-progress": "En cours"
+    },
+    "sort": {
+      "newest": "Plus récents",
+      "oldest": "Plus anciens",
+      "az": "A → Z"
+    }
+  },
+  "contact_page": {
+    "meta_title": "Contact & demande de devis — Scer-L/Construct Sarl",
+    "meta_desc": "Obtenez un devis gratuit et sans engagement pour votre projet de construction. Réponse sous 24 heures.",
+    "badge": "Réponse sous 24 h · Visite de site gratuite",
+    "title": "Construisons quelque chose d'exceptionnel.",
+    "subtitle": "Devis pour une construction neuve, discussion autour d'une rénovation ou question sur un chantier en cours — notre équipe est à votre écoute.",
+    "reach": "Contacter notre équipe",
+    "hours": "Lun–Sam · 7h à 19h",
+    "for_bids": "Appels d'offres & demandes générales",
+    "head_office": "Siège social",
+    "client_title": "Déjà client ou membre de l'équipe ?",
+    "client_desc": "Connectez-vous au portail pour consulter plans, demandes, factures et pointages.",
+    "open_portal": "Ouvrir le portail",
+    "next_title": "Et ensuite ?",
+    "next_1": "1. Un chef de projet examine votre demande.",
+    "next_2": "2. Nous planifions une consultation gratuite de 30 min.",
+    "next_3": "3. Vous recevez une proposition détaillée et chiffrée.",
+    "tab_quote": "Demander un devis",
+    "tab_contact": "Demande générale",
+    "done_title": "Message bien reçu",
+    "done_desc": "Un membre de notre équipe vous répondra sous un jour ouvrable.",
+    "send_another": "Envoyer un autre message",
+    "full_name": "Nom complet *",
+    "email": "E-mail *",
+    "phone": "Téléphone",
+    "company": "Société",
+    "project_type": "Type de projet",
+    "budget": "Fourchette budgétaire",
+    "select": "Sélectionner…",
+    "location": "Lieu du projet",
+    "location_ph": "Ville, région",
+    "type_residential": "Résidentiel",
+    "type_commercial": "Commercial",
+    "type_industrial": "Industriel",
+    "type_renovation": "Rénovation / Aménagement",
+    "type_infrastructure": "Infrastructures",
+    "desc_quote": "Description du projet *",
+    "desc_contact": "Message *",
+    "ph_quote": "Périmètre, délais, superficie, exigences particulières…",
+    "ph_contact": "Comment pouvons-nous vous aider ?",
+    "sending": "Envoi…",
+    "submit_quote": "Envoyer la demande de devis",
+    "submit_contact": "Envoyer le message",
+    "consent": "En soumettant ce formulaire, vous acceptez d'être contacté au sujet de votre demande.",
+    "err_name": "Veuillez saisir votre nom",
+    "err_email": "Adresse e-mail valide requise",
+    "err_message": "Donnez-nous un peu plus de détails sur votre projet",
+    "err_invalid": "Formulaire invalide",
+    "success": "Merci — nous vous recontactons sous 24 heures."
   }
 }
