@@ -181,7 +181,7 @@ function UploadChecksTab() {
         await cleanupDocument(photoId, photoUpload.error ? null : photoPath);
       }
 
-      toast.success("Upload permission checks completed");
+      toast.success(t("d.settings.checks_completed"));
     } finally {
       setRunning(false);
     }
@@ -197,7 +197,7 @@ function UploadChecksTab() {
           <div>
             <Label>{t("d.settings.upload_permissions")}</Label>
             <Select value={projectId || projects?.[0]?.id || ""} onValueChange={setProjectId}>
-              <SelectTrigger className="mt-1"><SelectValue placeholder="Select a project" /></SelectTrigger>
+              <SelectTrigger className="mt-1"><SelectValue placeholder={t("d.settings.select_project")} /></SelectTrigger>
               <SelectContent>{(projects ?? []).map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent>
             </Select>
           </div>
@@ -206,7 +206,7 @@ function UploadChecksTab() {
           </div>
         </div>
         <div className="rounded-md border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
-          Current role set: {roles.length ? roles.join(", ") : "none"}. The check uses your live session, creates temporary test files/records, verifies read and signed preview access, then removes them.
+          {t("d.settings.current_role_set")}: {roles.length ? roles.join(", ") : "—"}. {t("d.settings.checks_desc")}
         </div>
         <div className="space-y-2">
           {results.map((r) => (
@@ -216,10 +216,10 @@ function UploadChecksTab() {
                 <div className="font-medium">{r.name}</div>
                 <div className="break-words text-xs text-muted-foreground">{r.message}</div>
               </div>
-              <Badge variant={r.ok ? "secondary" : "destructive"}>{r.ok ? "Pass" : "Fail"}</Badge>
+              <Badge variant={r.ok ? "secondary" : "destructive"}>{r.ok ? t("d.settings.pass") : t("d.settings.fail")}</Badge>
             </div>
           ))}
-          {results.length === 0 && <div className="rounded-md border border-dashed border-border p-8 text-center text-sm text-muted-foreground">Run the checks to validate uploads and visibility for your current role.</div>}
+          {results.length === 0 && <div className="rounded-md border border-dashed border-border p-8 text-center text-sm text-muted-foreground">{t("d.settings.checks_desc")}</div>}
         </div>
       </CardContent>
     </Card>
@@ -254,7 +254,7 @@ function AuditTab() {
   return (
     <Card>
       <CardHeader className="space-y-3">
-        <CardTitle className="text-base">Recent activity ({rows.length})</CardTitle>
+        <CardTitle className="text-base">{t("d.settings.recent_activity")} ({rows.length})</CardTitle>
         <div className="flex flex-wrap gap-2">
           {AUDIT_FILTERS.map((f) => (
             <button
@@ -272,11 +272,11 @@ function AuditTab() {
         <table className="w-full text-sm">
           <thead className="border-b border-border bg-muted/40 text-left text-xs uppercase text-muted-foreground">
             <tr>
-              <th className="px-4 py-2">When</th>
-              <th className="px-4 py-2">Actor</th>
-              <th className="px-4 py-2">Action</th>
-              <th className="px-4 py-2">Target</th>
-              <th className="px-4 py-2">Details</th>
+              <th className="px-4 py-2">{t("d.settings.when")}</th>
+              <th className="px-4 py-2">{t("d.settings.actor")}</th>
+              <th className="px-4 py-2">{t("d.settings.action")}</th>
+              <th className="px-4 py-2">{t("d.settings.target")}</th>
+              <th className="px-4 py-2">{t("d.settings.details")}</th>
             </tr>
           </thead>
           <tbody>
@@ -295,7 +295,7 @@ function AuditTab() {
                 </tr>
               );
             })}
-            {rows.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-muted-foreground">No activity yet.</td></tr>}
+            {rows.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-muted-foreground">{t("d.settings.no_activity")}</td></tr>}
 
           </tbody>
         </table>
@@ -314,13 +314,13 @@ function ProfileTab() {
     const { error } = await supabase.from("profiles").update(v).eq("id", user.id);
     if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["auth-profile"] });
-    toast.success("Profile updated");
+    toast.success(t("d.settings.profile_updated"));
   };
   return (
     <Card><CardHeader>          <CardTitle className="text-base">{t("d.settings.my_profile")}</CardTitle></CardHeader><CardContent className="space-y-3 max-w-lg">
       <div><Label>{t("d.common.email")}</Label><Input value={profile?.email ?? ""} disabled className="mt-1" /></div>
-      <div><Label>Full name</Label><Input value={v.full_name} onChange={(e) => setV({ ...v, full_name: e.target.value })} className="mt-1" /></div>
-      <div><Label>Phone</Label><Input value={v.phone} onChange={(e) => setV({ ...v, phone: e.target.value })} className="mt-1" /></div>
+      <div><Label>{t("d.common.full_name")}</Label><Input value={v.full_name} onChange={(e) => setV({ ...v, full_name: e.target.value })} className="mt-1" /></div>
+      <div><Label>{t("d.common.phone")}</Label><Input value={v.phone} onChange={(e) => setV({ ...v, phone: e.target.value })} className="mt-1" /></div>
       <Button onClick={save}>{t("d.common.save")}</Button>
     </CardContent></Card>
   );
@@ -342,7 +342,7 @@ function UsersTab() {
     const { error } = await supabase.from("profiles" as never).update({ knock_user_id: knockId || null } as never).eq("id", userId);
     if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["company-profiles"] });
-    toast.success("Knock user ID saved");
+    toast.success(t("d.settings.knock_id_saved"));
   };
   const { data: roles } = useQuery({
     queryKey: ["all-roles"],
@@ -365,7 +365,7 @@ function UsersTab() {
     if (error) return toast.error(error.message);
     await recordAudit({ action: "role.assign", entity_type: "user", entity_id: userId, metadata: { role } });
     qc.invalidateQueries({ queryKey: ["all-roles"] });
-    toast.success("Role assigned");
+    toast.success(t("d.settings.role_assigned"));
   };
   const removeRole = async (id: string) => {
     const target = (roles ?? []).find((r) => r.id === id);
@@ -380,7 +380,7 @@ function UsersTab() {
     setCreating(true);
     try {
       await createUser({ data: draft });
-      toast.success("User created and role assigned");
+      toast.success(t("d.settings.user_created"));
       setCreateOpen(false);
       setDraft({ email: "", password: "", fullName: "", phone: "", role: "employee", employeeId: "", clientId: "" });
       qc.invalidateQueries({ queryKey: ["company-profiles"] });
@@ -388,7 +388,7 @@ function UsersTab() {
       qc.invalidateQueries({ queryKey: ["employees-user-link"] });
       qc.invalidateQueries({ queryKey: ["clients-user-link"] });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Could not create user");
+      toast.error(error instanceof Error ? error.message : t("d.settings.create_error"));
     } finally {
       setCreating(false);
     }
@@ -446,7 +446,7 @@ function UsersTab() {
             <div className="sm:col-span-2"><Label>{t("d.settings.link_client")}</Label><Select value={draft.clientId || "none"} onValueChange={(clientId) => setDraft({ ...draft, clientId: clientId === "none" ? "" : clientId, role: clientId === "none" ? draft.role : "client" })}><SelectTrigger className="mt-1"><SelectValue placeholder="Optional" /></SelectTrigger>              <SelectContent><SelectItem value="none">{t("d.settings.no_client_link")}</SelectItem>{(clients ?? []).map((c) => <SelectItem key={c.id} value={c.id}>{c.name} {c.email ? `· ${c.email}` : ""}</SelectItem>)}</SelectContent></Select></div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setCreateOpen(false)}>{t("d.common.cancel")}</Button>
             <Button onClick={submitCreate} disabled={creating || !draft.email || !draft.password || !draft.fullName}>{creating ? t("d.settings.creating") : t("d.settings.create_account")}</Button>
           </DialogFooter>
         </DialogContent>
@@ -473,7 +473,7 @@ function PayrollRulesTab() {
     const { error } = await q;
     if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["payroll-rules"] });
-    toast.success("Rules saved");
+    toast.success(t("d.settings.rules_saved"));
   };
   const num = (k: string) => (
     <div><Label>{k.replace(/_/g, " ")}</Label>
@@ -489,7 +489,7 @@ function PayrollRulesTab() {
         {num("late_penalty_per_hour")}
         {num("absence_deduction_per_day")}
         {num("tax_rate")}
-        <div className="sm:col-span-2"><Label>Currency</Label>
+        <div className="sm:col-span-2"><Label>{t("d.settings.currency")}</Label>
           <Input className="mt-1" value={String(cur.currency ?? "USD")} onChange={(e) => setV({ ...v, currency: e.target.value })} />
         </div>
         <div className="sm:col-span-2"><Button onClick={save}>{t("d.settings.save_rules")}</Button></div>
@@ -514,17 +514,17 @@ function CompanyTab() {
     const { error } = await supabase.from("companies").update(v as never).eq("id", profile.company_id);
     if (error) return toast.error(error.message);
     qc.invalidateQueries({ queryKey: ["company", profile.company_id] });
-    toast.success("Saved");
+    toast.success(t("d.settings.saved"));
   };
   return (
-    <Card><CardHeader><CardTitle className="text-base">Company</CardTitle></CardHeader>
+    <Card><CardHeader><CardTitle className="text-base">{t("d.settings.company")}</CardTitle></CardHeader>
       <CardContent className="grid gap-3 max-w-2xl sm:grid-cols-2">
         {["name", "email", "phone", "address", "tax_number"].map((k) => (
-          <div key={k} className={k === "address" ? "sm:col-span-2" : ""}><Label>{k.replace("_", " ")}</Label>
+          <div key={k} className={k === "address" ? "sm:col-span-2" : ""}><Label>{t("d.common." + k) || k.replace("_", " ")}</Label>
             <Input className="mt-1" value={String(cur[k] ?? "")} onChange={(e) => setV({ ...v, [k]: e.target.value })} />
           </div>
         ))}
-        <div className="sm:col-span-2"><Button onClick={save}>Save</Button></div>
+        <div className="sm:col-span-2"><Button onClick={save}>{t("d.common.save")}</Button></div>
       </CardContent>
     </Card>
   );
@@ -564,12 +564,13 @@ type NotificationTemplateRow = {
   enabled: boolean;
 };
 
-const NOTIF_TYPE_LABELS: Record<string, string> = {
-  task_assigned: "Task Assignment",
-  task_status_changed: "Task Status Change",
-  invoice_due: "Invoice Due Soon",
-  invoice_overdue: "Invoice Overdue",
-  requisition_approval: "Requisition Approval",
+// Labels use i18n keys: d.settings.notif_type_*
+const NOTIF_TYPE_KEYS: Record<string, string> = {
+  task_assigned: "d.settings.notif_type_task_assigned",
+  task_status_changed: "d.settings.notif_type_task_status_changed",
+  invoice_due: "d.settings.notif_type_invoice_due",
+  invoice_overdue: "d.settings.notif_type_invoice_overdue",
+  requisition_approval: "d.settings.notif_type_requisition_approval",
 };
 
 const NOTIF_TYPE_ICONS: Record<string, string> = {
@@ -581,6 +582,7 @@ const NOTIF_TYPE_ICONS: Record<string, string> = {
 };
 
 function NotificationsTab() {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const qc = useQueryClient();
   const [saving, setSaving] = useState(false);
@@ -816,12 +818,12 @@ function NotificationsTab() {
       qc.invalidateQueries({ queryKey: ["notification-templates"] });
       refetchTypes();
       refetchTemplates();
-      toast.success("Notification settings saved");
+      toast.success(t("d.settings.notif_saved"));
       setLocal({});
       setTypeChanges(new Map());
       setTemplateChanges(new Map());
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to save");
+      toast.error(err instanceof Error ? err.message : t("d.settings.save_failed"));
     } finally {
       setSaving(false);
     }
@@ -842,7 +844,7 @@ function NotificationsTab() {
             activeSection === "reminders" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
           }`}
         >
-          📧 Invoice Reminders
+          {t("d.settings.invoice_reminders")}
         </button>
         <button
           onClick={() => setActiveSection("types")}
@@ -850,7 +852,7 @@ function NotificationsTab() {
             activeSection === "types" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
           }`}
         >
-          🔔 Notification Types
+          {t("d.settings.notification_types")}
         </button>
         <button
           onClick={() => setActiveSection("templates")}
@@ -858,7 +860,7 @@ function NotificationsTab() {
             activeSection === "templates" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
           }`}
         >
-          ✏️ Email Templates
+          {t("d.settings.email_templates")}
         </button>
       </div>
 
@@ -868,17 +870,16 @@ function NotificationsTab() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base"><Bell className="h-4 w-4" /> Invoice Email Reminders</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Configure when automatic email reminders are sent for overdue invoices.
-              These settings control the Knock notification workflows.
+              {t("d.settings.reminders_desc")}
             </p>
           </CardHeader>
           <CardContent className="space-y-6 max-w-2xl">
             {/* Enable/Disable */}
             <div className="flex items-center justify-between rounded-lg border border-border p-4">
               <div>
-                <div className="font-medium">Automatic Reminders</div>
+                <div className="font-medium">{t("d.settings.automatic_reminders")}</div>
                 <div className="text-sm text-muted-foreground">
-                  {cur.enabled ? "Reminders are active — the system will check for overdue invoices on every dashboard load." : "Reminders are paused — no emails will be sent automatically."}
+                  {cur.enabled ? t("d.settings.reminders_active") : t("d.settings.reminders_paused")}
                 </div>
               </div>
               <Switch checked={cur.enabled} onCheckedChange={(v) => update({ enabled: v })} />
@@ -890,8 +891,8 @@ function NotificationsTab() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="rounded-lg border border-border p-4 space-y-2">
-                  <Label className="text-sm">Due Soon Reminder</Label>
-                  <p className="text-xs text-muted-foreground">Send when invoice is due within N days</p>
+                  <Label className="text-sm">{t("d.settings.due_soon")}</Label>
+                  <p className="text-xs text-muted-foreground">{t("d.settings.due_soon_desc")}</p>
                   <div className="flex items-center gap-2">
                     <Input
                       type="number"
@@ -901,13 +902,13 @@ function NotificationsTab() {
                       value={cur.due_soon_days}
                       onChange={(e) => update({ due_soon_days: Number(e.target.value) || 3 })}
                     />
-                    <span className="text-sm text-muted-foreground">days before due</span>
+                    <span className="text-sm text-muted-foreground">{t("d.settings.days_before")}</span>
                   </div>
                 </div>
 
                 <div className="rounded-lg border border-border p-4 space-y-2">
-                  <Label className="text-sm">First Overdue Reminder</Label>
-                  <p className="text-xs text-muted-foreground">Send N days after the due date</p>
+                  <Label className="text-sm">{t("d.settings.first_overdue")}</Label>
+                  <p className="text-xs text-muted-foreground">{t("d.settings.first_overdue_desc")}</p>
                   <div className="flex items-center gap-2">
                     <Input
                       type="number"
@@ -917,13 +918,13 @@ function NotificationsTab() {
                       value={cur.overdue_first_days}
                       onChange={(e) => update({ overdue_first_days: Number(e.target.value) || 1 })}
                     />
-                    <span className="text-sm text-muted-foreground">days overdue</span>
+                    <span className="text-sm text-muted-foreground">{t("d.settings.days_overdue")}</span>
                   </div>
                 </div>
 
                 <div className="rounded-lg border border-border p-4 space-y-2">
-                  <Label className="text-sm">Follow-up Reminder</Label>
-                  <p className="text-xs text-muted-foreground">Second reminder N days after due date</p>
+                  <Label className="text-sm">{t("d.settings.followup")}</Label>
+                  <p className="text-xs text-muted-foreground">{t("d.settings.followup_desc")}</p>
                   <div className="flex items-center gap-2">
                     <Input
                       type="number"
@@ -938,8 +939,8 @@ function NotificationsTab() {
                 </div>
 
                 <div className="rounded-lg border border-border p-4 space-y-2">
-                  <Label className="text-sm">Final Notice</Label>
-                  <p className="text-xs text-muted-foreground">Last reminder N days after due date</p>
+                  <Label className="text-sm">{t("d.settings.final_notice")}</Label>
+                  <p className="text-xs text-muted-foreground">{t("d.settings.final_notice_desc")}</p>
                   <div className="flex items-center gap-2">
                     <Input
                       type="number"
@@ -957,7 +958,7 @@ function NotificationsTab() {
 
             {/* Recipient Roles */}
             <div className="space-y-3">
-              <div className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Email Recipients</div>
+              <div className="text-sm font-medium text-muted-foreground uppercase tracking-wide">{t("d.settings.email_recipients")}</div>
               <p className="text-xs text-muted-foreground">Select which roles receive invoice reminder emails.</p>
               <div className="grid gap-2 sm:grid-cols-2">
                 {ALL_ROLES.map((role) => {
@@ -984,13 +985,13 @@ function NotificationsTab() {
 
             {/* Preview */}
             <div className="rounded-lg border border-border bg-muted/30 p-4 space-y-2">
-              <div className="text-sm font-medium">Schedule Preview</div>
+              <div className="text-sm font-medium">{t("d.settings.schedule_preview")}</div>
               <div className="text-xs text-muted-foreground space-y-1">
-                <div>📧 <strong>Due soon:</strong> {cur.due_soon_days} day{cur.due_soon_days !== 1 ? "s" : ""} before due date</div>
-                <div>🔴 <strong>First overdue:</strong> {cur.overdue_first_days} day{cur.overdue_first_days !== 1 ? "s" : ""} after due date</div>
-                <div>🟡 <strong>Follow-up:</strong> {cur.overdue_followup_days} days after due date</div>
-                <div>🚨 <strong>Final notice:</strong> {cur.overdue_final_days} days after due date</div>
-                <div>👥 <strong>Recipients:</strong> {cur.recipient_roles.length > 0 ? cur.recipient_roles.map((r) => r.replace(/_/g, " ")).join(", ") : "None selected"}</div>
+                <div>📧 <strong>{t("d.settings.due_soon_short")}:</strong> {cur.due_soon_days} day{cur.due_soon_days !== 1 ? "s" : ""} before due date</div>
+                <div>🔴 <strong>{t("d.settings.first_overdue_short")}:</strong> {cur.overdue_first_days} day{cur.overdue_first_days !== 1 ? "s" : ""} after due date</div>
+                <div>🟡 <strong>{t("d.settings.followup_short")}:</strong> {cur.overdue_followup_days} days after due date</div>
+                <div>🚨 <strong>{t("d.settings.final_notice_short")}:</strong> {cur.overdue_final_days} days after due date</div>
+                <div>👥 <strong>{t("d.settings.recipients_short")}:</strong> {cur.recipient_roles.length > 0 ? cur.recipient_roles.map((r) => r.replace(/_/g, " ")).join(", ") : t("d.settings.none_selected")}</div>
               </div>
             </div>
           </CardContent>
@@ -1003,11 +1004,11 @@ function NotificationsTab() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">🔔 Notification Types</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Enable or disable specific notification types and configure delivery channels and recipients.
+              {t("d.settings.notif_types_desc")}
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
-            {Object.entries(NOTIF_TYPE_LABELS).map(([typeKey, label]) => {
+            {Object.entries(NOTIF_TYPE_KEYS).map(([typeKey, i18nKey]) => {
               const setting = getTypeSetting(typeKey);
               return (
                 <div key={typeKey} className="rounded-lg border border-border p-4 space-y-3">
@@ -1015,7 +1016,7 @@ function NotificationsTab() {
                     <div className="flex items-center gap-3">
                       <span className="text-xl">{NOTIF_TYPE_ICONS[typeKey]}</span>
                       <div>
-                        <div className="font-medium">{label}</div>
+                        <div className="font-medium">{t(i18nKey)}</div>
                         <div className="text-xs text-muted-foreground">{typeKey}</div>
                       </div>
                     </div>
@@ -1028,7 +1029,7 @@ function NotificationsTab() {
                   {setting.enabled && (
                     <div className="grid gap-3 sm:grid-cols-2 pl-10">
                       <div className="space-y-2">
-                        <Label className="text-xs font-medium text-muted-foreground">Delivery Channels</Label>
+                        <Label className="text-xs font-medium text-muted-foreground">{t("d.settings.delivery_channels")}</Label>
                         <div className="flex items-center gap-4">
                           <label className="flex items-center gap-2 text-sm">
                             <Switch
@@ -1049,7 +1050,7 @@ function NotificationsTab() {
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-xs font-medium text-muted-foreground">Recipients</Label>
+                        <Label className="text-xs font-medium text-muted-foreground">{t("d.settings.recipients_label")}</Label>
                         <div className="flex flex-wrap gap-1.5">
                           {ALL_ROLES.map((role) => {
                             const active = setting.recipient_roles.includes(role);
@@ -1082,13 +1083,13 @@ function NotificationsTab() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">✏️ Email Templates</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Customize the subject and body of notification emails. Use &#123;&#123;variableName&#125;&#125; for dynamic content.
+              {t("d.settings.email_template_desc")} Use &#123;&#123;variableName&#125;&#125; for dynamic content.
               Available variables depend on the notification type.
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
-              <strong>Template Variables:</strong> {'{{taskName}}'}, {'{{projectName}}'}, {'{{dueDate}}'}, {'{{oldStatus}}'}, {'{{newStatus}}'}, {'{{invoiceNumber}}'}, {'{{amount}}'}, {'{{daysOverdue}}'}, {'{{requisitionNumber}}'} — Use &#123;&#123;#if variable&#125;&#125;...&#123;&#123;/if&#125;&#125; for conditional blocks.
+              <strong>{t("d.settings.template_variables")}:</strong> {'{{taskName}}'}, {'{{projectName}}'}, {'{{dueDate}}'}, {'{{oldStatus}}'}, {'{{newStatus}}'}, {'{{invoiceNumber}}'}, {'{{amount}}'}, {'{{daysOverdue}}'}, {'{{requisitionNumber}}'} — Use &#123;&#123;#if variable&#125;&#125;...&#123;&#123;/if&#125;&#125; for conditional blocks.
             </div>
 
             {Object.entries(TEMPLATE_DEFAULTS).map(([templateKey, defaults]) => {
@@ -1107,13 +1108,13 @@ function NotificationsTab() {
                           onCheckedChange={(v) => updateTemplate(templateKey, { enabled: v })}
                           className="scale-75"
                         />
-                        Enabled
+                        {t("d.settings.enabled")}
                       </label>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-xs font-medium">Subject</Label>
+                    <Label className="text-xs font-medium">{t("d.settings.subject")}</Label>
                     <Input
                       value={tpl.subject}
                       onChange={(e) => updateTemplate(templateKey, { subject: e.target.value })}
@@ -1122,7 +1123,7 @@ function NotificationsTab() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-xs font-medium">Body</Label>
+                    <Label className="text-xs font-medium">{t("d.settings.body")}</Label>
                     <Textarea
                       value={tpl.body}
                       onChange={(e) => updateTemplate(templateKey, { body: e.target.value })}
@@ -1141,12 +1142,12 @@ function NotificationsTab() {
       <div className="flex items-center justify-end gap-3 sticky bottom-4 z-10">
         {(typeChanges.size > 0 || templateChanges.size > 0 || (local && Object.keys(local).length > 0)) && (
           <div className="text-xs text-muted-foreground bg-background/80 backdrop-blur rounded-md px-3 py-1.5 border border-border">
-            Unsaved changes
+            {t("d.settings.unsaved_changes")}
           </div>
         )}
         <Button onClick={saveAll} disabled={saving} className="shadow-lg">
           <Save className="mr-2 h-4 w-4" />
-          {saving ? "Saving…" : "Save All Settings"}
+          {saving ? t("d.settings.saving") : t("d.settings.save_all")}
         </Button>
       </div>
     </div>
@@ -1191,6 +1192,7 @@ function groupPermissions(keys: PermissionKeyItem[]) {
 }
 
 function PermissionsTab() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const qc = useQueryClient();
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -1290,7 +1292,7 @@ function PermissionsTab() {
     try {
       const { data: profile } = await supabase.from("profiles").select("company_id").eq("id", user.id).single();
       if (!profile?.company_id) {
-        toast.error("No company associated with your account");
+        toast.error(t("d.settings.no_company"));
         return;
       }
       await supabase.from("user_permissions" as never).delete().eq("user_id" as never, selectedUserId as never).eq("company_id" as never, profile.company_id as never);
@@ -1301,7 +1303,7 @@ function PermissionsTab() {
         const { error } = await supabase.from("user_permissions" as never).insert(grantedPermissions as never);
         if (error) throw error;
       }
-      toast.success("Permissions saved");
+      toast.success(t("d.settings.permissions_saved"));
       refetchPermissions();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to save");
@@ -1321,8 +1323,8 @@ function PermissionsTab() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base"><ShieldCheck className="h-4 w-4" /> User Permissions</CardTitle>
-        <p className="text-sm text-muted-foreground">Control what each user can see and do. Super admins and company owners always have full access.</p>
+        <CardTitle className="flex items-center gap-2 text-base"><ShieldCheck className="h-4 w-4" />{t("d.settings.user_permissions")}</CardTitle>
+        <p className="text-sm text-muted-foreground">{t("d.settings.permissions_desc")}</p>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4 lg:grid-cols-[280px_1fr]">
@@ -1330,7 +1332,7 @@ function PermissionsTab() {
           <div className="space-y-2">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input placeholder="Search users..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9" />
+              <Input placeholder={t("d.settings.search_users")} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9" />
             </div>
             <div className="max-h-[400px] space-y-1 overflow-y-auto">
               {(filteredProfiles ?? []).map((p) => {
@@ -1338,7 +1340,7 @@ function PermissionsTab() {
                 const isSelected = selectedUserId === p.id;
                 return (
                   <button key={p.id} onClick={() => setSelectedUserId(p.id)} className={`w-full rounded-lg p-2.5 text-left transition ${isSelected ? "bg-primary/10 border border-primary/30" : "hover:bg-muted border border-transparent"}`}>
-                    <div className="text-sm font-medium truncate">{p.full_name || "Unnamed"}</div>
+                    <div className="text-sm font-medium truncate">{p.full_name || t("d.settings.unnamed")}</div>
                     <div className="text-xs text-muted-foreground truncate">{p.email}</div>
                     {userRole && <Badge variant="secondary" className="mt-1 text-[10px]">{userRole.role.replace(/_/g, " ")}</Badge>}
                   </button>
@@ -1351,7 +1353,7 @@ function PermissionsTab() {
           {!selectedUserId ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Users className="h-10 w-10 text-muted-foreground" />
-              <p className="mt-3 text-sm text-muted-foreground">Select a user to configure permissions</p>
+              <p className="mt-3 text-sm text-muted-foreground">{t("d.settings.select_user")}</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -1359,12 +1361,12 @@ function PermissionsTab() {
                 <div>
                   <div className="font-medium">{selectedProfile?.full_name || selectedProfile?.email}</div>
                   <div className="text-xs text-muted-foreground">
-                    {selectedRoles.length > 0 ? selectedRoles.map((r) => r.role.replace(/_/g, " ")).join(", ") : "No role"}
+                    {selectedRoles.length > 0 ? selectedRoles.map((r) => r.role.replace(/_/g, " ")).join(", ") : t("d.settings.no_role")}
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => refetchPermissions()}><RefreshCw className="mr-1.5 h-3.5 w-3.5" /> Refresh</Button>
-                  <Button size="sm" onClick={savePermissions} disabled={saving}><Save className="mr-1.5 h-3.5 w-3.5" /> {saving ? "Saving..." : "Save"}</Button>
+                  <Button size="sm" onClick={savePermissions} disabled={saving}><Save className="mr-1.5 h-3.5 w-3.5" /> {saving ? t("d.settings.saving_dots") : t("d.common.save")}</Button>
                 </div>
               </div>
 
