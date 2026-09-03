@@ -701,5 +701,43 @@
     "err_message": "Tell us a bit more about your project",
     "err_invalid": "Invalid form",
     "success": "Thank you — we'll be in touch within 24 hours."
+  },
+  "about": {
+    "badge": "25+ years in business",
+    "title": "A construction company built on trust, craft and discipline.",
+    "subtitle": "Scer-L/Construct Sarl is a full-service general contractor delivering commercial, residential, industrial and infrastructure projects across the region. We're family-founded, employee-owned, and proudly hands-on.",
+    "cta_work": "See our work",
+    "cta_talk": "Talk to our team",
+    "stat_years_value": "25 yrs",
+    "story_title": "Our story",
+    "story_p1": "Founded in 1998 with a single pickup truck and a four-person framing crew, Scer-L/Construct has grown into a multi-disciplinary general contractor — but the values haven't changed.",
+    "story_p2": "We still believe construction is a craft. We hire and train master tradespeople, run our own self-perform teams, and treat every site like it has our name on it — because it does.",
+    "story_p3": "Today, our 600+ employees deliver projects ranging from custom homes to airports, with the same belief that built our first project: do it right, do it safely, and do it on time.",
+    "values_title": "What we stand for",
+    "values": {
+      "safety": { "t": "Safety first", "d": "Zero-harm culture with daily toolbox talks and OSHA-leading incident rates." },
+      "trust": { "t": "Built on trust", "d": "Transparent pricing, weekly reporting and no surprises at closeout." },
+      "craft": { "t": "Craft & quality", "d": "Master tradespeople and a dedicated QA/QC team on every site." },
+      "sustainable": { "t": "Sustainable building", "d": "LEED-accredited team and a default low-waste site programme." }
+    },
+    "milestones_title": "Milestones",
+    "milestones": {
+      "1998": "Founded as a 4-person residential framing crew.",
+      "2006": "Completed our first commercial high-rise build.",
+      "2014": "Expanded into infrastructure with the Coastal interchange.",
+      "2020": "Launched our in-house design-build studio.",
+      "2025": "500+ projects delivered across 9 regions."
+    },
+    "leadership_title": "Leadership",
+    "roles": {
+      "ceo": "Founder & CEO",
+      "coo": "Chief Operating Officer",
+      "vp": "VP Pre-Construction",
+      "safety": "Director, Safety & Quality"
+    },
+    "employee_owned": "Employee-owned",
+    "employee_owned_desc": "Since 2018, every employee with one year of tenure receives ownership in the company. Our crews aren't just working on your project — they own the outcome.",
+    "cta_title": "Let's build the next one together.",
+    "cta_sub": "From your first site visit to the final handover, you'll work with the same accountable team."
   }
 }

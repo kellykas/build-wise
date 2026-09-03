@@ -653,5 +653,43 @@
     "err_message": "Donnez-nous un peu plus de détails sur votre projet",
     "err_invalid": "Formulaire invalide",
     "success": "Merci — nous vous recontactons sous 24 heures."
+  },
+  "about": {
+    "badge": "Plus de 25 ans d'activité",
+    "title": "Une entreprise de construction bâtie sur la confiance, le savoir-faire et la discipline.",
+    "subtitle": "Scer-L/Construct Sarl est un entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure dans toute la région. Fondée par une famille, détenue par les employés, et fièrement engagée sur le terrain.",
+    "cta_work": "Voir nos réalisations",
+    "cta_talk": "Parler à notre équipe",
+    "stat_years_value": "25 ans",
+    "story_title": "Notre histoire",
+    "story_p1": "Fondée en 1998 avec un seul camion et une équipe de quatre charpentiers, Scer-L/Construct s'est développée en un entrepreneur général pluridisciplinaire, mais les valeurs n'ont pas changé.",
+    "story_p2": "Nous croyons toujours que la construction est un métier. Nous recrutons et formons des artisans qualifiés, gérons nos propres équipes d'exécution, et traitons chaque chantier comme s'il portait notre nom, parce qu'il le porte.",
+    "story_p3": "Aujourd'hui, nos 600+ employés livrent des projets allant des maisons personnalisées aux aéroports, avec la même conviction qui a construit notre premier projet : bien faire, en sécurité, et à temps.",
+    "values_title": "Nos valeurs",
+    "values": {
+      "safety": { "t": "La sécurité d'abord", "d": "Culture de zéro incident avec des causeries sécurité quotidiennes et des taux d'incidents leaders dans l'industrie." },
+      "trust": { "t": "Bâti sur la confiance", "d": "Prix transparents, rapports hebdomadaires et aucune surprise à la clôture." },
+      "craft": { "t": "Savoir-faire et qualité", "d": "Artisans qualifiés et une équipe QA/QC dédiée sur chaque chantier." },
+      "sustainable": { "t": "Construction durable", "d": "Équipe accréditée LEED et programme de réduction des déchets par défaut." }
+    },
+    "milestones_title": "Étapes clés",
+    "milestones": {
+      "1998": "Fondée comme équipe de charpentiers résidentiels de 4 personnes.",
+      "2006": "Achèvement de notre premier immeuble commercial de grande hauteur.",
+      "2014": "Expansion dans les infrastructures avec l'échangeur côtier.",
+      "2020": "Lancement de notre studio de conception-réalisation interne.",
+      "2025": "500+ projets livrés dans 9 régions."
+    },
+    "leadership_title": "Direction",
+    "roles": {
+      "ceo": "Fondateur et PDG",
+      "coo": "Directrice de l'exploitation",
+      "vp": "VP Pré-construction",
+      "safety": "Directrice, Sécurité et Qualité"
+    },
+    "employee_owned": "Détenue par les employés",
+    "employee_owned_desc": "Depuis 2018, chaque employé avec un an d'ancienneté reçoit une participation dans l'entreprise. Nos équipes ne travaillent pas seulement sur votre projet, elles en sont propriétaires.",
+    "cta_title": "Construisons ensemble le prochain.",
+    "cta_sub": "De votre première visite de chantier à la remise des clés, vous travaillerez avec la même équipe responsable."
   }
 }
