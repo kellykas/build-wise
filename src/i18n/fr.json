@@ -667,10 +667,22 @@
     "story_p3": "Aujourd'hui, nos 600+ employés livrent des projets allant des maisons personnalisées aux aéroports, avec la même conviction qui a construit notre premier projet : bien faire, en sécurité, et à temps.",
     "values_title": "Nos valeurs",
     "values": {
-      "safety": { "t": "La sécurité d'abord", "d": "Culture de zéro incident avec des causeries sécurité quotidiennes et des taux d'incidents leaders dans l'industrie." },
-      "trust": { "t": "Bâti sur la confiance", "d": "Prix transparents, rapports hebdomadaires et aucune surprise à la clôture." },
-      "craft": { "t": "Savoir-faire et qualité", "d": "Artisans qualifiés et une équipe QA/QC dédiée sur chaque chantier." },
-      "sustainable": { "t": "Construction durable", "d": "Équipe accréditée LEED et programme de réduction des déchets par défaut." }
+      "safety": {
+        "t": "La sécurité d'abord",
+        "d": "Culture de zéro incident avec des causeries sécurité quotidiennes et des taux d'incidents leaders dans l'industrie."
+      },
+      "trust": {
+        "t": "Bâti sur la confiance",
+        "d": "Prix transparents, rapports hebdomadaires et aucune surprise à la clôture."
+      },
+      "craft": {
+        "t": "Savoir-faire et qualité",
+        "d": "Artisans qualifiés et une équipe QA/QC dédiée sur chaque chantier."
+      },
+      "sustainable": {
+        "t": "Construction durable",
+        "d": "Équipe accréditée LEED et programme de réduction des déchets par défaut."
+      }
     },
     "milestones_title": "Étapes clés",
     "milestones": {
@@ -691,5 +703,25 @@
     "employee_owned_desc": "Depuis 2018, chaque employé avec un an d'ancienneté reçoit une participation dans l'entreprise. Nos équipes ne travaillent pas seulement sur votre projet, elles en sont propriétaires.",
     "cta_title": "Construisons ensemble le prochain.",
     "cta_sub": "De votre première visite de chantier à la remise des clés, vous travaillerez avec la même équipe responsable."
+  },
+  "shared": {
+    "new": "Nouveau",
+    "no_records": "Aucun enregistrement",
+    "no_records_desc": "Vous n'avez pas encore créé d'enregistrement. Cliquez sur \"Nouveau\" pour ajouter votre premier enregistrement.",
+    "edit_title": "Modifier",
+    "new_title": "Nouveau",
+    "update_record": "Mettre à jour les détails.",
+    "create_record": "Créer un nouvel enregistrement.",
+    "delete": "Supprimer",
+    "cancel": "Annuler",
+    "saving": "Enregistrement...",
+    "save_changes": "Enregistrer",
+    "create": "Créer",
+    "updated": "Mis à jour",
+    "created": "Créé",
+    "deleted": "Supprimé",
+    "delete_confirm": "Supprimer cet enregistrement ? Cette action est irréversible.",
+    "delete_error": "Impossible de supprimer : cet enregistrement est référencé par d'autres enregistrements. Supprimez d'abord ces références.",
+    "select": "Sélectionner..."
   }
 }

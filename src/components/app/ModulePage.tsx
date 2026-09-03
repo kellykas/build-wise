@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Inbox } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "react-i18next";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Column<T = any> = { key: string; label: string; render?: (row: T) => ReactNode };
@@ -31,6 +32,8 @@ export function ModulePage<T extends { id: string }>({
     },
   });
 
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -44,7 +47,7 @@ export function ModulePage<T extends { id: string }>({
         <div className="flex items-center gap-2">
           {actions}
           {onNew && (
-            <Button onClick={onNew}><Plus className="mr-2 h-4 w-4" /> New</Button>
+            <Button onClick={onNew}><Plus className="mr-2 h-4 w-4" /> {t("shared.new")}</Button>
           )}
         </div>
       </div>
@@ -58,9 +61,9 @@ export function ModulePage<T extends { id: string }>({
           ) : (data?.length ?? 0) === 0 ? (
             <div className="flex flex-col items-center justify-center gap-3 p-16 text-center">
               <span className="grid h-12 w-12 place-items-center rounded-full bg-muted text-muted-foreground"><Inbox className="h-6 w-6" /></span>
-              <div className="text-lg font-semibold">No records yet</div>
+              <div className="text-lg font-semibold">{t("shared.no_records")}</div>
               <p className="max-w-sm text-sm text-muted-foreground">
-                You haven't created any {title.toLowerCase()} yet. Click "New" to add your first record.
+                {t("shared.no_records_desc")}
               </p>
             </div>
           ) : (

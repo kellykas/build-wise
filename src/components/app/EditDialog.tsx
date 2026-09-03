@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { notifyTaskAssigned } from "@/lib/notifications";
+import { useTranslation } from "react-i18next";
 
 export type Field = {
   key: string;
@@ -38,6 +39,7 @@ export function EditDialog({
 }) {
   const { profile } = useAuth();
   const qc = useQueryClient();
+  const { t } = useTranslation();
   const [values, setValues] = useState<Record<string, unknown>>({});
   const [saving, setSaving] = useState(false);
   const isEdit = !!row?.id;
@@ -63,7 +65,7 @@ export function EditDialog({
     const { data: result, error } = await q;
     setSaving(false);
     if (error) return toast.error(error.message);
-    toast.success(isEdit ? "Updated" : "Created");
+    toast.success(isEdit ? t("shared.updated") : t("shared.created"));
 
     // Send notification when a task is created with an assignee
     if (!isEdit && table === "tasks" && values.assigned_to && profile?.company_id) {
@@ -85,15 +87,15 @@ export function EditDialog({
 
   const onDelete = async () => {
     if (!isEdit) return;
-    if (!confirm("Delete this record? This cannot be undone.")) return;
+    if (!confirm(t("shared.delete_confirm"))) return;
     const { error } = await supabase.from(table as never).delete().eq("id", row!.id as string);
     if (error) {
       const msg = error.message.includes("foreign key constraint")
-        ? "Cannot delete: this record is referenced by other records (invoices, projects, etc.). Remove those references first."
+        ? t("shared.delete_error")
         : error.message;
       return toast.error(msg);
     }
-    toast.success("Deleted");
+    toast.success(t("shared.deleted"));
     (invalidate ?? [`module:${table}`]).forEach((k) => qc.invalidateQueries({ queryKey: [k] }));
     qc.invalidateQueries({ queryKey: ["module", table] });
     onOpenChange(false);
@@ -103,8 +105,8 @@ export function EditDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{isEdit ? `Edit ${title}` : `New ${title}`}</DialogTitle>
-          <DialogDescription>{isEdit ? "Update record details." : "Create a new record."}</DialogDescription>
+          <DialogTitle>{isEdit ? `${t("shared.edit_title")} ${title}` : `${t("shared.new_title")} ${title}`}</DialogTitle>
+          <DialogDescription>{isEdit ? t("shared.update_record") : t("shared.create_record")}</DialogDescription>
         </DialogHeader>
         <form onSubmit={onSubmit} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {fields.map((f) => {
@@ -118,7 +120,7 @@ export function EditDialog({
                   <Textarea className="mt-1" value={String(val ?? "")} onChange={(e) => setVal(e.target.value)} rows={3} required={f.required} placeholder={f.placeholder} />
                 ) : f.type === "select" ? (
                   <Select value={String(val ?? "")} onValueChange={(v) => setVal(v)}>
-                    <SelectTrigger className="mt-1"><SelectValue placeholder={f.placeholder ?? "Select..."} /></SelectTrigger>
+                    <SelectTrigger className="mt-1"><SelectValue placeholder={f.placeholder ?? t("shared.select")} /></SelectTrigger>
                     <SelectContent>
                       {f.options?.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
                     </SelectContent>
@@ -141,12 +143,12 @@ export function EditDialog({
           <DialogFooter className="sm:col-span-2 flex !justify-between gap-2">
             <div>
               {isEdit && (
-                <Button type="button" variant="destructive" onClick={onDelete}>Delete</Button>
+                <Button type="button" variant="destructive" onClick={onDelete}>{t("shared.delete")}</Button>
               )}
             </div>
             <div className="flex gap-2">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-              <Button type="submit" disabled={saving}>{saving ? "Saving..." : isEdit ? "Save changes" : "Create"}</Button>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>{t("shared.cancel")}</Button>
+              <Button type="submit" disabled={saving}>{saving ? t("shared.saving") : isEdit ? t("shared.save_changes") : t("shared.create")}</Button>
             </div>
           </DialogFooter>
         </form>

@@ -715,10 +715,22 @@
     "story_p3": "Today, our 600+ employees deliver projects ranging from custom homes to airports, with the same belief that built our first project: do it right, do it safely, and do it on time.",
     "values_title": "What we stand for",
     "values": {
-      "safety": { "t": "Safety first", "d": "Zero-harm culture with daily toolbox talks and OSHA-leading incident rates." },
-      "trust": { "t": "Built on trust", "d": "Transparent pricing, weekly reporting and no surprises at closeout." },
-      "craft": { "t": "Craft & quality", "d": "Master tradespeople and a dedicated QA/QC team on every site." },
-      "sustainable": { "t": "Sustainable building", "d": "LEED-accredited team and a default low-waste site programme." }
+      "safety": {
+        "t": "Safety first",
+        "d": "Zero-harm culture with daily toolbox talks and OSHA-leading incident rates."
+      },
+      "trust": {
+        "t": "Built on trust",
+        "d": "Transparent pricing, weekly reporting and no surprises at closeout."
+      },
+      "craft": {
+        "t": "Craft & quality",
+        "d": "Master tradespeople and a dedicated QA/QC team on every site."
+      },
+      "sustainable": {
+        "t": "Sustainable building",
+        "d": "LEED-accredited team and a default low-waste site programme."
+      }
     },
     "milestones_title": "Milestones",
     "milestones": {
@@ -739,5 +751,25 @@
     "employee_owned_desc": "Since 2018, every employee with one year of tenure receives ownership in the company. Our crews aren't just working on your project — they own the outcome.",
     "cta_title": "Let's build the next one together.",
     "cta_sub": "From your first site visit to the final handover, you'll work with the same accountable team."
+  },
+  "shared": {
+    "new": "New",
+    "no_records": "No records yet",
+    "no_records_desc": "You haven't created any records yet. Click \"New\" to add your first record.",
+    "edit_title": "Edit",
+    "new_title": "New",
+    "update_record": "Update record details.",
+    "create_record": "Create a new record.",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "save_changes": "Save changes",
+    "create": "Create",
+    "updated": "Updated",
+    "created": "Created",
+    "deleted": "Deleted",
+    "delete_confirm": "Delete this record? This cannot be undone.",
+    "delete_error": "Cannot delete: this record is referenced by other records. Remove those references first.",
+    "select": "Select..."
   }
 }
