@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { SiteHeader, SiteFooter } from "@/components/marketing/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +10,6 @@ import { toast } from "sonner";
 import { Mail, Phone, MapPin, Clock, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
-import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 
 type SearchParams = { type?: "quote" | "contact" };
@@ -20,8 +20,12 @@ export const Route = createFileRoute("/contact")({
   }),
   head: () => ({
     meta: [
-      { title: "Contact & Request a Quote — BuildFlow Construction" },
-      { name: "description", content: "Get a free, no-obligation quote for your construction project. Our team responds within 24 hours." },
+      { title: "Contact & demande de devis — Scer-L/Construct Sarl" },
+      { name: "description", content: "Obtenez un devis gratuit et sans engagement pour votre projet de construction. Notre équipe répond sous 24 heures." },
+      { property: "og:title", content: "Contact & demande de devis — Scer-L/Construct Sarl" },
+      { property: "og:description", content: "Parlez-nous de votre projet de construction. Réponse sous 24 heures." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: ContactPage,
@@ -49,13 +53,13 @@ function ContactPage() {
       message: String(fd.get("message") ?? ""),
     };
     const schema = z.object({
-      full_name: z.string().min(2, "Please enter your name"),
-      email: z.string().email("Valid email required"),
-      message: z.string().min(10, "Tell us a bit more about your project"),
+      full_name: z.string().min(2, t("contact_page.err_name")),
+      email: z.string().email(t("contact_page.err_email")),
+      message: z.string().min(10, t("contact_page.err_message")),
     });
     const parsed = schema.safeParse(payload);
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0]?.message ?? "Invalid form");
+      toast.error(parsed.error.issues[0]?.message ?? t("contact_page.err_invalid"));
       return;
     }
     setLoading(true);
@@ -66,7 +70,7 @@ function ContactPage() {
       return;
     }
     setDone(true);
-    toast.success("Thank you — we'll be in touch within 24 hours.");
+    toast.success(t("contact_page.success"));
     (e.target as HTMLFormElement).reset();
   }
 
@@ -81,9 +85,7 @@ function ContactPage() {
                 <Clock className="h-3.5 w-3.5 text-accent" /> {t("contact_page.badge")}
               </div>
               <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">{t("contact_page.title")}</h1>
-              <p className="mt-4 text-lg text-muted-foreground">
-                {t("contact_page.subtitle")}
-              </p>
+              <p className="mt-4 text-lg text-muted-foreground">{t("contact_page.subtitle")}</p>
             </div>
           </div>
         </section>
@@ -91,22 +93,22 @@ function ContactPage() {
         <section className="mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_1.4fr]">
           <div className="space-y-8">
             <div>
-              <h2 className="text-xl font-semibold">{t("contact_page.reach_team")}</h2>
+              <h2 className="text-xl font-semibold">{t("contact_page.reach")}</h2>
               <div className="mt-5 space-y-4 text-sm">
                 <div className="flex items-start gap-3"><Phone className="mt-0.5 h-4 w-4 text-primary" />
-                  <div><div className="font-medium text-foreground">+1 (555) 240-8800</div><div className="text-muted-foreground">{t("contact_page.phone_hours")}</div></div>
+                  <div><div className="font-medium text-foreground">+1 (555) 240-8800</div><div className="text-muted-foreground">{t("contact_page.hours")}</div></div>
                 </div>
                 <div className="flex items-start gap-3"><Mail className="mt-0.5 h-4 w-4 text-primary" />
-                  <div><div className="font-medium text-foreground">{t("contact_page.email_label")}</div><div className="text-muted-foreground">{t("contact_page.email_desc")}</div></div>
+                  <div><div className="font-medium text-foreground">hello@buildflow.co</div><div className="text-muted-foreground">{t("contact_page.for_bids")}</div></div>
                 </div>
                 <div className="flex items-start gap-3"><MapPin className="mt-0.5 h-4 w-4 text-primary" />
-                  <div><div className="font-medium text-foreground">{t("contact_page.office")}</div><div className="text-muted-foreground">{t("contact_page.address")}</div></div>
+                  <div><div className="font-medium text-foreground">{t("contact_page.head_office")}</div><div className="text-muted-foreground">240 Riverside Ave, Suite 1100</div></div>
                 </div>
               </div>
             </div>
             <div className="rounded-xl border border-border bg-card p-5">
-              <div className="text-sm font-semibold">{t("contact_page.already_client")}</div>
-              <p className="mt-1 text-sm text-muted-foreground">{t("contact_page.portal_desc")}</p>
+              <div className="text-sm font-semibold">{t("contact_page.client_title")}</div>
+              <p className="mt-1 text-sm text-muted-foreground">{t("contact_page.client_desc")}</p>
               <Link to="/auth"><Button variant="outline" size="sm" className="mt-3">{t("contact_page.open_portal")}</Button></Link>
             </div>
             <div className="rounded-xl border border-border bg-primary/5 p-5">
@@ -128,8 +130,8 @@ function ContactPage() {
             {done ? (
               <div className="grid place-items-center py-16 text-center">
                 <CheckCircle2 className="h-12 w-12 text-success" />
-                <h3 className="mt-4 text-xl font-semibold">{t("contact_page.message_received")}</h3>
-                <p className="mt-2 max-w-sm text-sm text-muted-foreground">{t("contact_page.message_received_d")}</p>
+                <h3 className="mt-4 text-xl font-semibold">{t("contact_page.done_title")}</h3>
+                <p className="mt-2 max-w-sm text-sm text-muted-foreground">{t("contact_page.done_desc")}</p>
                 <Button variant="outline" className="mt-5" onClick={() => setDone(false)}>{t("contact_page.send_another")}</Button>
               </div>
             ) : (
@@ -146,7 +148,7 @@ function ContactPage() {
                     <div>
                       <Label>{t("contact_page.project_type")}</Label>
                       <Select name="project_type">
-                        <SelectTrigger className="mt-1"><SelectValue placeholder={t("contact_page.select_placeholder")} /></SelectTrigger>
+                        <SelectTrigger className="mt-1"><SelectValue placeholder={t("contact_page.select")} /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="residential">{t("contact_page.type_residential")}</SelectItem>
                           <SelectItem value="commercial">{t("contact_page.type_commercial")}</SelectItem>
@@ -157,28 +159,28 @@ function ContactPage() {
                       </Select>
                     </div>
                     <div>
-                      <Label>{t("contact_page.budget_range")}</Label>
+                      <Label>{t("contact_page.budget")}</Label>
                       <Select name="budget_range">
-                        <SelectTrigger className="mt-1"><SelectValue placeholder={t("contact_page.select_placeholder")} /></SelectTrigger>
+                        <SelectTrigger className="mt-1"><SelectValue placeholder={t("contact_page.select")} /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="<100k">{t("contact_page.budget_under")}</SelectItem>
-                          <SelectItem value="100k-500k">{t("contact_page.budget_100_500")}</SelectItem>
-                          <SelectItem value="500k-2m">{t("contact_page.budget_500_2m")}</SelectItem>
-                          <SelectItem value="2m-10m">{t("contact_page.budget_2m_10m")}</SelectItem>
-                          <SelectItem value=">10m">{t("contact_page.budget_over_10m")}</SelectItem>
+                          <SelectItem value="<100k">&lt; 100 000 $</SelectItem>
+                          <SelectItem value="100k-500k">100 000 $ – 500 000 $</SelectItem>
+                          <SelectItem value="500k-2m">500 000 $ – 2 M$</SelectItem>
+                          <SelectItem value="2m-10m">2 M$ – 10 M$</SelectItem>
+                          <SelectItem value=">10m">10 M$ et plus</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="sm:col-span-2"><Label>{t("contact_page.project_location")}</Label><Input name="location" placeholder={t("contact_page.location_placeholder")} className="mt-1" /></div>
+                    <div className="sm:col-span-2"><Label>{t("contact_page.location")}</Label><Input name="location" placeholder={t("contact_page.location_ph")} className="mt-1" /></div>
                   </div>
                 )}
 
                 <div>
                   <Label>{type === "quote" ? t("contact_page.desc_quote") : t("contact_page.desc_contact")}</Label>
-                  <Textarea required name="message" rows={5} className="mt-1" placeholder={type === "quote" ? t("contact_page.placeholder_quote") : t("contact_page.placeholder_contact")} />
+                  <Textarea required name="message" rows={5} className="mt-1" placeholder={type === "quote" ? t("contact_page.ph_quote") : t("contact_page.ph_contact")} />
                 </div>
                 <Button type="submit" disabled={loading} className="w-full">
-                  {loading ? t("contact_page.sending") : type === "quote" ? t("contact_page.submit_quote") : t("contact_page.send_message")}
+                  {loading ? t("contact_page.sending") : type === "quote" ? t("contact_page.submit_quote") : t("contact_page.submit_contact")}
                 </Button>
                 <p className="text-center text-xs text-muted-foreground">{t("contact_page.consent")}</p>
               </form>

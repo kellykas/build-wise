@@ -120,17 +120,17 @@ function FinancePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(tx ?? []).filter((t) => tab === "all" || t.type === tab).map((t) => (
-                    <tr key={t.id} className="border-b last:border-0">
-                      <td className="px-4 py-3">{t.transaction_date}</td>
-                      <td className="px-4 py-3"><Badge variant={t.type === "income" ? "secondary" : "outline"}>{t.type === "income" ? t("d.finance.income") : t("d.finance.expenses")}</Badge></td>
-                      <td className="px-4 py-3">{t.category ?? "—"}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{t.description ?? "—"}</td>
-                      <td className={`px-4 py-3 text-right font-medium ${t.type === "income" ? "text-success" : "text-destructive"}`}>{t.type === "income" ? "+" : "−"}${Number(t.amount).toLocaleString()}</td>
+                  {(tx ?? []).filter((row) => tab === "all" || row.type === tab).map((row) => (
+                    <tr key={row.id} className="border-b last:border-0">
+                      <td className="px-4 py-3">{row.transaction_date}</td>
+                      <td className="px-4 py-3"><Badge variant={row.type === "income" ? "secondary" : "outline"}>{row.type === "income" ? t("d.finance.income") : t("d.finance.expenses")}</Badge></td>
+                      <td className="px-4 py-3">{row.category ?? "—"}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{row.description ?? "—"}</td>
+                      <td className={`px-4 py-3 text-right font-medium ${row.type === "income" ? "text-success" : "text-destructive"}`}>{row.type === "income" ? "+" : "−"}${Number(row.amount).toLocaleString()}</td>
                       <td className="px-4 py-3 text-right">
                         <button className="text-xs text-destructive hover:underline" onClick={async () => {
                           if (!confirm(t("d.finance.delete_confirm"))) return;
-                          await supabase.from("transactions").delete().eq("id", t.id);
+                          await supabase.from("transactions").delete().eq("id", row.id);
                           qc.invalidateQueries({ queryKey: ["transactions"] });
                         }}>{t("d.finance.delete")}</button>
                       </td>
