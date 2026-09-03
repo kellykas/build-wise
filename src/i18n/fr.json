@@ -154,7 +154,8 @@
       "documents": "Documents",
       "notification_log": "Journal des notifications",
       "site_editor": "Éditeur du site",
-      "settings": "Paramètres"
+      "settings": "Paramètres",
+      "cms": "Éditeur CMS"
     },
     "mobile": {
       "home": "Accueil",
