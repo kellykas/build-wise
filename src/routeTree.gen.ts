@@ -9,70 +9,51 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedAppRouteRouteImport } from './routes/_authenticated/app/route'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app/index'
-import { Route as AuthenticatedAppAttendanceRouteImport } from './routes/_authenticated/app/attendance'
-import { Route as AuthenticatedAppCalendarRouteImport } from './routes/_authenticated/app/calendar'
-import { Route as AuthenticatedAppClientPortalRouteImport } from './routes/_authenticated/app/client-portal'
-import { Route as AuthenticatedAppClientsRouteImport } from './routes/_authenticated/app/clients'
-import { Route as AuthenticatedAppCmsRouteImport } from './routes/_authenticated/app/cms'
-import { Route as AuthenticatedAppDocumentsRouteImport } from './routes/_authenticated/app/documents'
-import { Route as AuthenticatedAppEmployeesRouteImport } from './routes/_authenticated/app/employees'
-import { Route as AuthenticatedAppEquipmentRouteImport } from './routes/_authenticated/app/equipment'
-import { Route as AuthenticatedAppFinanceRouteImport } from './routes/_authenticated/app/finance'
-import { Route as AuthenticatedAppInventoryRouteImport } from './routes/_authenticated/app/inventory'
-import { Route as AuthenticatedAppInvoicesRouteImport } from './routes/_authenticated/app/invoices'
-import { Route as AuthenticatedAppNotificationLogRouteImport } from './routes/_authenticated/app/notification-log'
-import { Route as AuthenticatedAppNotificationsRouteImport } from './routes/_authenticated/app/notifications'
-import { Route as AuthenticatedAppOnboardingRouteImport } from './routes/_authenticated/app/onboarding'
-import { Route as AuthenticatedAppPayrollRouteImport } from './routes/_authenticated/app/payroll'
-import { Route as AuthenticatedAppProcurementRouteImport } from './routes/_authenticated/app/procurement'
-import { Route as AuthenticatedAppProjectsRouteImport } from './routes/_authenticated/app/projects'
-import { Route as AuthenticatedAppRequisitionsRouteImport } from './routes/_authenticated/app/requisitions'
-import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app/settings'
-import { Route as AuthenticatedAppSiteEditorRouteImport } from './routes/_authenticated/app/site-editor'
-import { Route as AuthenticatedAppSuppliersRouteImport } from './routes/_authenticated/app/suppliers'
-import { Route as AuthenticatedAppTasksRouteImport } from './routes/_authenticated/app/tasks'
 import { Route as ApiPublicKnockWebhookRouteImport } from './routes/api/public/knock-webhook'
-import { Route as AuthenticatedAppProjectsIndexRouteImport } from './routes/_authenticated/app/projects.index'
-import { Route as AuthenticatedAppProjectsIdRouteImport } from './routes/_authenticated/app/projects.$id'
-import { Route as AuthenticatedAppRequisitionsIndexRouteImport } from './routes/_authenticated/app/requisitions.index'
-import { Route as AuthenticatedAppRequisitionsIdRouteImport } from './routes/_authenticated/app/requisitions.$id'
+import { Route as AuthenticatedAppTasksRouteImport } from './routes/_authenticated/app/tasks'
+import { Route as AuthenticatedAppSuppliersRouteImport } from './routes/_authenticated/app/suppliers'
+import { Route as AuthenticatedAppSiteEditorRouteImport } from './routes/_authenticated/app/site-editor'
+import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app/settings'
+import { Route as AuthenticatedAppRequisitionsRouteImport } from './routes/_authenticated/app/requisitions'
+import { Route as AuthenticatedAppProjectsRouteImport } from './routes/_authenticated/app/projects'
+import { Route as AuthenticatedAppProcurementRouteImport } from './routes/_authenticated/app/procurement'
+import { Route as AuthenticatedAppPayrollRouteImport } from './routes/_authenticated/app/payroll'
+import { Route as AuthenticatedAppOnboardingRouteImport } from './routes/_authenticated/app/onboarding'
+import { Route as AuthenticatedAppNotificationsRouteImport } from './routes/_authenticated/app/notifications'
+import { Route as AuthenticatedAppNotificationLogRouteImport } from './routes/_authenticated/app/notification-log'
+import { Route as AuthenticatedAppInvoicesRouteImport } from './routes/_authenticated/app/invoices'
+import { Route as AuthenticatedAppInventoryRouteImport } from './routes/_authenticated/app/inventory'
+import { Route as AuthenticatedAppFinanceRouteImport } from './routes/_authenticated/app/finance'
+import { Route as AuthenticatedAppEquipmentRouteImport } from './routes/_authenticated/app/equipment'
+import { Route as AuthenticatedAppEmployeesRouteImport } from './routes/_authenticated/app/employees'
+import { Route as AuthenticatedAppDocumentsRouteImport } from './routes/_authenticated/app/documents'
+import { Route as AuthenticatedAppCmsRouteImport } from './routes/_authenticated/app/cms'
+import { Route as AuthenticatedAppClientsRouteImport } from './routes/_authenticated/app/clients'
+import { Route as AuthenticatedAppClientPortalRouteImport } from './routes/_authenticated/app/client-portal'
+import { Route as AuthenticatedAppCalendarRouteImport } from './routes/_authenticated/app/calendar'
+import { Route as AuthenticatedAppAttendanceRouteImport } from './routes/_authenticated/app/attendance'
 import { Route as AuthenticatedAppTasksIndexRouteImport } from './routes/_authenticated/app/tasks.index'
-import { Route as AuthenticatedAppTasksApprovalRouteImport } from './routes/_authenticated/app/tasks.approval'
-import { Route as AuthenticatedAppTasksExecutionRouteImport } from './routes/_authenticated/app/tasks.execution'
-import { Route as AuthenticatedAppTasksSupervisionRouteImport } from './routes/_authenticated/app/tasks.supervision'
+import { Route as AuthenticatedAppRequisitionsIndexRouteImport } from './routes/_authenticated/app/requisitions.index'
+import { Route as AuthenticatedAppProjectsIndexRouteImport } from './routes/_authenticated/app/projects.index'
 import { Route as AuthenticatedAppTasksUrgentRouteImport } from './routes/_authenticated/app/tasks.urgent'
+import { Route as AuthenticatedAppTasksSupervisionRouteImport } from './routes/_authenticated/app/tasks.supervision'
+import { Route as AuthenticatedAppTasksExecutionRouteImport } from './routes/_authenticated/app/tasks.execution'
+import { Route as AuthenticatedAppTasksApprovalRouteImport } from './routes/_authenticated/app/tasks.approval'
+import { Route as AuthenticatedAppRequisitionsIdRouteImport } from './routes/_authenticated/app/requisitions.$id'
+import { Route as AuthenticatedAppProjectsIdRouteImport } from './routes/_authenticated/app/projects.$id'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
+const ServicesRoute = ServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProjectsRoute = ProjectsRouteImport.update({
@@ -80,9 +61,28 @@ const ProjectsRoute = ProjectsRouteImport.update({
   path: '/projects',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ServicesRoute = ServicesRouteImport.update({
-  id: '/services',
-  path: '/services',
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAppRouteRoute = AuthenticatedAppRouteRouteImport.update({
@@ -95,114 +95,20 @@ const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAppRouteRoute,
 } as any)
-const AuthenticatedAppAttendanceRoute =
-  AuthenticatedAppAttendanceRouteImport.update({
-    id: '/attendance',
-    path: '/attendance',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
-  } as any)
-const AuthenticatedAppCalendarRoute =
-  AuthenticatedAppCalendarRouteImport.update({
-    id: '/calendar',
-    path: '/calendar',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
-  } as any)
-const AuthenticatedAppClientPortalRoute =
-  AuthenticatedAppClientPortalRouteImport.update({
-    id: '/client-portal',
-    path: '/client-portal',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
-  } as any)
-const AuthenticatedAppClientsRoute = AuthenticatedAppClientsRouteImport.update({
-  id: '/clients',
-  path: '/clients',
+const ApiPublicKnockWebhookRoute = ApiPublicKnockWebhookRouteImport.update({
+  id: '/api/public/knock-webhook',
+  path: '/api/public/knock-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAppTasksRoute = AuthenticatedAppTasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
   getParentRoute: () => AuthenticatedAppRouteRoute,
 } as any)
-const AuthenticatedAppCmsRoute = AuthenticatedAppCmsRouteImport.update({
-  id: '/cms',
-  path: '/cms',
-  getParentRoute: () => AuthenticatedAppRouteRoute,
-} as any)
-const AuthenticatedAppDocumentsRoute =
-  AuthenticatedAppDocumentsRouteImport.update({
-    id: '/documents',
-    path: '/documents',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
-  } as any)
-const AuthenticatedAppEmployeesRoute =
-  AuthenticatedAppEmployeesRouteImport.update({
-    id: '/employees',
-    path: '/employees',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
-  } as any)
-const AuthenticatedAppEquipmentRoute =
-  AuthenticatedAppEquipmentRouteImport.update({
-    id: '/equipment',
-    path: '/equipment',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
-  } as any)
-const AuthenticatedAppFinanceRoute = AuthenticatedAppFinanceRouteImport.update({
-  id: '/finance',
-  path: '/finance',
-  getParentRoute: () => AuthenticatedAppRouteRoute,
-} as any)
-const AuthenticatedAppInventoryRoute =
-  AuthenticatedAppInventoryRouteImport.update({
-    id: '/inventory',
-    path: '/inventory',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
-  } as any)
-const AuthenticatedAppInvoicesRoute =
-  AuthenticatedAppInvoicesRouteImport.update({
-    id: '/invoices',
-    path: '/invoices',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
-  } as any)
-const AuthenticatedAppNotificationLogRoute =
-  AuthenticatedAppNotificationLogRouteImport.update({
-    id: '/notification-log',
-    path: '/notification-log',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
-  } as any)
-const AuthenticatedAppNotificationsRoute =
-  AuthenticatedAppNotificationsRouteImport.update({
-    id: '/notifications',
-    path: '/notifications',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
-  } as any)
-const AuthenticatedAppOnboardingRoute =
-  AuthenticatedAppOnboardingRouteImport.update({
-    id: '/onboarding',
-    path: '/onboarding',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
-  } as any)
-const AuthenticatedAppPayrollRoute = AuthenticatedAppPayrollRouteImport.update({
-  id: '/payroll',
-  path: '/payroll',
-  getParentRoute: () => AuthenticatedAppRouteRoute,
-} as any)
-const AuthenticatedAppProcurementRoute =
-  AuthenticatedAppProcurementRouteImport.update({
-    id: '/procurement',
-    path: '/procurement',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
-  } as any)
-const AuthenticatedAppProjectsRoute =
-  AuthenticatedAppProjectsRouteImport.update({
-    id: '/projects',
-    path: '/projects',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
-  } as any)
-const AuthenticatedAppRequisitionsRoute =
-  AuthenticatedAppRequisitionsRouteImport.update({
-    id: '/requisitions',
-    path: '/requisitions',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
-  } as any)
-const AuthenticatedAppSettingsRoute =
-  AuthenticatedAppSettingsRouteImport.update({
-    id: '/settings',
-    path: '/settings',
+const AuthenticatedAppSuppliersRoute =
+  AuthenticatedAppSuppliersRouteImport.update({
+    id: '/suppliers',
+    path: '/suppliers',
     getParentRoute: () => AuthenticatedAppRouteRoute,
   } as any)
 const AuthenticatedAppSiteEditorRoute =
@@ -211,45 +117,115 @@ const AuthenticatedAppSiteEditorRoute =
     path: '/site-editor',
     getParentRoute: () => AuthenticatedAppRouteRoute,
   } as any)
-const AuthenticatedAppSuppliersRoute =
-  AuthenticatedAppSuppliersRouteImport.update({
-    id: '/suppliers',
-    path: '/suppliers',
+const AuthenticatedAppSettingsRoute =
+  AuthenticatedAppSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
     getParentRoute: () => AuthenticatedAppRouteRoute,
   } as any)
-const AuthenticatedAppTasksRoute = AuthenticatedAppTasksRouteImport.update({
-  id: '/tasks',
-  path: '/tasks',
+const AuthenticatedAppRequisitionsRoute =
+  AuthenticatedAppRequisitionsRouteImport.update({
+    id: '/requisitions',
+    path: '/requisitions',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppProjectsRoute =
+  AuthenticatedAppProjectsRouteImport.update({
+    id: '/projects',
+    path: '/projects',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppProcurementRoute =
+  AuthenticatedAppProcurementRouteImport.update({
+    id: '/procurement',
+    path: '/procurement',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppPayrollRoute = AuthenticatedAppPayrollRouteImport.update({
+  id: '/payroll',
+  path: '/payroll',
   getParentRoute: () => AuthenticatedAppRouteRoute,
 } as any)
-const ApiPublicKnockWebhookRoute = ApiPublicKnockWebhookRouteImport.update({
-  id: '/api/public/knock-webhook',
-  path: '/api/public/knock-webhook',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedAppOnboardingRoute =
+  AuthenticatedAppOnboardingRouteImport.update({
+    id: '/onboarding',
+    path: '/onboarding',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppNotificationsRoute =
+  AuthenticatedAppNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppNotificationLogRoute =
+  AuthenticatedAppNotificationLogRouteImport.update({
+    id: '/notification-log',
+    path: '/notification-log',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppInvoicesRoute =
+  AuthenticatedAppInvoicesRouteImport.update({
+    id: '/invoices',
+    path: '/invoices',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppInventoryRoute =
+  AuthenticatedAppInventoryRouteImport.update({
+    id: '/inventory',
+    path: '/inventory',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppFinanceRoute = AuthenticatedAppFinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => AuthenticatedAppRouteRoute,
 } as any)
-const AuthenticatedAppProjectsIndexRoute =
-  AuthenticatedAppProjectsIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AuthenticatedAppProjectsRoute,
+const AuthenticatedAppEquipmentRoute =
+  AuthenticatedAppEquipmentRouteImport.update({
+    id: '/equipment',
+    path: '/equipment',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
   } as any)
-const AuthenticatedAppProjectsIdRoute =
-  AuthenticatedAppProjectsIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => AuthenticatedAppProjectsRoute,
+const AuthenticatedAppEmployeesRoute =
+  AuthenticatedAppEmployeesRouteImport.update({
+    id: '/employees',
+    path: '/employees',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
   } as any)
-const AuthenticatedAppRequisitionsIndexRoute =
-  AuthenticatedAppRequisitionsIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AuthenticatedAppRequisitionsRoute,
+const AuthenticatedAppDocumentsRoute =
+  AuthenticatedAppDocumentsRouteImport.update({
+    id: '/documents',
+    path: '/documents',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
   } as any)
-const AuthenticatedAppRequisitionsIdRoute =
-  AuthenticatedAppRequisitionsIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => AuthenticatedAppRequisitionsRoute,
+const AuthenticatedAppCmsRoute = AuthenticatedAppCmsRouteImport.update({
+  id: '/cms',
+  path: '/cms',
+  getParentRoute: () => AuthenticatedAppRouteRoute,
+} as any)
+const AuthenticatedAppClientsRoute = AuthenticatedAppClientsRouteImport.update({
+  id: '/clients',
+  path: '/clients',
+  getParentRoute: () => AuthenticatedAppRouteRoute,
+} as any)
+const AuthenticatedAppClientPortalRoute =
+  AuthenticatedAppClientPortalRouteImport.update({
+    id: '/client-portal',
+    path: '/client-portal',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppCalendarRoute =
+  AuthenticatedAppCalendarRouteImport.update({
+    id: '/calendar',
+    path: '/calendar',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppAttendanceRoute =
+  AuthenticatedAppAttendanceRouteImport.update({
+    id: '/attendance',
+    path: '/attendance',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
   } as any)
 const AuthenticatedAppTasksIndexRoute =
   AuthenticatedAppTasksIndexRouteImport.update({
@@ -257,16 +233,22 @@ const AuthenticatedAppTasksIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedAppTasksRoute,
   } as any)
-const AuthenticatedAppTasksApprovalRoute =
-  AuthenticatedAppTasksApprovalRouteImport.update({
-    id: '/approval',
-    path: '/approval',
-    getParentRoute: () => AuthenticatedAppTasksRoute,
+const AuthenticatedAppRequisitionsIndexRoute =
+  AuthenticatedAppRequisitionsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedAppRequisitionsRoute,
   } as any)
-const AuthenticatedAppTasksExecutionRoute =
-  AuthenticatedAppTasksExecutionRouteImport.update({
-    id: '/execution',
-    path: '/execution',
+const AuthenticatedAppProjectsIndexRoute =
+  AuthenticatedAppProjectsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedAppProjectsRoute,
+  } as any)
+const AuthenticatedAppTasksUrgentRoute =
+  AuthenticatedAppTasksUrgentRouteImport.update({
+    id: '/urgent',
+    path: '/urgent',
     getParentRoute: () => AuthenticatedAppTasksRoute,
   } as any)
 const AuthenticatedAppTasksSupervisionRoute =
@@ -275,11 +257,29 @@ const AuthenticatedAppTasksSupervisionRoute =
     path: '/supervision',
     getParentRoute: () => AuthenticatedAppTasksRoute,
   } as any)
-const AuthenticatedAppTasksUrgentRoute =
-  AuthenticatedAppTasksUrgentRouteImport.update({
-    id: '/urgent',
-    path: '/urgent',
+const AuthenticatedAppTasksExecutionRoute =
+  AuthenticatedAppTasksExecutionRouteImport.update({
+    id: '/execution',
+    path: '/execution',
     getParentRoute: () => AuthenticatedAppTasksRoute,
+  } as any)
+const AuthenticatedAppTasksApprovalRoute =
+  AuthenticatedAppTasksApprovalRouteImport.update({
+    id: '/approval',
+    path: '/approval',
+    getParentRoute: () => AuthenticatedAppTasksRoute,
+  } as any)
+const AuthenticatedAppRequisitionsIdRoute =
+  AuthenticatedAppRequisitionsIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedAppRequisitionsRoute,
+  } as any)
+const AuthenticatedAppProjectsIdRoute =
+  AuthenticatedAppProjectsIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedAppProjectsRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -545,39 +545,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
+    '/services': {
+      id: '/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projects': {
@@ -587,11 +559,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/services': {
-      id: '/services'
-      path: '/services'
-      fullPath: '/services'
-      preLoaderRoute: typeof ServicesRouteImport
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/app': {
@@ -608,144 +608,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
       parentRoute: typeof AuthenticatedAppRouteRoute
     }
-    '/_authenticated/app/attendance': {
-      id: '/_authenticated/app/attendance'
-      path: '/attendance'
-      fullPath: '/app/attendance'
-      preLoaderRoute: typeof AuthenticatedAppAttendanceRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
+    '/api/public/knock-webhook': {
+      id: '/api/public/knock-webhook'
+      path: '/api/public/knock-webhook'
+      fullPath: '/api/public/knock-webhook'
+      preLoaderRoute: typeof ApiPublicKnockWebhookRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/app/calendar': {
-      id: '/_authenticated/app/calendar'
-      path: '/calendar'
-      fullPath: '/app/calendar'
-      preLoaderRoute: typeof AuthenticatedAppCalendarRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/client-portal': {
-      id: '/_authenticated/app/client-portal'
-      path: '/client-portal'
-      fullPath: '/app/client-portal'
-      preLoaderRoute: typeof AuthenticatedAppClientPortalRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/clients': {
-      id: '/_authenticated/app/clients'
-      path: '/clients'
-      fullPath: '/app/clients'
-      preLoaderRoute: typeof AuthenticatedAppClientsRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/cms': {
-      id: '/_authenticated/app/cms'
-      path: '/cms'
-      fullPath: '/app/cms'
-      preLoaderRoute: typeof AuthenticatedAppCmsRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/documents': {
-      id: '/_authenticated/app/documents'
-      path: '/documents'
-      fullPath: '/app/documents'
-      preLoaderRoute: typeof AuthenticatedAppDocumentsRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/employees': {
-      id: '/_authenticated/app/employees'
-      path: '/employees'
-      fullPath: '/app/employees'
-      preLoaderRoute: typeof AuthenticatedAppEmployeesRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/equipment': {
-      id: '/_authenticated/app/equipment'
-      path: '/equipment'
-      fullPath: '/app/equipment'
-      preLoaderRoute: typeof AuthenticatedAppEquipmentRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/finance': {
-      id: '/_authenticated/app/finance'
-      path: '/finance'
-      fullPath: '/app/finance'
-      preLoaderRoute: typeof AuthenticatedAppFinanceRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/inventory': {
-      id: '/_authenticated/app/inventory'
-      path: '/inventory'
-      fullPath: '/app/inventory'
-      preLoaderRoute: typeof AuthenticatedAppInventoryRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/invoices': {
-      id: '/_authenticated/app/invoices'
-      path: '/invoices'
-      fullPath: '/app/invoices'
-      preLoaderRoute: typeof AuthenticatedAppInvoicesRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/notification-log': {
-      id: '/_authenticated/app/notification-log'
-      path: '/notification-log'
-      fullPath: '/app/notification-log'
-      preLoaderRoute: typeof AuthenticatedAppNotificationLogRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/notifications': {
-      id: '/_authenticated/app/notifications'
-      path: '/notifications'
-      fullPath: '/app/notifications'
-      preLoaderRoute: typeof AuthenticatedAppNotificationsRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/onboarding': {
-      id: '/_authenticated/app/onboarding'
-      path: '/onboarding'
-      fullPath: '/app/onboarding'
-      preLoaderRoute: typeof AuthenticatedAppOnboardingRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/payroll': {
-      id: '/_authenticated/app/payroll'
-      path: '/payroll'
-      fullPath: '/app/payroll'
-      preLoaderRoute: typeof AuthenticatedAppPayrollRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/procurement': {
-      id: '/_authenticated/app/procurement'
-      path: '/procurement'
-      fullPath: '/app/procurement'
-      preLoaderRoute: typeof AuthenticatedAppProcurementRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/projects': {
-      id: '/_authenticated/app/projects'
-      path: '/projects'
-      fullPath: '/app/projects'
-      preLoaderRoute: typeof AuthenticatedAppProjectsRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/requisitions': {
-      id: '/_authenticated/app/requisitions'
-      path: '/requisitions'
-      fullPath: '/app/requisitions'
-      preLoaderRoute: typeof AuthenticatedAppRequisitionsRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/settings': {
-      id: '/_authenticated/app/settings'
-      path: '/settings'
-      fullPath: '/app/settings'
-      preLoaderRoute: typeof AuthenticatedAppSettingsRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/site-editor': {
-      id: '/_authenticated/app/site-editor'
-      path: '/site-editor'
-      fullPath: '/app/site-editor'
-      preLoaderRoute: typeof AuthenticatedAppSiteEditorRouteImport
+    '/_authenticated/app/tasks': {
+      id: '/_authenticated/app/tasks'
+      path: '/tasks'
+      fullPath: '/app/tasks'
+      preLoaderRoute: typeof AuthenticatedAppTasksRouteImport
       parentRoute: typeof AuthenticatedAppRouteRoute
     }
     '/_authenticated/app/suppliers': {
@@ -755,47 +629,145 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppSuppliersRouteImport
       parentRoute: typeof AuthenticatedAppRouteRoute
     }
-    '/_authenticated/app/tasks': {
-      id: '/_authenticated/app/tasks'
-      path: '/tasks'
-      fullPath: '/app/tasks'
-      preLoaderRoute: typeof AuthenticatedAppTasksRouteImport
+    '/_authenticated/app/site-editor': {
+      id: '/_authenticated/app/site-editor'
+      path: '/site-editor'
+      fullPath: '/app/site-editor'
+      preLoaderRoute: typeof AuthenticatedAppSiteEditorRouteImport
       parentRoute: typeof AuthenticatedAppRouteRoute
     }
-    '/api/public/knock-webhook': {
-      id: '/api/public/knock-webhook'
-      path: '/api/public/knock-webhook'
-      fullPath: '/api/public/knock-webhook'
-      preLoaderRoute: typeof ApiPublicKnockWebhookRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_authenticated/app/settings': {
+      id: '/_authenticated/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AuthenticatedAppSettingsRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
     }
-    '/_authenticated/app/projects/': {
-      id: '/_authenticated/app/projects/'
-      path: '/'
-      fullPath: '/app/projects/'
-      preLoaderRoute: typeof AuthenticatedAppProjectsIndexRouteImport
-      parentRoute: typeof AuthenticatedAppProjectsRoute
+    '/_authenticated/app/requisitions': {
+      id: '/_authenticated/app/requisitions'
+      path: '/requisitions'
+      fullPath: '/app/requisitions'
+      preLoaderRoute: typeof AuthenticatedAppRequisitionsRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
     }
-    '/_authenticated/app/projects/$id': {
-      id: '/_authenticated/app/projects/$id'
-      path: '/$id'
-      fullPath: '/app/projects/$id'
-      preLoaderRoute: typeof AuthenticatedAppProjectsIdRouteImport
-      parentRoute: typeof AuthenticatedAppProjectsRoute
+    '/_authenticated/app/projects': {
+      id: '/_authenticated/app/projects'
+      path: '/projects'
+      fullPath: '/app/projects'
+      preLoaderRoute: typeof AuthenticatedAppProjectsRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
     }
-    '/_authenticated/app/requisitions/': {
-      id: '/_authenticated/app/requisitions/'
-      path: '/'
-      fullPath: '/app/requisitions/'
-      preLoaderRoute: typeof AuthenticatedAppRequisitionsIndexRouteImport
-      parentRoute: typeof AuthenticatedAppRequisitionsRoute
+    '/_authenticated/app/procurement': {
+      id: '/_authenticated/app/procurement'
+      path: '/procurement'
+      fullPath: '/app/procurement'
+      preLoaderRoute: typeof AuthenticatedAppProcurementRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
     }
-    '/_authenticated/app/requisitions/$id': {
-      id: '/_authenticated/app/requisitions/$id'
-      path: '/$id'
-      fullPath: '/app/requisitions/$id'
-      preLoaderRoute: typeof AuthenticatedAppRequisitionsIdRouteImport
-      parentRoute: typeof AuthenticatedAppRequisitionsRoute
+    '/_authenticated/app/payroll': {
+      id: '/_authenticated/app/payroll'
+      path: '/payroll'
+      fullPath: '/app/payroll'
+      preLoaderRoute: typeof AuthenticatedAppPayrollRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/onboarding': {
+      id: '/_authenticated/app/onboarding'
+      path: '/onboarding'
+      fullPath: '/app/onboarding'
+      preLoaderRoute: typeof AuthenticatedAppOnboardingRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/notifications': {
+      id: '/_authenticated/app/notifications'
+      path: '/notifications'
+      fullPath: '/app/notifications'
+      preLoaderRoute: typeof AuthenticatedAppNotificationsRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/notification-log': {
+      id: '/_authenticated/app/notification-log'
+      path: '/notification-log'
+      fullPath: '/app/notification-log'
+      preLoaderRoute: typeof AuthenticatedAppNotificationLogRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/invoices': {
+      id: '/_authenticated/app/invoices'
+      path: '/invoices'
+      fullPath: '/app/invoices'
+      preLoaderRoute: typeof AuthenticatedAppInvoicesRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/inventory': {
+      id: '/_authenticated/app/inventory'
+      path: '/inventory'
+      fullPath: '/app/inventory'
+      preLoaderRoute: typeof AuthenticatedAppInventoryRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/finance': {
+      id: '/_authenticated/app/finance'
+      path: '/finance'
+      fullPath: '/app/finance'
+      preLoaderRoute: typeof AuthenticatedAppFinanceRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/equipment': {
+      id: '/_authenticated/app/equipment'
+      path: '/equipment'
+      fullPath: '/app/equipment'
+      preLoaderRoute: typeof AuthenticatedAppEquipmentRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/employees': {
+      id: '/_authenticated/app/employees'
+      path: '/employees'
+      fullPath: '/app/employees'
+      preLoaderRoute: typeof AuthenticatedAppEmployeesRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/documents': {
+      id: '/_authenticated/app/documents'
+      path: '/documents'
+      fullPath: '/app/documents'
+      preLoaderRoute: typeof AuthenticatedAppDocumentsRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/cms': {
+      id: '/_authenticated/app/cms'
+      path: '/cms'
+      fullPath: '/app/cms'
+      preLoaderRoute: typeof AuthenticatedAppCmsRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/clients': {
+      id: '/_authenticated/app/clients'
+      path: '/clients'
+      fullPath: '/app/clients'
+      preLoaderRoute: typeof AuthenticatedAppClientsRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/client-portal': {
+      id: '/_authenticated/app/client-portal'
+      path: '/client-portal'
+      fullPath: '/app/client-portal'
+      preLoaderRoute: typeof AuthenticatedAppClientPortalRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/calendar': {
+      id: '/_authenticated/app/calendar'
+      path: '/calendar'
+      fullPath: '/app/calendar'
+      preLoaderRoute: typeof AuthenticatedAppCalendarRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/attendance': {
+      id: '/_authenticated/app/attendance'
+      path: '/attendance'
+      fullPath: '/app/attendance'
+      preLoaderRoute: typeof AuthenticatedAppAttendanceRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
     }
     '/_authenticated/app/tasks/': {
       id: '/_authenticated/app/tasks/'
@@ -804,18 +776,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppTasksIndexRouteImport
       parentRoute: typeof AuthenticatedAppTasksRoute
     }
-    '/_authenticated/app/tasks/approval': {
-      id: '/_authenticated/app/tasks/approval'
-      path: '/approval'
-      fullPath: '/app/tasks/approval'
-      preLoaderRoute: typeof AuthenticatedAppTasksApprovalRouteImport
-      parentRoute: typeof AuthenticatedAppTasksRoute
+    '/_authenticated/app/requisitions/': {
+      id: '/_authenticated/app/requisitions/'
+      path: '/'
+      fullPath: '/app/requisitions/'
+      preLoaderRoute: typeof AuthenticatedAppRequisitionsIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRequisitionsRoute
     }
-    '/_authenticated/app/tasks/execution': {
-      id: '/_authenticated/app/tasks/execution'
-      path: '/execution'
-      fullPath: '/app/tasks/execution'
-      preLoaderRoute: typeof AuthenticatedAppTasksExecutionRouteImport
+    '/_authenticated/app/projects/': {
+      id: '/_authenticated/app/projects/'
+      path: '/'
+      fullPath: '/app/projects/'
+      preLoaderRoute: typeof AuthenticatedAppProjectsIndexRouteImport
+      parentRoute: typeof AuthenticatedAppProjectsRoute
+    }
+    '/_authenticated/app/tasks/urgent': {
+      id: '/_authenticated/app/tasks/urgent'
+      path: '/urgent'
+      fullPath: '/app/tasks/urgent'
+      preLoaderRoute: typeof AuthenticatedAppTasksUrgentRouteImport
       parentRoute: typeof AuthenticatedAppTasksRoute
     }
     '/_authenticated/app/tasks/supervision': {
@@ -825,12 +804,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppTasksSupervisionRouteImport
       parentRoute: typeof AuthenticatedAppTasksRoute
     }
-    '/_authenticated/app/tasks/urgent': {
-      id: '/_authenticated/app/tasks/urgent'
-      path: '/urgent'
-      fullPath: '/app/tasks/urgent'
-      preLoaderRoute: typeof AuthenticatedAppTasksUrgentRouteImport
+    '/_authenticated/app/tasks/execution': {
+      id: '/_authenticated/app/tasks/execution'
+      path: '/execution'
+      fullPath: '/app/tasks/execution'
+      preLoaderRoute: typeof AuthenticatedAppTasksExecutionRouteImport
       parentRoute: typeof AuthenticatedAppTasksRoute
+    }
+    '/_authenticated/app/tasks/approval': {
+      id: '/_authenticated/app/tasks/approval'
+      path: '/approval'
+      fullPath: '/app/tasks/approval'
+      preLoaderRoute: typeof AuthenticatedAppTasksApprovalRouteImport
+      parentRoute: typeof AuthenticatedAppTasksRoute
+    }
+    '/_authenticated/app/requisitions/$id': {
+      id: '/_authenticated/app/requisitions/$id'
+      path: '/$id'
+      fullPath: '/app/requisitions/$id'
+      preLoaderRoute: typeof AuthenticatedAppRequisitionsIdRouteImport
+      parentRoute: typeof AuthenticatedAppRequisitionsRoute
+    }
+    '/_authenticated/app/projects/$id': {
+      id: '/_authenticated/app/projects/$id'
+      path: '/$id'
+      fullPath: '/app/projects/$id'
+      preLoaderRoute: typeof AuthenticatedAppProjectsIdRouteImport
+      parentRoute: typeof AuthenticatedAppProjectsRoute
     }
   }
 }
@@ -971,3 +971,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
