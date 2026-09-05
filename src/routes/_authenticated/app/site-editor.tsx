@@ -103,13 +103,29 @@ function SectionEditor({
 }) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
-  const [localValues, setLocalValues] = useState<Record<string, string>>({});
   const [hasChanges, setHasChanges] = useState(false);
+
+  const initial = useMemo(() => {
+    const out: Record<string, string> = {};
+    for (const field of section.fields) {
+      const raw = getContentValue(content, section.id, field.key, field.type === "json_array" ? [] : "");
+      out[field.key] =
+        typeof raw === "string" ? raw : JSON.stringify(raw, null, 2);
+    }
+    return out;
+  }, [content, section]);
+
+  const [localValues, setLocalValues] = useState<Record<string, string>>(initial);
+
+  useEffect(() => {
+    if (!hasChanges) setLocalValues(initial);
+  }, [initial, hasChanges]);
 
   const handleValueChange = (key: string, value: string) => {
     setLocalValues((prev) => ({ ...prev, [key]: value }));
     setHasChanges(true);
   };
+
 
   const handleSave = async () => {
     try {
