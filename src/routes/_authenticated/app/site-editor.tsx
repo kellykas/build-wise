@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Globe, Save, Plus, Trash2, ChevronDown, ChevronRight,
@@ -177,19 +177,6 @@ function SectionEditor({
       {expanded && (
         <CardContent className="space-y-4 pt-0">
           {section.fields.map((field) => {
-            const currentValue =
-              localValues[field.key] ??
-              JSON.stringify(getContentValue(content, section.id, field.key, ""), null, 2);
-
-            // Initialize local values on first expand
-            if (!(field.key in localValues)) {
-              const raw = getContentValue(content, section.id, field.key, "");
-              const displayValue = field.type === "json_array"
-                ? (typeof raw === "string" ? raw : JSON.stringify(raw, null, 2))
-                : (typeof raw === "string" ? raw : JSON.stringify(raw));
-              localValues[field.key] = displayValue;
-            }
-
             return (
               <div key={field.key}>
                 <Label className="text-sm font-medium">{field.label}</Label>
