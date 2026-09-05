@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Globe, Save, Plus, Trash2, ChevronDown, ChevronRight,
@@ -103,13 +103,29 @@ function SectionEditor({
 }) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
-  const [localValues, setLocalValues] = useState<Record<string, string>>({});
   const [hasChanges, setHasChanges] = useState(false);
+
+  const initial = useMemo(() => {
+    const out: Record<string, string> = {};
+    for (const field of section.fields) {
+      const raw = getContentValue(content, section.id, field.key, field.type === "json_array" ? [] : "");
+      out[field.key] =
+        typeof raw === "string" ? raw : JSON.stringify(raw, null, 2);
+    }
+    return out;
+  }, [content, section]);
+
+  const [localValues, setLocalValues] = useState<Record<string, string>>(initial);
+
+  useEffect(() => {
+    if (!hasChanges) setLocalValues(initial);
+  }, [initial, hasChanges]);
 
   const handleValueChange = (key: string, value: string) => {
     setLocalValues((prev) => ({ ...prev, [key]: value }));
     setHasChanges(true);
   };
+
 
   const handleSave = async () => {
     try {
@@ -161,19 +177,6 @@ function SectionEditor({
       {expanded && (
         <CardContent className="space-y-4 pt-0">
           {section.fields.map((field) => {
-            const currentValue =
-              localValues[field.key] ??
-              JSON.stringify(getContentValue(content, section.id, field.key, ""), null, 2);
-
-            // Initialize local values on first expand
-            if (!(field.key in localValues)) {
-              const raw = getContentValue(content, section.id, field.key, "");
-              const displayValue = field.type === "json_array"
-                ? (typeof raw === "string" ? raw : JSON.stringify(raw, null, 2))
-                : (typeof raw === "string" ? raw : JSON.stringify(raw));
-              localValues[field.key] = displayValue;
-            }
-
             return (
               <div key={field.key}>
                 <Label className="text-sm font-medium">{field.label}</Label>

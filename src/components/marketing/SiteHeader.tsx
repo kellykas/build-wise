@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { HardHat, Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import { useSiteContent, siteText, getContentValue } from "@/hooks/use-site-content";
 
 const navKeys = ["home", "about", "services", "projects", "contact"] as const;
 const navPaths = ["/", "/about", "/services", "/projects", "/contact"] as const;
@@ -40,8 +41,33 @@ export function SiteHeader() {
   );
 }
 
+type FooterCms = {
+  description?: string;
+  copyright?: string;
+  legal?: { rccm?: string; tax_number?: string; id_nat?: string; numero?: string; inpp?: string; onem?: string };
+  contact?: { phone?: string; email?: string; address?: string };
+};
+
 export function SiteFooter() {
   const { t } = useTranslation();
+  const { data: content } = useSiteContent();
+  const cms = (getContentValue(content, "cms", "footer", {}) as FooterCms) ?? {};
+
+  const description = siteText(content, "footer", "description", cms.description || t("footer.description"));
+  const copyright = siteText(content, "footer", "copyright", cms.copyright || t("footer.copyright"));
+  const phone = siteText(content, "contact", "phone", cms.contact?.phone || "+1 (555) 240-8800");
+  const email = siteText(content, "contact", "email", cms.contact?.email || "hello@buildflow.co");
+  const address = siteText(content, "contact", "address", cms.contact?.address || "240 Riverside Ave, Suite 1100");
+  const legal = [
+    cms.legal?.rccm || "CD/KIS/RCCM/21.8-00068",
+    cms.legal?.tax_number ? `Numéro Impôt : ${cms.legal.tax_number}` : "Numéro Impôt : A2213934W",
+    cms.legal?.id_nat ? `ID NAT : ${cms.legal.id_nat}` : "ID NAT : 25-F4200-N84176G",
+    cms.legal?.numero ? `NUMERO : ${cms.legal.numero}` : "NUMERO : 1015361000",
+  ];
+  const certs = [
+    cms.legal?.inpp || "Certificat d'immatriculation à l'INPP N° DG/DF/DIREC/GU/7022/2021",
+    cms.legal?.onem ? `ONEM : ${cms.legal.onem}` : "ONEM : 060255A21",
+  ];
 
   return (
     <footer className="border-t border-border bg-card">
@@ -52,7 +78,7 @@ export function SiteFooter() {
             Scer-L/Construct Sarl
           </div>
           <p className="mt-3 text-sm text-muted-foreground">
-            {t("footer.description")}
+            {description}
           </p>
         </div>
         <div>
@@ -67,9 +93,9 @@ export function SiteFooter() {
         <div>
           <div className="text-sm font-semibold">Get in touch</div>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-            <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> +1 (555) 240-8800</li>
-            <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-primary" /> hello@buildflow.co</li>
-            <li className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-primary" /> 240 Riverside Ave, Suite 1100</li>
+            <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> {phone}</li>
+            <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-primary" /> {email}</li>
+            <li className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-primary" /> {address}</li>
           </ul>
         </div>
         <div>
@@ -84,31 +110,27 @@ export function SiteFooter() {
             <div>
               <div className="font-semibold text-foreground">Informations légales</div>
               <ul className="mt-2 space-y-1">
-                <li>CD/KIS/RCCM/21.8-00068</li>
-                <li>Numéro Impôt : A2213934W</li>
-                <li>ID NAT : 25-F4200-N84176G</li>
-                <li>NUMERO : 1015361000</li>
+                {legal.map((l) => <li key={l}>{l}</li>)}
               </ul>
             </div>
             <div>
               <div className="font-semibold text-foreground">Certifications</div>
               <ul className="mt-2 space-y-1">
-                <li>Certificat d'immatriculation à l'INPP N° DG/DF/DIREC/GU/7022/2021</li>
-                <li>ONEM : 060255A21</li>
+                {certs.map((c) => <li key={c}>{c}</li>)}
               </ul>
             </div>
             <div>
               <div className="font-semibold text-foreground">Coordonnées</div>
               <ul className="mt-2 space-y-1">
-                <li>+1 (555) 240-8800</li>
-                <li>hello@buildflow.co</li>
-                <li>240 Riverside Ave, Suite 1100</li>
+                <li>{phone}</li>
+                <li>{email}</li>
+                <li>{address}</li>
               </ul>
             </div>
           </div>
         </div>
         <div className="border-t border-border py-4 text-center text-xs text-muted-foreground">
-          {t("footer.copyright")}
+          {copyright}
         </div>
       </div>
     </footer>

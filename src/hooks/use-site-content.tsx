@@ -16,15 +16,35 @@ export type SiteContentRow = {
   updated_at: string;
 };
 
+/** Undo accidental double JSON encoding from older saves. */
+function normalize(value: unknown): unknown {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (
+      (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+      trimmed.startsWith("[") ||
+      trimmed.startsWith("{")
+    ) {
+      try {
+        return JSON.parse(trimmed);
+      } catch {
+        return value;
+      }
+    }
+  }
+  return value;
+}
+
 /**
  * Fetch all site content, optionally filtered by company.
- * Returns a flat map keyed by "section.key" for easy access.
+ * Returns a flat map keyed by "section.key". Company-specific rows
+ * override the global (company_id null) defaults.
  */
 export function useSiteContent(companyId?: string | null) {
   return useQuery<Record<string, unknown>>({
-    queryKey: ["site-content", companyId],
+    queryKey: ["site-content", companyId ?? null],
     queryFn: async () => {
-      let query = db.from("site_content").select("section, key, value") as any;
+      let query = db.from("site_content").select("section, key, value, company_id") as any;
       if (companyId) {
         query = query.or(`company_id.eq.${companyId},company_id.is.null`);
       } else {
@@ -33,13 +53,17 @@ export function useSiteContent(companyId?: string | null) {
       const { data, error } = await query;
       if (error) throw error;
 
+      const rows = (data ?? []) as any[];
+      // global rows first, company rows last so they win
+      rows.sort((a, b) => (a.company_id ? 1 : 0) - (b.company_id ? 1 : 0));
+
       const map: Record<string, unknown> = {};
-      for (const row of (data ?? []) as any[]) {
-        map[`${row.section}.${row.key}`] = row.value;
+      for (const row of rows) {
+        map[`${row.section}.${row.key}`] = normalize(row.value);
       }
       return map;
     },
-    staleTime: 5 * 60_000, // 5 minutes
+    staleTime: 30_000,
   });
 }
 
@@ -52,7 +76,31 @@ export function getContentValue(
   key: string,
   fallback: unknown = ""
 ): unknown {
-  return content?.[`${section}.${key}`] ?? fallback;
+  const v = content?.[`${section}.${key}`];
+  if (v === undefined || v === null || v === "") return fallback;
+  return v;
+}
+
+/** String accessor with fallback. */
+export function siteText(
+  content: Record<string, unknown> | undefined,
+  section: string,
+  key: string,
+  fallback: string
+): string {
+  const v = getContentValue(content, section, key, fallback);
+  return typeof v === "string" ? v : fallback;
+}
+
+/** Array accessor with fallback. */
+export function siteList<T>(
+  content: Record<string, unknown> | undefined,
+  section: string,
+  key: string,
+  fallback: T[]
+): T[] {
+  const v = getContentValue(content, section, key, fallback);
+  return Array.isArray(v) && v.length > 0 ? (v as T[]) : fallback;
 }
 
 /**
@@ -75,6 +123,8 @@ export function useSiteContentSection(section: string) {
 
 /**
  * Upsert a single site content value.
+ * All content is stored globally (company_id null) so the public website,
+ * which is read by anonymous visitors, always picks up the edits.
  */
 export function useUpsertSiteContent() {
   const qc = useQueryClient();
@@ -84,23 +134,33 @@ export function useUpsertSiteContent() {
       section,
       key,
       value,
-      companyId,
     }: {
       section: string;
       key: string;
       value: unknown;
       companyId?: string | null;
     }) => {
-      const { error } = await db.from("site_content").upsert(
-        {
-          section,
-          key,
-          value: JSON.stringify(value),
-          company_id: companyId ?? null,
-        },
-        { onConflict: "section,key,company_id" }
-      );
-      if (error) throw error;
+      const existing = await (db
+        .from("site_content")
+        .select("id")
+        .eq("section", section)
+        .eq("key", key)
+        .is("company_id", null)
+        .maybeSingle() as any);
+      if (existing.error) throw existing.error;
+
+      if (existing.data?.id) {
+        const { error } = await (db
+          .from("site_content")
+          .update({ value, updated_at: new Date().toISOString() })
+          .eq("id", existing.data.id) as any);
+        if (error) throw error;
+      } else {
+        const { error } = await (db
+          .from("site_content")
+          .insert({ section, key, value, company_id: null }) as any);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["site-content"] });
