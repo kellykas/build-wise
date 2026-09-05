@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteHeader, SiteFooter } from "@/components/marketing/SiteHeader";
+import { useSiteContent, siteText, siteList } from "@/hooks/use-site-content";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,29 +28,51 @@ export const Route = createFileRoute("/")({
 
 function Home_() {
   const { t } = useTranslation();
+  const { data: content } = useSiteContent();
+  const s = (section: string, key: string, fallback: string) => siteText(content, section, key, fallback);
 
-  const services = [
-    { icon: Building2, title: t("services_section.commercial.title"), desc: t("services_section.commercial.desc") },
-    { icon: Home, title: t("services_section.residential.title"), desc: t("services_section.residential.desc") },
-    { icon: Factory, title: t("services_section.industrial.title"), desc: t("services_section.industrial.desc") },
-    { icon: Hammer, title: t("services_section.renovation.title"), desc: t("services_section.renovation.desc") },
+  const serviceIcons = [Building2, Home, Factory, Hammer];
+  const services = siteList<{ title: string; desc: string }>(content, "services", "items", [
+    { title: t("services_section.commercial.title"), desc: t("services_section.commercial.desc") },
+    { title: t("services_section.residential.title"), desc: t("services_section.residential.desc") },
+    { title: t("services_section.industrial.title"), desc: t("services_section.industrial.desc") },
+    { title: t("services_section.renovation.title"), desc: t("services_section.renovation.desc") },
+  ]).map((item, i) => ({ ...item, icon: serviceIcons[i % serviceIcons.length] }));
+
+  const featuredImgs = [
+    "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=900&q=70&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1448630360428-65456885c650?w=900&q=70&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=900&q=70&auto=format&fit=crop",
   ];
+  const featured = siteList<{ title: string; tag: string; img?: string }>(content, "featured", "items", [
+    { title: t("featured.riverside.title"), tag: t("featured.riverside.tag") },
+    { title: t("featured.maple.title"), tag: t("featured.maple.tag") },
+    { title: t("featured.northgate.title"), tag: t("featured.northgate.tag") },
+  ]).map((p, i) => ({ ...p, img: p.img || featuredImgs[i % featuredImgs.length] }));
 
-  const featured = [
-    { title: t("featured.riverside.title"), tag: t("featured.riverside.tag"), img: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=900&q=70&auto=format&fit=crop" },
-    { title: t("featured.maple.title"), tag: t("featured.maple.tag"), img: "https://images.unsplash.com/photo-1448630360428-65456885c650?w=900&q=70&auto=format&fit=crop" },
-    { title: t("featured.northgate.title"), tag: t("featured.northgate.tag"), img: "https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=900&q=70&auto=format&fit=crop" },
-  ];
-
-  const stats = [
+  const stats = siteList<{ v: string; l: string }>(content, "stats", "items", [
     { v: "500+", l: t("stats.projects") },
     { v: "25 yrs", l: t("stats.years") },
     { v: "$2.4B", l: t("stats.value") },
     { v: "98%", l: t("stats.ontime") },
-  ];
+  ]);
 
   const whyPointsRaw = t("why_us.points", { returnObjects: true });
-  const whyPoints: string[] = Array.isArray(whyPointsRaw) ? whyPointsRaw : [String(whyPointsRaw)];
+  const whyFallback: string[] = Array.isArray(whyPointsRaw) ? whyPointsRaw : [String(whyPointsRaw)];
+  const whyPoints = siteList<string>(content, "why_us", "points", whyFallback);
+
+  const testimonials = siteList<{ quote: string; author: string }>(content, "testimonials", "items", [
+    { quote: t("testimonials.1.quote"), author: t("testimonials.1.author") },
+    { quote: t("testimonials.2.quote"), author: t("testimonials.2.author") },
+    { quote: t("testimonials.3.quote"), author: t("testimonials.3.author") },
+  ]);
+
+  const certifications = siteList<string>(content, "certifications", "items", [
+    t("certifications.enr"), t("certifications.osha"), t("certifications.leed"),
+    t("certifications.iso"), t("certifications.agc"),
+  ]);
+
+  const heroTitle = siteText(content, "hero", "title", "");
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -69,22 +92,22 @@ function Home_() {
           <div className="max-w-2xl">
             <img src="/logo.png" alt="Scer-L/Construct Sarl" className="h-24 w-24 mb-6 rounded-full" />
             <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
-              <ShieldCheck className="h-3.5 w-3.5 text-accent" /> {t("hero.badge")}
+              <ShieldCheck className="h-3.5 w-3.5 text-accent" /> {s("hero", "badge", t("hero.badge"))}
             </div>
             <h1 className="mt-5 text-4xl font-bold tracking-tight md:text-6xl">
-              <Trans i18nKey="hero.title" components={{ 1: <span className="text-accent" /> }} />
+              {heroTitle ? heroTitle : <Trans i18nKey="hero.title" components={{ 1: <span className="text-accent" /> }} />}
             </h1>
             <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-              {t("hero.subtitle")}
+              {s("hero", "subtitle", t("hero.subtitle"))}
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link to="/contact" search={{ type: "quote" }}>
-                <Button size="lg">{t("hero.cta_quote")} <ArrowRight className="ml-2 h-4 w-4" /></Button>
+                <Button size="lg">{s("hero", "cta_quote", t("hero.cta_quote"))} <ArrowRight className="ml-2 h-4 w-4" /></Button>
               </Link>
-              <Link to="/projects"><Button size="lg" variant="outline">{t("hero.cta_projects")}</Button></Link>
+              <Link to="/projects"><Button size="lg" variant="outline">{s("hero", "cta_projects", t("hero.cta_projects"))}</Button></Link>
             </div>
             <div className="mt-8 flex items-center gap-3 text-sm text-muted-foreground">
-              <Phone className="h-4 w-4 text-primary" /> {t("hero.phone_label")} <span className="font-semibold text-foreground">{t("hero.phone_number")}</span>
+              <Phone className="h-4 w-4 text-primary" /> {s("hero", "phone_label", t("hero.phone_label"))} <span className="font-semibold text-foreground">{s("hero", "phone_number", t("hero.phone_number"))}</span>
             </div>
           </div>
         </div>
@@ -107,10 +130,10 @@ function Home_() {
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div className="max-w-2xl">
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{t("services_section.title")}</h2>
-              <p className="mt-3 text-muted-foreground">{t("services_section.subtitle")}</p>
+              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{s("services", "title", t("services_section.title"))}</h2>
+              <p className="mt-3 text-muted-foreground">{s("services", "subtitle", t("services_section.subtitle"))}</p>
             </div>
-            <Link to="/services" className="text-sm font-medium text-primary hover:underline">{t("services_section.view_all")}</Link>
+            <Link to="/services" className="text-sm font-medium text-primary hover:underline">{s("services", "view_all", t("services_section.view_all"))}</Link>
           </div>
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {services.map((f) => (
@@ -134,10 +157,10 @@ function Home_() {
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div className="max-w-2xl">
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{t("featured.title")}</h2>
-              <p className="mt-3 text-muted-foreground">{t("featured.subtitle")}</p>
+              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{s("featured", "title", t("featured.title"))}</h2>
+              <p className="mt-3 text-muted-foreground">{s("featured", "subtitle", t("featured.subtitle"))}</p>
             </div>
-            <Link to="/projects" className="text-sm font-medium text-primary hover:underline">{t("featured.view_all")}</Link>
+            <Link to="/projects" className="text-sm font-medium text-primary hover:underline">{s("featured", "view_all", t("featured.view_all"))}</Link>
           </div>
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             {featured.map((p) => (
@@ -159,9 +182,9 @@ function Home_() {
       <section className="border-b border-border">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-20 sm:px-6 md:grid-cols-2">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{t("why_us.title")}</h2>
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{s("why_us", "title", t("why_us.title"))}</h2>
             <p className="mt-4 text-muted-foreground">
-              {t("why_us.subtitle")}
+              {s("why_us", "subtitle", t("why_us.subtitle"))}
             </p>
             <ul className="mt-8 space-y-3">
               {whyPoints.map((p) => (
@@ -170,11 +193,11 @@ function Home_() {
             </ul>
           </div>
           <div className="grid gap-4">
-            {["1", "2", "3"].map((key) => (
-              <figure key={key} className="rounded-2xl border border-border bg-card p-6">
+            {testimonials.map((item, i) => (
+              <figure key={i} className="rounded-2xl border border-border bg-card p-6">
                 <Quote className="h-5 w-5 text-primary" />
-                <blockquote className="mt-3 text-sm text-foreground">“{t(`testimonials.${key}.quote`)}”</blockquote>
-                <figcaption className="mt-3 text-xs text-muted-foreground">{t(`testimonials.${key}.author`)}</figcaption>
+                <blockquote className="mt-3 text-sm text-foreground">“{item.quote}”</blockquote>
+                <figcaption className="mt-3 text-xs text-muted-foreground">{item.author}</figcaption>
               </figure>
             ))}
           </div>
@@ -185,11 +208,11 @@ function Home_() {
       <section className="border-b border-border bg-card/40">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
           <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2"><Award className="h-4 w-4 text-primary" /> {t("certifications.enr")}</div>
-            <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> {t("certifications.osha")}</div>
-            <div className="flex items-center gap-2"><Award className="h-4 w-4 text-primary" /> {t("certifications.leed")}</div>
-            <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> {t("certifications.iso")}</div>
-            <div className="flex items-center gap-2"><Award className="h-4 w-4 text-primary" /> {t("certifications.agc")}</div>
+            {certifications.map((c, i) => (
+              <div key={i} className="flex items-center gap-2">
+                {i % 2 === 0 ? <Award className="h-4 w-4 text-primary" /> : <ShieldCheck className="h-4 w-4 text-primary" />} {c}
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -198,12 +221,12 @@ function Home_() {
       <section className="border-b border-border bg-primary text-primary-foreground">
         <div className="mx-auto grid max-w-7xl gap-6 px-4 py-16 sm:px-6 md:grid-cols-[2fr_1fr] md:items-center">
           <div>
-            <h2 className="text-3xl font-bold md:text-4xl">{t("cta.title")}</h2>
-            <p className="mt-3 opacity-90">{t("cta.subtitle")}</p>
+            <h2 className="text-3xl font-bold md:text-4xl">{s("cta", "title", t("cta.title"))}</h2>
+            <p className="mt-3 opacity-90">{s("cta", "subtitle", t("cta.subtitle"))}</p>
           </div>
           <div className="flex flex-wrap gap-3 md:justify-end">
-            <Link to="/contact" search={{ type: "quote" }}><Button size="lg" variant="secondary">{t("cta.quote_btn")}</Button></Link>
-            <Link to="/contact"><Button size="lg" variant="outline" className="bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-primary">{t("cta.hi_btn")}</Button></Link>
+            <Link to="/contact" search={{ type: "quote" }}><Button size="lg" variant="secondary">{s("cta", "quote_btn", t("cta.quote_btn"))}</Button></Link>
+            <Link to="/contact"><Button size="lg" variant="outline" className="bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-primary">{s("cta", "hi_btn", t("cta.hi_btn"))}</Button></Link>
           </div>
         </div>
       </section>
