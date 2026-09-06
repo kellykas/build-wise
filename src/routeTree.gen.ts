@@ -38,6 +38,7 @@ import { Route as AuthenticatedAppEmployeesRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppDocumentsRouteImport } from './routes/_authenticated/app/documents'
 import { Route as AuthenticatedAppCmsRouteImport } from './routes/_authenticated/app/cms'
 import { Route as AuthenticatedAppClientsRouteImport } from './routes/_authenticated/app/clients'
+import { Route as AuthenticatedAppClientSpaceRouteImport } from './routes/_authenticated/app/client-space'
 import { Route as AuthenticatedAppClientPortalRouteImport } from './routes/_authenticated/app/client-portal'
 import { Route as AuthenticatedAppCalendarRouteImport } from './routes/_authenticated/app/calendar'
 import { Route as AuthenticatedAppAttendanceRouteImport } from './routes/_authenticated/app/attendance'
@@ -209,6 +210,12 @@ const AuthenticatedAppClientsRoute = AuthenticatedAppClientsRouteImport.update({
   path: '/clients',
   getParentRoute: () => AuthenticatedAppRouteRoute,
 } as any)
+const AuthenticatedAppClientSpaceRoute =
+  AuthenticatedAppClientSpaceRouteImport.update({
+    id: '/client-space',
+    path: '/client-space',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
 const AuthenticatedAppClientPortalRoute =
   AuthenticatedAppClientPortalRouteImport.update({
     id: '/client-portal',
@@ -293,6 +300,7 @@ export interface FileRoutesByFullPath {
   '/app/attendance': typeof AuthenticatedAppAttendanceRoute
   '/app/calendar': typeof AuthenticatedAppCalendarRoute
   '/app/client-portal': typeof AuthenticatedAppClientPortalRoute
+  '/app/client-space': typeof AuthenticatedAppClientSpaceRoute
   '/app/clients': typeof AuthenticatedAppClientsRoute
   '/app/cms': typeof AuthenticatedAppCmsRoute
   '/app/documents': typeof AuthenticatedAppDocumentsRoute
@@ -334,6 +342,7 @@ export interface FileRoutesByTo {
   '/app/attendance': typeof AuthenticatedAppAttendanceRoute
   '/app/calendar': typeof AuthenticatedAppCalendarRoute
   '/app/client-portal': typeof AuthenticatedAppClientPortalRoute
+  '/app/client-space': typeof AuthenticatedAppClientSpaceRoute
   '/app/clients': typeof AuthenticatedAppClientsRoute
   '/app/cms': typeof AuthenticatedAppCmsRoute
   '/app/documents': typeof AuthenticatedAppDocumentsRoute
@@ -375,6 +384,7 @@ export interface FileRoutesById {
   '/_authenticated/app/attendance': typeof AuthenticatedAppAttendanceRoute
   '/_authenticated/app/calendar': typeof AuthenticatedAppCalendarRoute
   '/_authenticated/app/client-portal': typeof AuthenticatedAppClientPortalRoute
+  '/_authenticated/app/client-space': typeof AuthenticatedAppClientSpaceRoute
   '/_authenticated/app/clients': typeof AuthenticatedAppClientsRoute
   '/_authenticated/app/cms': typeof AuthenticatedAppCmsRoute
   '/_authenticated/app/documents': typeof AuthenticatedAppDocumentsRoute
@@ -419,6 +429,7 @@ export interface FileRouteTypes {
     | '/app/attendance'
     | '/app/calendar'
     | '/app/client-portal'
+    | '/app/client-space'
     | '/app/clients'
     | '/app/cms'
     | '/app/documents'
@@ -460,6 +471,7 @@ export interface FileRouteTypes {
     | '/app/attendance'
     | '/app/calendar'
     | '/app/client-portal'
+    | '/app/client-space'
     | '/app/clients'
     | '/app/cms'
     | '/app/documents'
@@ -500,6 +512,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/attendance'
     | '/_authenticated/app/calendar'
     | '/_authenticated/app/client-portal'
+    | '/_authenticated/app/client-space'
     | '/_authenticated/app/clients'
     | '/_authenticated/app/cms'
     | '/_authenticated/app/documents'
@@ -748,6 +761,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppClientsRouteImport
       parentRoute: typeof AuthenticatedAppRouteRoute
     }
+    '/_authenticated/app/client-space': {
+      id: '/_authenticated/app/client-space'
+      path: '/client-space'
+      fullPath: '/app/client-space'
+      preLoaderRoute: typeof AuthenticatedAppClientSpaceRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
     '/_authenticated/app/client-portal': {
       id: '/_authenticated/app/client-portal'
       path: '/client-portal'
@@ -893,6 +913,7 @@ interface AuthenticatedAppRouteRouteChildren {
   AuthenticatedAppAttendanceRoute: typeof AuthenticatedAppAttendanceRoute
   AuthenticatedAppCalendarRoute: typeof AuthenticatedAppCalendarRoute
   AuthenticatedAppClientPortalRoute: typeof AuthenticatedAppClientPortalRoute
+  AuthenticatedAppClientSpaceRoute: typeof AuthenticatedAppClientSpaceRoute
   AuthenticatedAppClientsRoute: typeof AuthenticatedAppClientsRoute
   AuthenticatedAppCmsRoute: typeof AuthenticatedAppCmsRoute
   AuthenticatedAppDocumentsRoute: typeof AuthenticatedAppDocumentsRoute
@@ -919,6 +940,7 @@ const AuthenticatedAppRouteRouteChildren: AuthenticatedAppRouteRouteChildren = {
   AuthenticatedAppAttendanceRoute: AuthenticatedAppAttendanceRoute,
   AuthenticatedAppCalendarRoute: AuthenticatedAppCalendarRoute,
   AuthenticatedAppClientPortalRoute: AuthenticatedAppClientPortalRoute,
+  AuthenticatedAppClientSpaceRoute: AuthenticatedAppClientSpaceRoute,
   AuthenticatedAppClientsRoute: AuthenticatedAppClientsRoute,
   AuthenticatedAppCmsRoute: AuthenticatedAppCmsRoute,
   AuthenticatedAppDocumentsRoute: AuthenticatedAppDocumentsRoute,
