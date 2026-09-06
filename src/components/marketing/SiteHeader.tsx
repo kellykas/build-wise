@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { HardHat, Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import { usePublicSiteContent, getPublicContentValue } from "@/hooks/use-public-site-content";
 
 const navKeys = ["home", "about", "services", "projects", "contact"] as const;
 const navPaths = ["/", "/about", "/services", "/projects", "/contact"] as const;
@@ -42,6 +43,21 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   const { t } = useTranslation();
+  const { data: siteContent } = usePublicSiteContent();
+
+  const footerData = getPublicContentValue(siteContent, "cms", "footer") as {
+    description?: string;
+    copyright?: string;
+    contact?: { phone?: string; email?: string; address?: string };
+    legal?: { rccm?: string; tax_number?: string; id_nat?: string; numero?: string; inpp?: string; onem?: string };
+  } | null;
+
+  const description = footerData?.description || t("footer.description");
+  const copyright = footerData?.copyright || t("footer.copyright");
+  const phone = footerData?.contact?.phone || "+1 (555) 240-8800";
+  const email = footerData?.contact?.email || "hello@buildflow.co";
+  const address = footerData?.contact?.address || "240 Riverside Ave, Suite 1100";
+  const legal = footerData?.legal || {};
 
   return (
     <footer className="border-t border-border bg-card">
@@ -52,11 +68,11 @@ export function SiteFooter() {
             Scer-L/Construct Sarl
           </div>
           <p className="mt-3 text-sm text-muted-foreground">
-            {t("footer.description")}
+            {description}
           </p>
         </div>
         <div>
-          <div className="text-sm font-semibold">Company</div>
+          <div className="text-sm font-semibold">Entreprise</div>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             <li><Link to="/about" className="hover:text-foreground">{t("nav.about")}</Link></li>
             <li><Link to="/services" className="hover:text-foreground">{t("nav.services")}</Link></li>
@@ -65,16 +81,16 @@ export function SiteFooter() {
           </ul>
         </div>
         <div>
-          <div className="text-sm font-semibold">Get in touch</div>
+          <div className="text-sm font-semibold">Contactez-nous</div>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-            <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> +1 (555) 240-8800</li>
-            <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-primary" /> hello@buildflow.co</li>
-            <li className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-primary" /> 240 Riverside Ave, Suite 1100</li>
+            <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> {phone}</li>
+            <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-primary" /> {email}</li>
+            <li className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-primary" /> {address}</li>
           </ul>
         </div>
         <div>
-          <div className="text-sm font-semibold">Start a project</div>
-          <p className="mt-3 text-sm text-muted-foreground">Tell us about your build and our team will reply within 24 hours.</p>
+          <div className="text-sm font-semibold">Demander un devis</div>
+          <p className="mt-3 text-sm text-muted-foreground">Décrivez-nous votre projet et notre équipe vous répondra sous 24 heures.</p>
           <Link to="/contact" search={{ type: "quote" }}><Button size="sm" className="mt-3">{t("hero.cta_quote")}</Button></Link>
         </div>
       </div>
@@ -84,31 +100,31 @@ export function SiteFooter() {
             <div>
               <div className="font-semibold text-foreground">Informations légales</div>
               <ul className="mt-2 space-y-1">
-                <li>CD/KIS/RCCM/21.8-00068</li>
-                <li>Numéro Impôt : A2213934W</li>
-                <li>ID NAT : 25-F4200-N84176G</li>
-                <li>NUMERO : 1015361000</li>
+                <li>RCCM: {legal.rccm || "CD/KIS/RCCM/21.8-00068"}</li>
+                <li>Numéro Impôt: {legal.tax_number || "A2213934W"}</li>
+                <li>ID NAT: {legal.id_nat || "25-F4200-N84176G"}</li>
+                <li>NUMERO: {legal.numero || "1015361000"}</li>
               </ul>
             </div>
             <div>
               <div className="font-semibold text-foreground">Certifications</div>
               <ul className="mt-2 space-y-1">
-                <li>Certificat d'immatriculation à l'INPP N° DG/DF/DIREC/GU/7022/2021</li>
-                <li>ONEM : 060255A21</li>
+                <li>Certificat INPP: {legal.inpp || "N° DG/DF/DIREC/GU/7022/2021"}</li>
+                <li>ONEM: {legal.onem || "060255A21"}</li>
               </ul>
             </div>
             <div>
               <div className="font-semibold text-foreground">Coordonnées</div>
               <ul className="mt-2 space-y-1">
-                <li>+1 (555) 240-8800</li>
-                <li>hello@buildflow.co</li>
-                <li>240 Riverside Ave, Suite 1100</li>
+                <li>{phone}</li>
+                <li>{email}</li>
+                <li>{address}</li>
               </ul>
             </div>
           </div>
         </div>
         <div className="border-t border-border py-4 text-center text-xs text-muted-foreground">
-          {t("footer.copyright")}
+          {copyright}
         </div>
       </div>
     </footer>

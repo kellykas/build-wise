@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
+import { usePublicSiteContent, getPublicContentValue } from "@/hooks/use-public-site-content";
 
 /* ------------------------------------------------------------------ */
 /* Types & data                                                        */
@@ -44,7 +45,7 @@ interface Project {
   img: string;
 }
 
-const projects: Project[] = [
+const defaultProjects: Project[] = [
   {
     title: "Riverside Tower",
     category: "commercial",
@@ -191,6 +192,22 @@ function ProjectsPage() {
   const { t } = useTranslation();
   const search = useSearch({ from: "/projects" });
   const navigate = useNavigate({ from: "/projects" });
+  const { data: siteContent } = usePublicSiteContent();
+
+  // Load projects from CMS with fallback to defaults
+  const cmsProjects = getPublicContentValue(siteContent, "cms", "projects") as { title: string; category: string; location: string; year: string; size: string; status: string; blurb: string; img: string }[] | null;
+  const allProjects: Project[] = (cmsProjects && cmsProjects.length > 0)
+    ? cmsProjects.map((p) => ({
+        title: p.title,
+        category: p.category as Project["category"],
+        location: p.location,
+        year: p.year,
+        size: p.size,
+        status: p.status as Project["status"],
+        blurb: p.blurb,
+        img: p.img,
+      }))
+    : defaultProjects;
 
   const categoryFilters: { key: Category; label: string; icon: React.ElementType }[] = [
     { key: "all", label: t("projects_page.all"), icon: SlidersHorizontal },
@@ -233,7 +250,7 @@ function ProjectsPage() {
 
   /* ---- Filter + sort logic ---- */
   const filtered = useMemo(() => {
-    let list = [...projects];
+    let list = [...allProjects];
 
     // Text search
     if (q.trim()) {

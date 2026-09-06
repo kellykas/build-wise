@@ -345,7 +345,11 @@
       "task": "Tâche",
       "requisition": "État de besoin",
       "approval": "Approbation",
-      "urgent": "Urgence"
+      "urgent": "Urgence",
+      "to": "À",
+      "select_recipient_error": "Sélectionnez au moins un destinataire",
+      "sent_to": "Notification envoyée à",
+      "recipients_count": "destinataire(s)"
     },
     "settings": {
       "title": "Paramètres",
@@ -456,16 +460,60 @@
     },
     "attendance": {
       "title": "Présence",
-      "description": "Suivre les pointages quotidiens et les heures de travail."
+      "description": "Suivre les pointages quotidiens et les heures de travail.",
+      "clocked_in": "Arrivé",
+      "clocked_out": "Parti",
+      "active_employees": "Employés actifs",
+      "present_today": "Présents aujourd'hui",
+      "total_hours": "Heures totales",
+      "daily_roster": "Équipe quotidienne",
+      "employee": "Employé",
+      "position": "Poste",
+      "clock_in": "Pointer l'arrivée",
+      "clock_out": "Pointer le départ",
+      "hours": "Heures",
+      "action": "Action",
+      "done": "Terminé",
+      "no_active_employees": "Aucun employé actif."
     },
     "calendar": {
       "title": "Agenda",
       "description": "Jalons de projet, échéances et événements.",
-      "event": "événement"
+      "event": "événement",
+      "title_label": "Titre",
+      "date": "Date",
+      "start": "Début",
+      "end": "Fin",
+      "location": "Lieu",
+      "notes": "Notes",
+      "new_event": "Nouvel événement",
+      "nothing_scheduled": "Rien de prévu pour cette journée.",
+      "all_day": "Toute la journée",
+      "upcoming": "À venir",
+      "nothing_horizon": "Rien à l'horizon."
     },
     "finance": {
       "title": "Trésorerie",
-      "description": "Flux de trésorerie, transactions et rapprochement."
+      "description": "Flux de trésorerie, transactions et rapprochement.",
+      "add_expense": "Ajouter une dépense",
+      "add_income": "Ajouter un revenu",
+      "income": "Revenus",
+      "expenses": "Dépenses",
+      "net_profit": "Bénéfice net",
+      "accounts_receivable": "Comptes à recevoir",
+      "cash_flow": "Flux de trésorerie",
+      "all": "Tous",
+      "date": "Date",
+      "type": "Type",
+      "category": "Catégorie",
+      "amount": "Montant",
+      "delete": "Supprimer",
+      "delete_confirm": "Supprimer la transaction ?",
+      "no_transactions": "Aucune transaction.",
+      "new": "Nouveau",
+      "add": "Ajouter",
+      "income_added": "Revenu ajouté",
+      "expense_added": "Dépense ajoutée"
     },
     "documents": {
       "title": "Documents",

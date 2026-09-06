@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteHeader, SiteFooter } from "@/components/marketing/SiteHeader";
+import { usePublicSiteContent, getPublicContentValue } from "@/hooks/use-public-site-content";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,19 +28,27 @@ export const Route = createFileRoute("/")({
 
 function Home_() {
   const { t } = useTranslation();
+  const { data: siteContent } = usePublicSiteContent();
 
-  const services = [
-    { icon: Building2, title: t("services_section.commercial.title"), desc: t("services_section.commercial.desc") },
-    { icon: Home, title: t("services_section.residential.title"), desc: t("services_section.residential.desc") },
-    { icon: Factory, title: t("services_section.industrial.title"), desc: t("services_section.industrial.desc") },
-    { icon: Hammer, title: t("services_section.renovation.title"), desc: t("services_section.renovation.desc") },
-  ];
+  // Load from CMS with fallback to i18n defaults
+  const cmsServices = getPublicContentValue(siteContent, "cms", "services") as { title: string; desc: string; points: string[]; icon: string }[] | null;
+  const services = (cmsServices && cmsServices.length > 0)
+    ? cmsServices.slice(0, 4).map((s) => ({ icon: Building2, title: s.title, desc: s.desc }))
+    : [
+        { icon: Building2, title: t("services_section.commercial.title"), desc: t("services_section.commercial.desc") },
+        { icon: Home, title: t("services_section.residential.title"), desc: t("services_section.residential.desc") },
+        { icon: Factory, title: t("services_section.industrial.title"), desc: t("services_section.industrial.desc") },
+        { icon: Hammer, title: t("services_section.renovation.title"), desc: t("services_section.renovation.desc") },
+      ];
 
-  const featured = [
-    { title: t("featured.riverside.title"), tag: t("featured.riverside.tag"), img: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=900&q=70&auto=format&fit=crop" },
-    { title: t("featured.maple.title"), tag: t("featured.maple.tag"), img: "https://images.unsplash.com/photo-1448630360428-65456885c650?w=900&q=70&auto=format&fit=crop" },
-    { title: t("featured.northgate.title"), tag: t("featured.northgate.tag"), img: "https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=900&q=70&auto=format&fit=crop" },
-  ];
+  const cmsProjects = getPublicContentValue(siteContent, "cms", "projects") as { title: string; category: string; img: string }[] | null;
+  const featured = (cmsProjects && cmsProjects.length > 0)
+    ? cmsProjects.slice(0, 3).map((p) => ({ title: p.title, tag: p.category, img: p.img }))
+    : [
+        { title: t("featured.riverside.title"), tag: t("featured.riverside.tag"), img: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=900&q=70&auto=format&fit=crop" },
+        { title: t("featured.maple.title"), tag: t("featured.maple.tag"), img: "https://images.unsplash.com/photo-1448630360428-65456885c650?w=900&q=70&auto=format&fit=crop" },
+        { title: t("featured.northgate.title"), tag: t("featured.northgate.tag"), img: "https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=900&q=70&auto=format&fit=crop" },
+      ];
 
   const stats = [
     { v: "500+", l: t("stats.projects") },

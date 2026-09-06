@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { SiteHeader, SiteFooter } from "@/components/marketing/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Award, HeartHandshake, ShieldCheck, Sparkles, Users, Leaf } from "lucide-react";
+import { usePublicSiteContent, getPublicContentValue } from "@/hooks/use-public-site-content";
 
 const values = [
   { icon: ShieldCheck, k: "safety", t: "Safety first", d: "Zero-harm culture with daily toolbox talks and OSHA-leading incident rates." },
@@ -11,7 +12,7 @@ const values = [
   { icon: Leaf, k: "sustainable", t: "Sustainable building", d: "LEED-accredited team and a default low-waste site programme." },
 ];
 
-const milestones = [
+const defaultMilestones = [
   { y: "1998", t: "Founded as a 4-person residential framing crew." },
   { y: "2006", t: "Completed our first commercial high-rise build." },
   { y: "2014", t: "Expanded into infrastructure with the Coastal interchange." },
@@ -19,7 +20,7 @@ const milestones = [
   { y: "2025", t: "500+ projects delivered across 9 regions." },
 ];
 
-const leadership = [
+const defaultLeadership = [
   { name: "Marcus Reyes", k: "ceo", role: "Founder & CEO", initials: "MR" },
   { name: "Elena Cho", k: "coo", role: "Chief Operating Officer", initials: "EC" },
   { name: "Daniel Okafor", k: "vp", role: "VP Pre-Construction", initials: "DO" },
@@ -42,6 +43,17 @@ export const Route = createFileRoute("/about")({
 
 function AboutPage() {
   const { t } = useTranslation();
+  const { data: siteContent } = usePublicSiteContent();
+
+  // Load from CMS with fallbacks
+  const cmsLeadership = getPublicContentValue(siteContent, "cms", "leadership") as { name: string; role: string; initials: string; photo: string }[] | null;
+  const cmsMilestones = getPublicContentValue(siteContent, "cms", "milestones") as { year: string; description: string }[] | null;
+  const leadership = (cmsLeadership && cmsLeadership.length > 0)
+    ? cmsLeadership.map((l) => ({ name: l.name, k: l.name.toLowerCase().replace(/\s+/g, "_"), role: l.role, initials: l.initials }))
+    : defaultLeadership;
+  const milestones = (cmsMilestones && cmsMilestones.length > 0)
+    ? cmsMilestones.map((m) => ({ y: m.year, t: m.description }))
+    : defaultMilestones;
 
   return (
     <div className="flex min-h-screen flex-col">

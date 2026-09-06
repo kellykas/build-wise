@@ -6,8 +6,9 @@ import {
   Building2, Home, Factory, Hammer, Ruler, Truck,
   ArrowRight, CheckCircle2, ShieldCheck,
 } from "lucide-react";
+import { usePublicSiteContent, getPublicContentValue } from "@/hooks/use-public-site-content";
 
-const services = [
+const serviceKeys = [
   { key: "commercial", icon: Building2 },
   { key: "residential", icon: Home },
   { key: "industrial", icon: Factory },
@@ -34,6 +35,7 @@ export const Route = createFileRoute("/services")({
 
 function ServicesPage() {
   const { t } = useTranslation();
+  const { data: siteContent } = usePublicSiteContent();
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -57,7 +59,7 @@ function ServicesPage() {
 
         <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {services.map((s) => (
+            {serviceKeys.map((s) => (
               <div key={s.key} className="group rounded-2xl border border-border bg-card p-6 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
                 <div className="grid h-12 w-12 place-items-center rounded-lg bg-primary/10 text-primary">
                   <s.icon className="h-6 w-6" />
