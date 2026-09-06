@@ -77,6 +77,79 @@ export type Database = {
           },
         ]
       }
+      appointments: {
+        Row: {
+          client_id: string | null
+          company_id: string
+          created_at: string
+          description: string | null
+          duration_minutes: number
+          id: string
+          location: string | null
+          project_id: string | null
+          requested_by: string | null
+          scheduled_at: string
+          staff_note: string | null
+          status: Database["public"]["Enums"]["appointment_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          client_id?: string | null
+          company_id: string
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          location?: string | null
+          project_id?: string | null
+          requested_by?: string | null
+          scheduled_at: string
+          staff_note?: string | null
+          status?: Database["public"]["Enums"]["appointment_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string | null
+          company_id?: string
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          location?: string | null
+          project_id?: string | null
+          requested_by?: string | null
+          scheduled_at?: string
+          staff_note?: string | null
+          status?: Database["public"]["Enums"]["appointment_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       attendance: {
         Row: {
           clock_in: string
@@ -584,6 +657,63 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoice_payments: {
+        Row: {
+          amount: number
+          company_id: string
+          created_at: string
+          id: string
+          invoice_id: string
+          method: string
+          note: string | null
+          paid_at: string
+          recorded_by: string | null
+          reference: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          company_id: string
+          created_at?: string
+          id?: string
+          invoice_id: string
+          method?: string
+          note?: string | null
+          paid_at?: string
+          recorded_by?: string | null
+          reference?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          company_id?: string
+          created_at?: string
+          id?: string
+          invoice_id?: string
+          method?: string
+          note?: string | null
+          paid_at?: string
+          recorded_by?: string | null
+          reference?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_payments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoice_payments_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
             referencedColumns: ["id"]
           },
         ]
@@ -1139,6 +1269,151 @@ export type Database = {
             columns: ["supplier_id"]
             isOneToOne: false
             referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quote_items: {
+        Row: {
+          company_id: string
+          created_at: string
+          description: string
+          id: string
+          position: number
+          quantity: number
+          quote_id: string
+          unit: string | null
+          unit_price: number
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          description: string
+          id?: string
+          position?: number
+          quantity?: number
+          quote_id: string
+          unit?: string | null
+          unit_price?: number
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          description?: string
+          id?: string
+          position?: number
+          quantity?: number
+          quote_id?: string
+          unit?: string | null
+          unit_price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_items_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_items_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quotes: {
+        Row: {
+          amount: number
+          client_id: string | null
+          client_response_note: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          currency: string
+          description: string | null
+          id: string
+          issue_date: string
+          notes: string | null
+          project_id: string | null
+          quote_number: string | null
+          responded_at: string | null
+          status: Database["public"]["Enums"]["quote_status"]
+          tax: number
+          title: string
+          total: number
+          updated_at: string
+          valid_until: string | null
+        }
+        Insert: {
+          amount?: number
+          client_id?: string | null
+          client_response_note?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          description?: string | null
+          id?: string
+          issue_date?: string
+          notes?: string | null
+          project_id?: string | null
+          quote_number?: string | null
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["quote_status"]
+          tax?: number
+          title: string
+          total?: number
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Update: {
+          amount?: number
+          client_id?: string | null
+          client_response_note?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          description?: string | null
+          id?: string
+          issue_date?: string
+          notes?: string | null
+          project_id?: string | null
+          quote_number?: string | null
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["quote_status"]
+          tax?: number
+          title?: string
+          total?: number
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotes_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -1761,6 +2036,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_client_of: { Args: { _client_id: string }; Returns: boolean }
       is_staff_user: { Args: { _user_id: string }; Returns: boolean }
       user_has_permission: {
         Args: { _permission_key: string; _user_id: string }
@@ -1780,6 +2056,7 @@ export type Database = {
         | "store_manager"
         | "employee"
         | "client"
+      appointment_status: "requested" | "confirmed" | "completed" | "cancelled"
       equipment_status:
         | "available"
         | "assigned"
@@ -1803,6 +2080,13 @@ export type Database = {
         | "on_hold"
         | "completed"
         | "cancelled"
+      quote_status:
+        | "draft"
+        | "sent"
+        | "under_review"
+        | "accepted"
+        | "rejected"
+        | "expired"
       requisition_line_status:
         | "pending"
         | "priced"
@@ -1957,6 +2241,7 @@ export const Constants = {
         "employee",
         "client",
       ],
+      appointment_status: ["requested", "confirmed", "completed", "cancelled"],
       equipment_status: [
         "available",
         "assigned",
@@ -1982,6 +2267,14 @@ export const Constants = {
         "on_hold",
         "completed",
         "cancelled",
+      ],
+      quote_status: [
+        "draft",
+        "sent",
+        "under_review",
+        "accepted",
+        "rejected",
+        "expired",
       ],
       requisition_line_status: [
         "pending",
