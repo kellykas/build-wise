@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { HardHat, Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
-import { usePublicSiteContent, getPublicContentValue } from "@/hooks/use-public-site-content";
+import { useSiteContent, siteText, getContentValue } from "@/hooks/use-site-content";
 
 const navKeys = ["home", "about", "services", "projects", "contact"] as const;
 const navPaths = ["/", "/about", "/services", "/projects", "/contact"] as const;
@@ -41,23 +41,33 @@ export function SiteHeader() {
   );
 }
 
+type FooterCms = {
+  description?: string;
+  copyright?: string;
+  legal?: { rccm?: string; tax_number?: string; id_nat?: string; numero?: string; inpp?: string; onem?: string };
+  contact?: { phone?: string; email?: string; address?: string };
+};
+
 export function SiteFooter() {
   const { t } = useTranslation();
-  const { data: siteContent } = usePublicSiteContent();
+  const { data: content } = useSiteContent();
+  const cms = (getContentValue(content, "cms", "footer", {}) as FooterCms) ?? {};
 
-  const footerData = getPublicContentValue(siteContent, "cms", "footer") as {
-    description?: string;
-    copyright?: string;
-    contact?: { phone?: string; email?: string; address?: string };
-    legal?: { rccm?: string; tax_number?: string; id_nat?: string; numero?: string; inpp?: string; onem?: string };
-  } | null;
-
-  const description = footerData?.description || t("footer.description");
-  const copyright = footerData?.copyright || t("footer.copyright");
-  const phone = footerData?.contact?.phone || "+1 (555) 240-8800";
-  const email = footerData?.contact?.email || "hello@buildflow.co";
-  const address = footerData?.contact?.address || "240 Riverside Ave, Suite 1100";
-  const legal = footerData?.legal || {};
+  const description = siteText(content, "footer", "description", cms.description || t("footer.description"));
+  const copyright = siteText(content, "footer", "copyright", cms.copyright || t("footer.copyright"));
+  const phone = siteText(content, "contact", "phone", cms.contact?.phone || "+1 (555) 240-8800");
+  const email = siteText(content, "contact", "email", cms.contact?.email || "hello@buildflow.co");
+  const address = siteText(content, "contact", "address", cms.contact?.address || "240 Riverside Ave, Suite 1100");
+  const legal = [
+    cms.legal?.rccm || "CD/KIS/RCCM/21.8-00068",
+    cms.legal?.tax_number ? `Numéro Impôt : ${cms.legal.tax_number}` : "Numéro Impôt : A2213934W",
+    cms.legal?.id_nat ? `ID NAT : ${cms.legal.id_nat}` : "ID NAT : 25-F4200-N84176G",
+    cms.legal?.numero ? `NUMERO : ${cms.legal.numero}` : "NUMERO : 1015361000",
+  ];
+  const certs = [
+    cms.legal?.inpp || "Certificat d'immatriculation à l'INPP N° DG/DF/DIREC/GU/7022/2021",
+    cms.legal?.onem ? `ONEM : ${cms.legal.onem}` : "ONEM : 060255A21",
+  ];
 
   return (
     <footer className="border-t border-border bg-card">
@@ -72,7 +82,7 @@ export function SiteFooter() {
           </p>
         </div>
         <div>
-          <div className="text-sm font-semibold">Entreprise</div>
+          <div className="text-sm font-semibold">Company</div>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             <li><Link to="/about" className="hover:text-foreground">{t("nav.about")}</Link></li>
             <li><Link to="/services" className="hover:text-foreground">{t("nav.services")}</Link></li>
@@ -81,7 +91,7 @@ export function SiteFooter() {
           </ul>
         </div>
         <div>
-          <div className="text-sm font-semibold">Contactez-nous</div>
+          <div className="text-sm font-semibold">Get in touch</div>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> {phone}</li>
             <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-primary" /> {email}</li>
@@ -89,8 +99,8 @@ export function SiteFooter() {
           </ul>
         </div>
         <div>
-          <div className="text-sm font-semibold">Demander un devis</div>
-          <p className="mt-3 text-sm text-muted-foreground">Décrivez-nous votre projet et notre équipe vous répondra sous 24 heures.</p>
+          <div className="text-sm font-semibold">Start a project</div>
+          <p className="mt-3 text-sm text-muted-foreground">Tell us about your build and our team will reply within 24 hours.</p>
           <Link to="/contact" search={{ type: "quote" }}><Button size="sm" className="mt-3">{t("hero.cta_quote")}</Button></Link>
         </div>
       </div>
@@ -100,17 +110,13 @@ export function SiteFooter() {
             <div>
               <div className="font-semibold text-foreground">Informations légales</div>
               <ul className="mt-2 space-y-1">
-                <li>RCCM: {legal.rccm || "CD/KIS/RCCM/21.8-00068"}</li>
-                <li>Numéro Impôt: {legal.tax_number || "A2213934W"}</li>
-                <li>ID NAT: {legal.id_nat || "25-F4200-N84176G"}</li>
-                <li>NUMERO: {legal.numero || "1015361000"}</li>
+                {legal.map((l) => <li key={l}>{l}</li>)}
               </ul>
             </div>
             <div>
               <div className="font-semibold text-foreground">Certifications</div>
               <ul className="mt-2 space-y-1">
-                <li>Certificat INPP: {legal.inpp || "N° DG/DF/DIREC/GU/7022/2021"}</li>
-                <li>ONEM: {legal.onem || "060255A21"}</li>
+                {certs.map((c) => <li key={c}>{c}</li>)}
               </ul>
             </div>
             <div>
