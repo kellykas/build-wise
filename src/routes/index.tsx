@@ -97,10 +97,10 @@ function Home_() {
             <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
               <ShieldCheck className="h-3.5 w-3.5 text-accent" /> {t("hero.badge")}
             </div>
-            <h1 className="mt-5 text-4xl font-bold tracking-tight md:text-6xl">
+            <h1 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl md:text-6xl">
               <Trans i18nKey="hero.title" components={{ 1: <span className="text-accent" /> }} />
             </h1>
-            <p className="mt-5 max-w-xl text-lg text-muted-foreground">
+            <p className="mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">
               {t("hero.subtitle")}
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
@@ -110,7 +110,7 @@ function Home_() {
               <Link to="/projects"><Button size="lg" variant="outline">{t("hero.cta_projects")}</Button></Link>
             </div>
             <div className="mt-8 flex items-center gap-3 text-sm text-muted-foreground">
-              <Phone className="h-4 w-4 text-primary" /> {t("hero.phone_label")} <span className="font-semibold text-foreground">{t("hero.phone_number")}</span>
+              <Phone className="h-4 w-4 shrink-0 text-primary" /> <span className="truncate">{t("hero.phone_label")}</span> <span className="font-semibold text-foreground">{t("hero.phone_number")}</span>
             </div>
           </div>
         </div>

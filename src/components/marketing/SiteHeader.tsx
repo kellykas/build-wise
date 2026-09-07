@@ -1,15 +1,18 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { HardHat, Mail, Phone, MapPin } from "lucide-react";
+import { HardHat, Mail, Phone, MapPin, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { useSiteContent, siteText, getContentValue } from "@/hooks/use-site-content";
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 
 const navKeys = ["home", "about", "services", "projects", "contact"] as const;
 const navPaths = ["/", "/about", "/services", "/projects", "/contact"] as const;
 
 export function SiteHeader() {
   const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur">
@@ -18,6 +21,8 @@ export function SiteHeader() {
           <img src="/logo.png" alt="Scer-L/Construct Sarl" className="h-10 w-10 rounded-full" />
           <span className="text-lg tracking-tight">Scer-L/<span className="text-primary">Construct</span></span>
         </Link>
+
+        {/* Desktop nav */}
         <nav className="hidden items-center gap-7 md:flex">
           {navKeys.map((key, i) => (
             <Link
@@ -31,10 +36,58 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
+
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
-          <Link to="/auth"><Button variant="ghost" size="sm">{t("nav.dashboard")}</Button></Link>
-          <Link to="/contact" search={{ type: "quote" }}><Button size="sm">{t("hero.cta_quote")}</Button></Link>
+          <Link to="/auth" className="hidden sm:block"><Button variant="ghost" size="sm">{t("nav.dashboard")}</Button></Link>
+          <Link to="/contact" search={{ type: "quote" }} className="hidden sm:block"><Button size="sm">{t("hero.cta_quote")}</Button></Link>
+
+          {/* Mobile hamburger */}
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-9 w-9 md:hidden">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-72 p-0">
+              <div className="flex flex-col">
+                <div className="flex items-center justify-between border-b border-border px-6 py-4">
+                  <Link to="/" className="flex items-center gap-2 font-semibold" onClick={() => setOpen(false)}>
+                    <img src="/logo.png" alt="Scer-L/Construct Sarl" className="h-8 w-8 rounded-full" />
+                    <span className="text-sm">Scer-L/<span className="text-primary">Construct</span></span>
+                  </Link>
+                  <SheetClose asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </SheetClose>
+                </div>
+                <nav className="flex flex-col px-6 py-4">
+                  {navKeys.map((key, i) => (
+                    <Link
+                      key={navPaths[i]}
+                      to={navPaths[i]}
+                      className="py-3 text-sm text-muted-foreground hover:text-foreground border-b border-border last:border-0"
+                      activeProps={{ className: "text-foreground font-medium" }}
+                      activeOptions={{ exact: navPaths[i] === "/" }}
+                      onClick={() => setOpen(false)}
+                    >
+                      {t(`nav.${key}`)}
+                    </Link>
+                  ))}
+                </nav>
+                <div className="flex flex-col gap-2 px-6 pb-6">
+                  <Link to="/auth" onClick={() => setOpen(false)}>
+                    <Button variant="outline" className="w-full">{t("nav.dashboard")}</Button>
+                  </Link>
+                  <Link to="/contact" search={{ type: "quote" }} onClick={() => setOpen(false)}>
+                    <Button className="w-full">{t("hero.cta_quote")}</Button>
+                  </Link>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>
@@ -73,7 +126,7 @@ export function SiteFooter() {
 
   return (
     <footer className="border-t border-border bg-card">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-4">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-2 lg:grid-cols-4">
         <div>
           <div className="flex items-center gap-2 font-semibold">
             <img src="/logo.png" alt="Scer-L/Construct Sarl" className="h-8 w-8 rounded-full" />

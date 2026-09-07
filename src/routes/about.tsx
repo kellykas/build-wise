@@ -68,10 +68,10 @@ function AboutPage() {
               <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">
                 <Award className="h-3.5 w-3.5 text-accent" /> {t("about.badge", "25+ years in business")}
               </div>
-              <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
+              <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
                 {t("about.title", "A construction company built on trust, craft and discipline.")}
               </h1>
-              <p className="mt-4 text-lg text-muted-foreground">
+              <p className="mt-4 text-base text-muted-foreground sm:text-lg">
                 {t("about.subtitle", "Scer-L/Construct Sarl is a full-service general contractor delivering commercial, residential, industrial and infrastructure projects across the region. We're family-founded, employee-owned, and proudly hands-on.")}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
@@ -95,9 +95,9 @@ function AboutPage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
-          <div className="grid gap-12 md:grid-cols-[1fr_2fr]">
-            <h2 className="text-3xl font-bold tracking-tight">{t("about.story_title", "Our story")}</h2>
+        <section className="mx-auto max-w-7xl px-4 py-16 sm:py-20 sm:px-6">
+          <div className="grid gap-8 md:grid-cols-[1fr_2fr]">
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("about.story_title", "Our story")}</h2>
             <div className="space-y-4 text-muted-foreground">
               <p>{t("about.story_p1", "Founded in 1998 with a single pickup truck and a four-person framing crew, Scer-L/Construct has grown into a multi-disciplinary general contractor — but the values haven't changed.")}</p>
               <p>{t("about.story_p2", "We still believe construction is a craft. We hire and train master tradespeople, run our own self-perform teams, and treat every site like it has our name on it — because it does.")}</p>
@@ -108,7 +108,7 @@ function AboutPage() {
 
         <section className="border-y border-border bg-card/40">
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
-            <h2 className="text-3xl font-bold tracking-tight">{t("about.values_title", "What we stand for")}</h2>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("about.values_title", "What we stand for")}</h2>
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {values.map((v) => (
                 <div key={v.k} className="rounded-2xl border border-border bg-card p-6">
@@ -126,7 +126,7 @@ function AboutPage() {
         <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <div className="grid gap-12 md:grid-cols-2">
             <div>
-              <h2 className="text-3xl font-bold tracking-tight">{t("about.milestones_title", "Milestones")}</h2>
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("about.milestones_title", "Milestones")}</h2>
               <ol className="mt-8 space-y-6">
                 {milestones.map((m) => (
                   <li key={m.y} className="grid grid-cols-[80px_1fr] gap-4 border-l-2 border-primary/30 pl-4">
@@ -137,7 +137,7 @@ function AboutPage() {
               </ol>
             </div>
             <div>
-              <h2 className="text-3xl font-bold tracking-tight">{t("about.leadership_title", "Leadership")}</h2>
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("about.leadership_title", "Leadership")}</h2>
               <div className="mt-8 grid gap-4 sm:grid-cols-2">
                 {leadership.map((l) => (
                   <div key={l.name} className="flex items-center gap-4 rounded-xl border border-border bg-card p-4">
@@ -159,7 +159,7 @@ function AboutPage() {
 
         <section className="border-y border-border bg-card/40">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-            <h2 className="text-3xl font-bold tracking-tight">Informations légales</h2>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Informations légales</h2>
             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <div className="rounded-xl border border-border bg-card p-5">
                 <div className="text-sm font-semibold text-primary">Registre du commerce</div>
@@ -191,7 +191,7 @@ function AboutPage() {
 
         <section className="border-t border-border bg-primary text-primary-foreground">
           <div className="mx-auto max-w-5xl px-4 py-16 text-center sm:px-6">
-            <h2 className="text-3xl font-bold md:text-4xl">{t("about.cta_title", "Let's build the next one together.")}</h2>
+            <h2 className="text-2xl font-bold sm:text-3xl md:text-4xl">{t("about.cta_title", "Let's build the next one together.")}</h2>
             <p className="mt-3 opacity-90">{t("about.cta_sub", "From your first site visit to the final handover, you'll work with the same accountable team.")}</p>
             <Link to="/contact" search={{ type: "quote" }}><Button size="lg" variant="secondary" className="mt-6">{t("hero.cta_quote", "Request a quote")} <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
           </div>
