@@ -1,14 +1,4 @@
 {
-  "nav": {
-    "home": "Home",
-    "about": "About",
-    "services": "Services",
-    "projects": "Projects",
-    "contact": "Contact",
-    "login": "Login",
-    "dashboard": "Dashboard",
-    "client_space": "Client space"
-  },
   "hero": {
     "badge": "Licensed · Bonded · Insured · OSHA Compliant",
     "title": "<1>Engagés pour construire</1> vos rêves.",
@@ -156,7 +146,8 @@
       "notification_log": "Notification Log",
       "site_editor": "Site Editor",
       "settings": "Settings",
-      "cms": "CMS Editor"
+      "cms": "CMS Editor",
+      "client_space": "Client space"
     },
     "mobile": {
       "home": "Home",

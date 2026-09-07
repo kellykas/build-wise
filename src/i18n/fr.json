@@ -1,14 +1,4 @@
 {
-  "nav": {
-    "home": "Accueil",
-    "about": "À propos",
-    "services": "Services",
-    "projects": "Projets",
-    "contact": "Contact",
-    "login": "Connexion",
-    "dashboard": "Tableau de bord",
-    "client_space": "Espace client"
-  },
   "hero": {
     "badge": "Licencié · cautionné · assuré · conforme OSHA",
     "title": "<1>Engagés pour construire</1> vos rêves.",
@@ -156,7 +146,8 @@
       "notification_log": "Journal des notifications",
       "site_editor": "Éditeur du site",
       "settings": "Paramètres",
-      "cms": "Éditeur CMS"
+      "cms": "Éditeur CMS",
+      "client_space": "Espace client"
     },
     "mobile": {
       "home": "Accueil",
