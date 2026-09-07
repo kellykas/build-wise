@@ -59,6 +59,7 @@ const NAV_KEYS = {
     requisitions: "app.nav.requisitions",
     clients: "app.nav.clients",
     client_portal: "app.nav.client_portal",
+    client_space: "app.nav.client_space",
     employees: "app.nav.employees",
     attendance: "app.nav.attendance",
     payroll: "app.nav.payroll",
@@ -167,6 +168,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       { to: "/app/requisitions", label: t(k.nav.requisitions), icon: FileSpreadsheet, roles: [...OPS, ...FIN, ...PROC] },
       { to: "/app/clients", label: t(k.nav.clients), icon: Users, roles: [...ADMIN, "project_manager", "accountant"] },
       { to: "/app/client-portal", label: t(k.nav.client_portal), icon: Building2, roles: [...ADMIN, "project_manager", "client"] },
+      { to: "/app/client-space", label: t(k.nav.client_space), icon: Receipt, roles: [...ADMIN, "project_manager", "accountant", "client"] },
     ]},
     { label: t(k.groups.hr), items: [
       { to: "/app/employees", label: t(k.nav.employees), icon: UserCog, roles: HR },
@@ -200,7 +202,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const initials = (profile?.full_name || user?.email || "U").slice(0, 2).toUpperCase();
   const isClientOnly = roles.includes("client") && !roles.some((r) => r !== "client");
-  const clientAllowedPaths = new Set(["/app/client-portal", "/app/notifications", "/app/settings"]);
+  const clientAllowedPaths = new Set(["/app/client-portal", "/app/client-space", "/app/notifications", "/app/settings"]);
   const canSee = (item: NavItemDef) => {
     if (isClientOnly) return clientAllowedPaths.has(item.to);
     return !item.roles || isAdmin || item.roles.some((r) => roles.includes(r));

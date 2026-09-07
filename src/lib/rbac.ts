@@ -22,6 +22,7 @@ export const ROUTE_ROLES: Record<string, AppRole[] | undefined> = {
   "/app/requisitions": [...OPS, ...FIN, ...PROC],
   "/app/clients": [...ADMIN, "project_manager", "accountant"],
   "/app/client-portal": [...ADMIN, "project_manager", "client"],
+  "/app/client-space": [...ADMIN, "project_manager", "accountant", "client"],
 
   "/app/employees": HR,
   "/app/attendance": [...HR, "project_manager"],
@@ -38,6 +39,7 @@ export const ROUTE_ROLES: Record<string, AppRole[] | undefined> = {
 
 export const CLIENT_ALLOWED = new Set<string>([
   "/app/client-portal",
+  "/app/client-space",
   "/app/notifications",
   "/app/settings",
 ]);
