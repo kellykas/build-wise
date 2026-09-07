@@ -47,106 +47,105 @@ interface Project {
 
 const defaultProjects: Project[] = [
   {
-    title: "Riverside Tower",
+    title: "Tour Riverside",
     category: "commercial",
-    location: "Downtown Metro",
+    location: "Centre-ville",
     year: "2024",
-    size: "32 floors · 480,000 sqft",
+    size: "32 étages · 44 500 m²",
     status: "Completed",
     blurb:
-      "Class-A office tower with ground-floor retail and 3 levels of underground parking. LEED Gold certified with full smart-building infrastructure.",
+      "Tour de bureaux de classe A avec commerces au rez-de-chaussée et 3 niveaux de parking souterrain. Certifié LEED Or.",
     img: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=70&auto=format&fit=crop",
   },
   {
-    title: "Maple Heights Residences",
+    title: "Résidences Maple Heights",
     category: "residential",
-    location: "North District",
+    location: "Quartier Nord",
     year: "2023",
-    size: "186 units",
+    size: "186 unités",
     status: "Completed",
     blurb:
-      "Two-tower multi-family community with rooftop amenities, co-working spaces, and underground parking.",
+      "Ensemble résidentiel multifamilial à deux tours avec équipements sur le toit, espaces de coworking et parking souterrain.",
     img: "https://images.unsplash.com/photo-1448630360428-65456885c650?w=1200&q=70&auto=format&fit=crop",
   },
   {
-    title: "Northgate Logistics Hub",
+    title: "Hub logistique Northgate",
     category: "industrial",
-    location: "Port Authority",
+    location: "Zone portuaire",
     year: "2024",
-    size: "620,000 sqft",
+    size: "57 600 m²",
     status: "Completed",
     blurb:
-      "Cross-dock distribution centre with 84 loading bays and rail spur connection.",
+      "Centre de distribution transbordeur avec 84 quais de chargement et connexion ferroviaire.",
     img: "https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=1200&q=70&auto=format&fit=crop",
   },
   {
-    title: "The Grand Heritage Hotel",
+    title: "Hôtel Grand Heritage",
     category: "renovation",
-    location: "Old Town",
+    location: "Vieille ville",
     year: "2023",
-    size: "210 rooms",
+    size: "210 chambres",
     status: "Completed",
     blurb:
-      "Full restoration of a 1924 landmark with seismic upgrades and modernised systems.",
+      "Restauration complète d'un monument de 1924 avec mise aux normes sismiques et systèmes modernisés.",
     img: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=1200&q=70&auto=format&fit=crop",
   },
   {
-    title: "Coastal Highway Interchange",
+    title: "Échangeur côtier",
     category: "infrastructure",
-    location: "Coastal Route 9",
+    location: "Route côtière 9",
     year: "2022",
-    size: "2.4 mile span",
+    size: "3,9 km",
     status: "Completed",
     blurb:
-      "Four-level interchange and twin bridge structures completed three months ahead of schedule.",
+      "Échangeur à quatre niveaux et doubles structures de pont achevés trois mois avant le calendrier.",
     img: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1200&q=70&auto=format&fit=crop",
   },
   {
-    title: "Skyline Medical Campus",
+    title: "Campus médical Skyline",
     category: "commercial",
-    location: "Westside",
+    location: "Quartier Ouest",
     year: "2025",
-    size: "8 buildings · 1.1M sqft",
+    size: "8 bâtiments · 102 000 m²",
     status: "In progress",
     blurb:
-      "Phased medical campus with surgical centre, MOBs, parking deck and central plant.",
+      "Campus médical par phases avec centre chirurgical, bureaux médicaux, parkings et centrale technique.",
     img: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=1200&q=70&auto=format&fit=crop",
   },
   {
-    title: "Oakwood Custom Estate",
+    title: "Domaine Oakwood",
     category: "residential",
     location: "Hillview Estates",
     year: "2024",
-    size: "12,400 sqft",
+    size: "1 150 m²",
     status: "Completed",
     blurb:
-      "Contemporary luxury residence with indoor pool, wine cellar and 6-car gallery.",
+      "Résidence de luxe contemporaine avec piscine intérieure, cave à vin et galerie pour 6 voitures.",
     img: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&q=70&auto=format&fit=crop",
   },
   {
-    title: "Pioneer Manufacturing Plant",
+    title: "Usine Pioneer",
     category: "industrial",
-    location: "South Industrial Park",
+    location: "Zone industrielle Sud",
     year: "2023",
-    size: "340,000 sqft",
+    size: "31 600 m²",
     status: "Completed",
     blurb:
-      "High-bay manufacturing facility with cleanroom labs and 12 MW substation.",
+      "Installation industrielle à grande hauteur avec laboratoires propres et sous-station de 12 MW.",
     img: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=1200&q=70&auto=format&fit=crop",
   },
   {
-    title: "Civic Library Modernisation",
+    title: "Modernisation de la bibliothèque civique",
     category: "renovation",
-    location: "City Centre",
+    location: "Centre-ville",
     year: "2024",
-    size: "78,000 sqft",
+    size: "7 250 m²",
     status: "In progress",
     blurb:
-      "Adaptive reuse of a mid-century civic landmark — staying open to the public throughout construction.",
+      "Réutilisation adaptative d'un monument civique du milieu du siècle, restant ouvert au public pendant les travaux.",
     img: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1200&q=70&auto=format&fit=crop",
   },
 ];
-
 /* ------------------------------------------------------------------ */
 /* Filter / sort config                                                */
 /* ------------------------------------------------------------------ */
@@ -167,11 +166,11 @@ export interface ProjectsSearchParams {
 export const Route = createFileRoute("/projects")({
   head: () => ({
     meta: [
-      { title: "Our Projects — BuildFlow Construction" },
+      { title: "Nos projets — Scer-L/Construct Sarl" },
       {
         name: "description",
         content:
-          "Featured construction projects: commercial, residential, industrial, infrastructure and heritage restoration. Filter and explore our portfolio.",
+          "Découvrez nos projets de construction : commerciaux, résidentiels, industriels, d'infrastructure et de restauration patrimoniale.",
       },
     ],
   }),
