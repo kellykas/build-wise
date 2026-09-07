@@ -119,33 +119,33 @@ export const deleteCompanyUser = createServerFn({ method: "POST" })
       throw new Error("User not found in your company.");
     }
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const companyId = callerProfile.company_id;
+    // Call the deployed Edge Function which has service role access
+    const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const supabaseKey = (import.meta as any).env?.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY || (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
 
-    // Clean up related records
-    await supabaseAdmin.from("user_roles").delete().eq("user_id", data.userId).eq("company_id", companyId);
-    await supabaseAdmin.from("user_permissions").delete().eq("user_id", data.userId).eq("company_id", companyId);
-    // Unlink employee/client records
-    await supabaseAdmin.from("employees").update({ user_id: null }).eq("user_id", data.userId).eq("company_id", companyId);
-    await supabaseAdmin.from("clients").update({ user_id: null }).eq("user_id", data.userId).eq("company_id", companyId);
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error("Supabase configuration is missing.");
+    }
 
-    // Delete the Supabase auth user
-    const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
-    if (deleteError) throw deleteError;
+    // Get the caller's JWT from the request headers
+    const { getRequest } = await import("@tanstack/react-start/server");
+    const request = getRequest();
+    const authHeader = request?.headers?.get("authorization") ?? "";
 
-    // Audit log
-    await supabaseAdmin.from("audit_logs").insert({
-      company_id: companyId,
-      actor_id: context.userId,
-      actor_email: (context.claims as { email?: string } | null)?.email ?? null,
-      action: "user.delete",
-      entity_type: "user",
-      entity_id: data.userId,
-      metadata: {
-        deleted_email: targetProfile.email,
-        deleted_name: targetProfile.full_name,
+    const res = await fetch(`${supabaseUrl}/functions/v1/delete-user`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": authHeader,
+        "apikey": supabaseKey,
       },
+      body: JSON.stringify({ userId: data.userId }),
     });
+
+    const result = await res.json();
+    if (!res.ok || result.error) {
+      throw new Error(result.error || "Failed to delete user");
+    }
 
     return { success: true };
   });
