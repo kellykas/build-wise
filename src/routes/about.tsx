@@ -5,26 +5,28 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Award, HeartHandshake, ShieldCheck, Sparkles, Users, Leaf } from "lucide-react";
 import { usePublicSiteContent, getPublicContentValue } from "@/hooks/use-public-site-content";
 
-const values = [
-  { icon: ShieldCheck, k: "safety", t: "Safety first", d: "Zero-harm culture with daily toolbox talks and OSHA-leading incident rates." },
-  { icon: HeartHandshake, k: "trust", t: "Built on trust", d: "Transparent pricing, weekly reporting and no surprises at closeout." },
-  { icon: Sparkles, k: "craft", t: "Craft & quality", d: "Master tradespeople and a dedicated QA/QC team on every site." },
-  { icon: Leaf, k: "sustainable", t: "Sustainable building", d: "LEED-accredited team and a default low-waste site programme." },
+// These defaults are only used when the CMS has no data.
+// They use hardcoded French text to match the default language.
+const valuesFr = [
+  { icon: ShieldCheck, k: "safety", t: "La sécurité d'abord", d: "Culture de zéro incident avec des causeries sécurité quotidiennes et des taux d'incidents leaders dans l'industrie." },
+  { icon: HeartHandshake, k: "trust", t: "Bâti sur la confiance", d: "Prix transparents, rapports hebdomadaires et aucune surprise à la clôture." },
+  { icon: Sparkles, k: "craft", t: "Savoir-faire et qualité", d: "Artisans qualifiés et une équipe QA/QC dédiée sur chaque chantier." },
+  { icon: Leaf, k: "sustainable", t: "Construction durable", d: "Équipe accréditée LEED et programme de réduction des déchets par défaut." },
 ];
 
-const defaultMilestones = [
-  { y: "1998", t: "Founded as a 4-person residential framing crew." },
-  { y: "2006", t: "Completed our first commercial high-rise build." },
-  { y: "2014", t: "Expanded into infrastructure with the Coastal interchange." },
-  { y: "2020", t: "Launched our in-house design-build studio." },
-  { y: "2025", t: "500+ projects delivered across 9 regions." },
+const defaultMilestonesFr = [
+  { y: "1998", t: "Fondée comme équipe de charpentiers résidentiels de 4 personnes." },
+  { y: "2006", t: "Achèvement de notre premier immeuble commercial de grande hauteur." },
+  { y: "2014", t: "Expansion dans les infrastructures avec l'échangeur côtier." },
+  { y: "2020", t: "Lancement de notre studio de conception-réalisation interne." },
+  { y: "2025", t: "500+ projets livrés dans 9 régions." },
 ];
 
-const defaultLeadership = [
-  { name: "Marcus Reyes", k: "ceo", role: "Founder & CEO", initials: "MR" },
-  { name: "Elena Cho", k: "coo", role: "Chief Operating Officer", initials: "EC" },
-  { name: "Daniel Okafor", k: "vp", role: "VP Pre-Construction", initials: "DO" },
-  { name: "Priya Natarajan", k: "safety", role: "Director, Safety & Quality", initials: "PN" },
+const defaultLeadershipFr = [
+  { name: "Marcus Reyes", k: "ceo", role: "Fondateur et PDG", initials: "MR" },
+  { name: "Elena Cho", k: "coo", role: "Directrice de l'exploitation", initials: "EC" },
+  { name: "Daniel Okafor", k: "vp", role: "VP Pré-construction", initials: "DO" },
+  { name: "Priya Natarajan", k: "safety", role: "Directrice, Sécurité et Qualité", initials: "PN" },
 ];
 
 export const Route = createFileRoute("/about")({
@@ -50,10 +52,11 @@ function AboutPage() {
   const cmsMilestones = getPublicContentValue(siteContent, "cms", "milestones") as { year: string; description: string }[] | null;
   const leadership = (cmsLeadership && cmsLeadership.length > 0)
     ? cmsLeadership.map((l) => ({ name: l.name, k: l.name.toLowerCase().replace(/\s+/g, "_"), role: l.role, initials: l.initials }))
-    : defaultLeadership;
+    : defaultLeadershipFr;
   const milestones = (cmsMilestones && cmsMilestones.length > 0)
     ? cmsMilestones.map((m) => ({ y: m.year, t: m.description }))
-    : defaultMilestones;
+    : defaultMilestonesFr;
+  const values = valuesFr;
 
   return (
     <div className="flex min-h-screen flex-col">

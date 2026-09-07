@@ -49,15 +49,17 @@ type FooterCms = {
 };
 
 export function SiteFooter() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data: content } = useSiteContent();
   const cms = (getContentValue(content, "cms", "footer", {}) as FooterCms) ?? {};
 
-  const description = siteText(content, "footer", "description", cms.description || t("footer.description"));
-  const copyright = siteText(content, "footer", "copyright", cms.copyright || t("footer.copyright"));
-  const phone = siteText(content, "contact", "phone", cms.contact?.phone || "+1 (555) 240-8800");
-  const email = siteText(content, "contact", "email", cms.contact?.email || "hello@buildflow.co");
-  const address = siteText(content, "contact", "address", cms.contact?.address || "240 Riverside Ave, Suite 1100");
+  // When French is selected, prefer i18n translations over CMS-stored values
+  const useI18n = i18n.language === "fr";
+  const description = useI18n ? t("footer.description") : siteText(content, "footer", "description", cms.description || t("footer.description"));
+  const copyright = useI18n ? t("footer.copyright") : siteText(content, "footer", "copyright", cms.copyright || t("footer.copyright"));
+  const phone = cms.contact?.phone || "+1 (555) 240-8800";
+  const email = cms.contact?.email || "hello@buildflow.co";
+  const address = cms.contact?.address || "240 Riverside Ave, Suite 1100";
   const legal = [
     cms.legal?.rccm || "CD/KIS/RCCM/21.8-00068",
     cms.legal?.tax_number ? `Numéro Impôt : ${cms.legal.tax_number}` : "Numéro Impôt : A2213934W",

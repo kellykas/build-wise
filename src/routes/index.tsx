@@ -27,9 +27,14 @@ export const Route = createFileRoute("/")({
 
 
 function Home_() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data: content } = useSiteContent();
-  const s = (section: string, key: string, fallback: string) => siteText(content, section, key, fallback);
+  // When French is selected, prefer i18n translations over CMS-stored values
+  // so the site always shows the correct language.
+  const s = (section: string, key: string, fallback: string) => {
+    if (i18n.language === "fr") return fallback;
+    return siteText(content, section, key, fallback);
+  };
 
   const serviceIcons = [Building2, Home, Factory, Hammer];
   const services = siteList<{ title: string; desc: string }>(content, "services", "items", [
@@ -72,8 +77,6 @@ function Home_() {
     t("certifications.iso"), t("certifications.agc"),
   ]);
 
-  const heroTitle = siteText(content, "hero", "title", "");
-
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
@@ -92,22 +95,22 @@ function Home_() {
           <div className="max-w-2xl">
             <img src="/logo.png" alt="Scer-L/Construct Sarl" className="h-24 w-24 mb-6 rounded-full" />
             <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
-              <ShieldCheck className="h-3.5 w-3.5 text-accent" /> {s("hero", "badge", t("hero.badge"))}
+              <ShieldCheck className="h-3.5 w-3.5 text-accent" /> {t("hero.badge")}
             </div>
             <h1 className="mt-5 text-4xl font-bold tracking-tight md:text-6xl">
-              {heroTitle ? heroTitle : <Trans i18nKey="hero.title" components={{ 1: <span className="text-accent" /> }} />}
+              <Trans i18nKey="hero.title" components={{ 1: <span className="text-accent" /> }} />
             </h1>
             <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-              {s("hero", "subtitle", t("hero.subtitle"))}
+              {t("hero.subtitle")}
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link to="/contact" search={{ type: "quote" }}>
-                <Button size="lg">{s("hero", "cta_quote", t("hero.cta_quote"))} <ArrowRight className="ml-2 h-4 w-4" /></Button>
+                <Button size="lg">{t("hero.cta_quote")} <ArrowRight className="ml-2 h-4 w-4" /></Button>
               </Link>
-              <Link to="/projects"><Button size="lg" variant="outline">{s("hero", "cta_projects", t("hero.cta_projects"))}</Button></Link>
+              <Link to="/projects"><Button size="lg" variant="outline">{t("hero.cta_projects")}</Button></Link>
             </div>
             <div className="mt-8 flex items-center gap-3 text-sm text-muted-foreground">
-              <Phone className="h-4 w-4 text-primary" /> {s("hero", "phone_label", t("hero.phone_label"))} <span className="font-semibold text-foreground">{s("hero", "phone_number", t("hero.phone_number"))}</span>
+              <Phone className="h-4 w-4 text-primary" /> {t("hero.phone_label")} <span className="font-semibold text-foreground">{t("hero.phone_number")}</span>
             </div>
           </div>
         </div>
