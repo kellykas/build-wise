@@ -73,64 +73,27 @@ export const resetUserPassword = createServerFn({ method: "POST" })
   });
 
 export const deleteCompanyUser = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .validator((data) => z.object({
     userId: z.string().uuid(),
   }).parse(data))
-  .handler(async ({ data, context }) => {
-    const { data: callerProfile, error: profileError } = await context.supabase
-      .from("profiles")
-      .select("company_id")
-      .eq("id", context.userId)
-      .maybeSingle();
+  .handler(async ({ data }) => {
+    // Read auth token directly from request — no env vars needed
+    const { getRequest } = await import("@tanstack/react-start/server");
+    const request = getRequest();
+    const authHeader = request?.headers?.get("authorization") ?? "";
 
-    if (profileError || !callerProfile?.company_id) {
-      throw new Error("Your account is not linked to a company workspace.");
-    }
-
-    const { data: callerRoles, error: rolesError } = await context.supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", context.userId);
-
-    if (rolesError) throw rolesError;
-
-    const canDeleteUsers = (callerRoles ?? []).some((row) =>
-      ["super_admin", "company_owner", "director"].includes(String(row.role)),
-    );
-
-    if (!canDeleteUsers) {
-      throw new Error("You do not have permission to delete users.");
-    }
-
-    // Prevent self-deletion
-    if (data.userId === context.userId) {
-      throw new Error("You cannot delete your own account.");
-    }
-
-    // Verify target user belongs to same company
-    const { data: targetProfile } = await context.supabase
-      .from("profiles")
-      .select("company_id, full_name, email")
-      .eq("id", data.userId)
-      .maybeSingle();
-
-    if (!targetProfile || targetProfile.company_id !== callerProfile.company_id) {
-      throw new Error("User not found in your company.");
+    if (!authHeader) {
+      throw new Error("Unauthorized: No authorization header");
     }
 
     // Call the deployed Edge Function which has service role access
+    // The Edge Function handles auth verification, role checks, and deletion
     const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
     const supabaseKey = (import.meta as any).env?.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY || (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !supabaseKey) {
       throw new Error("Supabase configuration is missing.");
     }
-
-    // Get the caller's JWT from the request headers
-    const { getRequest } = await import("@tanstack/react-start/server");
-    const request = getRequest();
-    const authHeader = request?.headers?.get("authorization") ?? "";
 
     const res = await fetch(`${supabaseUrl}/functions/v1/delete-user`, {
       method: "POST",
