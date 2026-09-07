@@ -995,5 +995,22 @@
     "contact": "Contact",
     "dashboard": "Dashboard",
     "login": "Login"
+  },
+  "auth": {
+    "welcome_back": "Welcome back",
+    "sign_in_desc": "Sign in to your Scer-L/Construct account.",
+    "or": "or",
+    "email": "Email",
+    "password": "Password",
+    "signing_in": "Signing in...",
+    "sign_in": "Sign in",
+    "no_account": "Don't have an account?",
+    "sign_up_link": "Sign up",
+    "create_account": "Create account",
+    "sign_up_desc": "Sign up to access Scer-L/Construct.",
+    "creating": "Creating...",
+    "sign_up": "Sign up",
+    "has_account": "Already have an account?",
+    "sign_in_link": "Sign in"
   }
 }

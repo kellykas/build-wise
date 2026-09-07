@@ -995,5 +995,22 @@
     "contact": "Contact",
     "dashboard": "Tableau de bord",
     "login": "Connexion"
+  },
+  "auth": {
+    "welcome_back": "Bon retour",
+    "sign_in_desc": "Connectez-vous à votre compte Scer-L/Construct.",
+    "or": "ou",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "signing_in": "Connexion...",
+    "sign_in": "Se connecter",
+    "no_account": "Vous n'avez pas de compte ?",
+    "sign_up_link": "S'inscrire",
+    "create_account": "Créer un compte",
+    "sign_up_desc": "Inscrivez-vous pour accéder à Scer-L/Construct.",
+    "creating": "Création...",
+    "sign_up": "S'inscrire",
+    "has_account": "Vous avez déjà un compte ?",
+    "sign_in_link": "Se connecter"
   }
 }
