@@ -93,7 +93,11 @@
   },
   "footer": {
     "copyright": "© 2024 Scer-L/Construct Sarl. Tous droits réservés.",
-    "description": "Entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure. Engagés pour construire vos rêves."
+    "description": "Entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure. Engagés pour construire vos rêves.",
+    "company": "Entreprise",
+    "get_in_touch": "Nous contacter",
+    "start_project": "Démarrer un projet",
+    "start_project_desc": "Parlez-nous de votre projet et notre équipe vous répondra dans les 24 heures."
   },
   "not_found": {
     "title": "Page non trouvée",
@@ -982,5 +986,14 @@
     "delete_confirm": "Supprimer cet enregistrement ? Cette action est irréversible.",
     "delete_error": "Impossible de supprimer : cet enregistrement est référencé par d'autres enregistrements. Supprimez d'abord ces références.",
     "select": "Sélectionner..."
+  },
+  "nav": {
+    "home": "Accueil",
+    "about": "À propos",
+    "services": "Services",
+    "projects": "Projets",
+    "contact": "Contact",
+    "dashboard": "Tableau de bord",
+    "login": "Connexion"
   }
 }

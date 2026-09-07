@@ -93,7 +93,11 @@
   },
   "footer": {
     "copyright": "© 2024 Scer-L/Construct Sarl. All rights reserved.",
-    "description": "Full-service general contractor delivering commercial, residential, industrial and infrastructure projects. Engagés pour construire vos rêves."
+    "description": "Full-service general contractor delivering commercial, residential, industrial and infrastructure projects. Engagés pour construire vos rêves.",
+    "company": "Company",
+    "get_in_touch": "Get in touch",
+    "start_project": "Start a project",
+    "start_project_desc": "Tell us about your build and our team will reply within 24 hours."
   },
   "not_found": {
     "title": "Page not found",
@@ -982,5 +986,14 @@
     "delete_confirm": "Delete this record? This cannot be undone.",
     "delete_error": "Cannot delete: this record is referenced by other records. Remove those references first.",
     "select": "Select..."
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "projects": "Projects",
+    "contact": "Contact",
+    "dashboard": "Dashboard",
+    "login": "Login"
   }
 }

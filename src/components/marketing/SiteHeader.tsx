@@ -82,7 +82,7 @@ export function SiteFooter() {
           </p>
         </div>
         <div>
-          <div className="text-sm font-semibold">Company</div>
+          <div className="text-sm font-semibold">{t("footer.company")}</div>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             <li><Link to="/about" className="hover:text-foreground">{t("nav.about")}</Link></li>
             <li><Link to="/services" className="hover:text-foreground">{t("nav.services")}</Link></li>
@@ -91,7 +91,7 @@ export function SiteFooter() {
           </ul>
         </div>
         <div>
-          <div className="text-sm font-semibold">Get in touch</div>
+          <div className="text-sm font-semibold">{t("footer.get_in_touch")}</div>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> {phone}</li>
             <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-primary" /> {email}</li>
@@ -99,8 +99,8 @@ export function SiteFooter() {
           </ul>
         </div>
         <div>
-          <div className="text-sm font-semibold">Start a project</div>
-          <p className="mt-3 text-sm text-muted-foreground">Tell us about your build and our team will reply within 24 hours.</p>
+          <div className="text-sm font-semibold">{t("footer.start_project")}</div>
+          <p className="mt-3 text-sm text-muted-foreground">{t("footer.start_project_desc")}</p>
           <Link to="/contact" search={{ type: "quote" }}><Button size="sm" className="mt-3">{t("hero.cta_quote")}</Button></Link>
         </div>
       </div>
