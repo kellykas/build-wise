@@ -221,9 +221,17 @@ function PaymentDialog({
         description: `Payment for ${inv.invoice_number}`,
         invoice_id: inv.id,
       });
+      await supabase.from("invoice_payments").insert({
+        company_id: profile.company_id,
+        invoice_id: inv.id,
+        amount: amt,
+        method: "manual",
+        recorded_by: profile.id,
+      } as never);
     }
     qc.invalidateQueries({ queryKey: ["module", "invoices"] });
     qc.invalidateQueries({ queryKey: ["transactions"] });
+    qc.invalidateQueries({ queryKey: ["invoice-payments"] });
     toast.success("Payment recorded · income posted");
     setAmount("");
     onClose();
@@ -300,9 +308,17 @@ function OnlinePaymentDialog({
         description: `Online payment for ${inv.invoice_number}`,
         invoice_id: inv.id,
       });
+      await supabase.from("invoice_payments").insert({
+        company_id: profile.company_id,
+        invoice_id: inv.id,
+        amount: outstanding,
+        method: "stripe",
+        recorded_by: profile.id,
+      } as never);
     }
     qc.invalidateQueries({ queryKey: ["module", "invoices"] });
     qc.invalidateQueries({ queryKey: ["transactions"] });
+    qc.invalidateQueries({ queryKey: ["invoice-payments"] });
     setStep("success");
   };
 
