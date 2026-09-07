@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS public.notification_log (
 ALTER TABLE public.notification_log ENABLE ROW LEVEL SECURITY;
 
 -- Admins and owners can read all company logs
+DROP POLICY IF EXISTS "admins read notification log" ON public.notification_log;
 CREATE POLICY "admins read notification log"
   ON public.notification_log FOR SELECT
   TO authenticated
@@ -41,12 +42,14 @@ CREATE POLICY "admins read notification log"
   );
 
 -- System can insert log entries (via authenticated users creating notifications)
+DROP POLICY IF EXISTS "system insert notification log" ON public.notification_log;
 CREATE POLICY "system insert notification log"
   ON public.notification_log FOR INSERT
   TO authenticated
   WITH CHECK (company_id = public.current_company_id());
 
 -- System can update delivery status
+DROP POLICY IF EXISTS "system update notification log" ON public.notification_log;
 CREATE POLICY "system update notification log"
   ON public.notification_log FOR UPDATE
   TO authenticated
@@ -59,8 +62,18 @@ CREATE INDEX IF NOT EXISTS idx_notification_log_company_created
 CREATE INDEX IF NOT EXISTS idx_notification_log_recipient
   ON public.notification_log (recipient_id, created_at DESC);
 
-CREATE INDEX IF NOT EXISTS idx_notification_log_type
-  ON public.notification_log (company_id, type, created_at DESC);
+-- The original notification_log table (20260901090803) has no `type` column;
+-- only create this index if that column exists.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'notification_log' AND column_name = 'type'
+  ) THEN
+    CREATE INDEX IF NOT EXISTS idx_notification_log_type
+      ON public.notification_log (company_id, type, created_at DESC);
+  END IF;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_notification_log_status
   ON public.notification_log (company_id, status, created_at DESC);
