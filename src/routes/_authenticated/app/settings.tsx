@@ -3,7 +3,7 @@ import { useState, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { createCompanyUser } from "@/lib/admin-users.functions";
+import { createCompanyUser, deleteCompanyUser } from "@/lib/admin-users.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { CheckCircle2, Loader2, Settings as SettingsIcon, ShieldCheck, UserPlus, XCircle, Search, Users, RefreshCw, Save, Bell } from "lucide-react";
+import { CheckCircle2, Loader2, Settings as SettingsIcon, ShieldCheck, UserPlus, XCircle, Search, Users, RefreshCw, Save, Bell, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { recordAudit } from "@/lib/audit";
 import { TEMPLATE_DEFAULTS, TEMPLATE_LABELS } from "@/lib/notification-templates";
@@ -332,6 +332,9 @@ function UsersTab() {
   const createUser = useServerFn(createCompanyUser);
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Profile | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const deleteUserFn = useServerFn(deleteCompanyUser);
   const [draft, setDraft] = useState({ email: "", password: "", fullName: "", phone: "", role: "employee", employeeId: "", clientId: "" });
   const { data: profiles } = useQuery({
     queryKey: ["company-profiles"],
@@ -376,6 +379,24 @@ function UsersTab() {
     qc.invalidateQueries({ queryKey: ["all-roles"] });
   };
 
+  const submitDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await deleteUserFn({ data: { userId: deleteTarget.id } });
+      toast.success(t("d.settings.user_deleted") || "User deleted");
+      setDeleteTarget(null);
+      qc.invalidateQueries({ queryKey: ["company-profiles"] });
+      qc.invalidateQueries({ queryKey: ["all-roles"] });
+      qc.invalidateQueries({ queryKey: ["employees-user-link"] });
+      qc.invalidateQueries({ queryKey: ["clients-user-link"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete user");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const submitCreate = async () => {
     setCreating(true);
     try {
@@ -403,6 +424,7 @@ function UsersTab() {
               <div>
                 <div className="font-medium">{p.full_name ?? p.email}</div>
                 <div className="text-xs text-muted-foreground">{p.email}</div>
+                <div className="text-[10px] text-muted-foreground">ID: {p.id.slice(0, 8)}…</div>
                 <div className="mt-1.5 flex items-center gap-1.5">
                   <span className="text-xs text-muted-foreground">Knock ID:</span>
                   <Input
@@ -425,6 +447,9 @@ function UsersTab() {
                   <SelectTrigger className="h-8 w-44"><SelectValue placeholder="+ Assign role" /></SelectTrigger>
                   <SelectContent>{ROLES.map((r) => <SelectItem key={r} value={r}>{r.replace("_", " ")}</SelectItem>)}</SelectContent>
                 </Select>
+                <Button size="sm" variant="destructive" className="h-8 px-2" onClick={() => setDeleteTarget(p)} title="Delete user">
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
               </div>
             </div>
           </div>
@@ -448,6 +473,20 @@ function UsersTab() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>{t("d.common.cancel")}</Button>
             <Button onClick={submitCreate} disabled={creating || !draft.email || !draft.password || !draft.fullName}>{creating ? t("d.settings.creating") : t("d.settings.create_account")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={!!deleteTarget} onOpenChange={(o) => { if (!o) setDeleteTarget(null); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete User</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete <strong>{deleteTarget?.full_name ?? deleteTarget?.email}</strong>? This will permanently remove their account, roles, and unlink them from any employee or client records. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+            <Button variant="destructive" onClick={submitDelete} disabled={deleting}>{deleting ? "Deleting…" : "Delete User"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

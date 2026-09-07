@@ -72,6 +72,84 @@ export const resetUserPassword = createServerFn({ method: "POST" })
     return { success: true };
   });
 
+export const deleteCompanyUser = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((data) => z.object({
+    userId: z.string().uuid(),
+  }).parse(data))
+  .handler(async ({ data, context }) => {
+    const { data: callerProfile, error: profileError } = await context.supabase
+      .from("profiles")
+      .select("company_id")
+      .eq("id", context.userId)
+      .maybeSingle();
+
+    if (profileError || !callerProfile?.company_id) {
+      throw new Error("Your account is not linked to a company workspace.");
+    }
+
+    const { data: callerRoles, error: rolesError } = await context.supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", context.userId);
+
+    if (rolesError) throw rolesError;
+
+    const canDeleteUsers = (callerRoles ?? []).some((row) =>
+      ["super_admin", "company_owner", "director"].includes(String(row.role)),
+    );
+
+    if (!canDeleteUsers) {
+      throw new Error("You do not have permission to delete users.");
+    }
+
+    // Prevent self-deletion
+    if (data.userId === context.userId) {
+      throw new Error("You cannot delete your own account.");
+    }
+
+    // Verify target user belongs to same company
+    const { data: targetProfile } = await context.supabase
+      .from("profiles")
+      .select("company_id, full_name, email")
+      .eq("id", data.userId)
+      .maybeSingle();
+
+    if (!targetProfile || targetProfile.company_id !== callerProfile.company_id) {
+      throw new Error("User not found in your company.");
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const companyId = callerProfile.company_id;
+
+    // Clean up related records
+    await supabaseAdmin.from("user_roles").delete().eq("user_id", data.userId).eq("company_id", companyId);
+    await supabaseAdmin.from("user_permissions").delete().eq("user_id", data.userId).eq("company_id", companyId);
+    // Unlink employee/client records
+    await supabaseAdmin.from("employees").update({ user_id: null }).eq("user_id", data.userId).eq("company_id", companyId);
+    await supabaseAdmin.from("clients").update({ user_id: null }).eq("user_id", data.userId).eq("company_id", companyId);
+
+    // Delete the Supabase auth user
+    const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
+    if (deleteError) throw deleteError;
+
+    // Audit log
+    await supabaseAdmin.from("audit_logs").insert({
+      company_id: companyId,
+      actor_id: context.userId,
+      actor_email: (context.claims as { email?: string } | null)?.email ?? null,
+      action: "user.delete",
+      entity_type: "user",
+      entity_id: data.userId,
+      metadata: {
+        deleted_email: targetProfile.email,
+        deleted_name: targetProfile.full_name,
+      },
+    });
+
+    return { success: true };
+  });
+
 export const createCompanyUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((data) => z.object({
