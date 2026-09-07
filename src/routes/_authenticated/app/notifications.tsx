@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StatusBadge } from "@/components/app/StatusBadge";
-import { Bell, Send, X } from "lucide-react";
+import { Bell, Send, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/app/notifications")({
@@ -81,6 +81,19 @@ function NotificationsPage() {
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["my-internal-notifs"] }),
+  });
+
+  const deleteNotif = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("internal_notifications").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success(t("d.notifications.deleted"));
+      qc.invalidateQueries({ queryKey: ["my-internal-notifs"] });
+      qc.invalidateQueries({ queryKey: ["my-sent-notifs"] });
+    },
+    onError: (e: any) => toast.error(e.message),
   });
 
   const filteredProfiles = (profiles ?? []).filter((p: any) =>
@@ -184,7 +197,10 @@ function NotificationsPage() {
                       {t("d.notifications.from")} {n.sender?.full_name ?? t("d.notifications.system")} · {new Date(n.created_at).toLocaleString()}
                     </div>
                   </div>
-                  {!n.read_at && <Button size="sm" variant="outline" onClick={() => markRead.mutate(n.id)}>{t("d.notifications.mark_read")}</Button>}
+                  <div className="flex gap-2">
+                    {!n.read_at && <Button size="sm" variant="outline" onClick={() => markRead.mutate(n.id)}>{t("d.notifications.mark_read")}</Button>}
+                    <Button size="sm" variant="outline" onClick={() => deleteNotif.mutate(n.id)}><Trash2 className="h-4 w-4" /></Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -204,6 +220,7 @@ function NotificationsPage() {
                       {t("d.notifications.to")} {n.recipient?.full_name ?? "—"} · {new Date(n.created_at).toLocaleString()} · {n.read_at ? t("d.notifications.read") : t("d.notifications.unread")}
                     </div>
                   </div>
+                  <Button size="sm" variant="outline" onClick={() => deleteNotif.mutate(n.id)}><Trash2 className="h-4 w-4" /></Button>
                 </div>
               ))}
             </div>
