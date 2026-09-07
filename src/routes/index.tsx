@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useTranslation, Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import {
   ArrowRight, Building2, Home, Factory, Hammer, ShieldCheck,
   Award, Quote, CheckCircle2, Phone,
@@ -29,10 +29,9 @@ export const Route = createFileRoute("/")({
 function Home_() {
   const { t, i18n } = useTranslation();
   const { data: content } = useSiteContent();
-  // When French is selected, prefer i18n translations over CMS-stored values
-  // so the site always shows the correct language.
+  // CMS content always takes priority over i18n fallbacks.
+  // The i18n values are only used when the CMS has no value for a key.
   const s = (section: string, key: string, fallback: string) => {
-    if (i18n.language === "fr") return fallback;
     return siteText(content, section, key, fallback);
   };
 
@@ -95,22 +94,22 @@ function Home_() {
           <div className="max-w-2xl">
             <img src="/logo.png" alt="Scer-L/Construct Sarl" className="h-24 w-24 mb-6 rounded-full" />
             <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
-              <ShieldCheck className="h-3.5 w-3.5 text-accent" /> {t("hero.badge")}
+              <ShieldCheck className="h-3.5 w-3.5 text-accent" /> {s("hero", "badge", t("hero.badge"))}
             </div>
             <h1 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl md:text-6xl">
-              <Trans i18nKey="hero.title" components={{ 1: <span className="text-accent" /> }} />
+              <span dangerouslySetInnerHTML={{ __html: s("hero", "title", t("hero.title")) }} />
             </h1>
             <p className="mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">
-              {t("hero.subtitle")}
+              {s("hero", "subtitle", t("hero.subtitle"))}
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link to="/contact" search={{ type: "quote" }}>
-                <Button size="lg">{t("hero.cta_quote")} <ArrowRight className="ml-2 h-4 w-4" /></Button>
+                <Button size="lg">{s("hero", "cta_quote", t("hero.cta_quote"))} <ArrowRight className="ml-2 h-4 w-4" /></Button>
               </Link>
-              <Link to="/projects"><Button size="lg" variant="outline">{t("hero.cta_projects")}</Button></Link>
+              <Link to="/projects"><Button size="lg" variant="outline">{s("hero", "cta_projects", t("hero.cta_projects"))}</Button></Link>
             </div>
             <div className="mt-8 flex items-center gap-3 text-sm text-muted-foreground">
-              <Phone className="h-4 w-4 shrink-0 text-primary" /> <span className="truncate">{t("hero.phone_label")}</span> <span className="font-semibold text-foreground">{t("hero.phone_number")}</span>
+              <Phone className="h-4 w-4 shrink-0 text-primary" /> <span className="truncate">{s("hero", "phone_label", t("hero.phone_label"))}</span> <span className="font-semibold text-foreground">{s("hero", "phone_number", t("hero.phone_number"))}</span>
             </div>
           </div>
         </div>

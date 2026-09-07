@@ -106,10 +106,9 @@ export function SiteFooter() {
   const { data: content } = useSiteContent();
   const cms = (getContentValue(content, "cms", "footer", {}) as FooterCms) ?? {};
 
-  // When French is selected, prefer i18n translations over CMS-stored values
-  const useI18n = i18n.language === "fr";
-  const description = useI18n ? t("footer.description") : siteText(content, "footer", "description", cms.description || t("footer.description"));
-  const copyright = useI18n ? t("footer.copyright") : siteText(content, "footer", "copyright", cms.copyright || t("footer.copyright"));
+  // CMS content always takes priority over i18n fallbacks
+  const description = siteText(content, "footer", "description", cms.description || t("footer.description"));
+  const copyright = siteText(content, "footer", "copyright", cms.copyright || t("footer.copyright"));
   const phone = cms.contact?.phone || "+1 (555) 240-8800";
   const email = cms.contact?.email || "hello@buildflow.co";
   const address = cms.contact?.address || "240 Riverside Ave, Suite 1100";
