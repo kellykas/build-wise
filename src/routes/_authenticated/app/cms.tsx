@@ -73,10 +73,10 @@ function ImageUpload({
       const { data } = supabase.storage.from("documents").getPublicUrl(path);
       if (data?.publicUrl) {
         onChange(data.publicUrl);
-        toast.success("Image uploaded");
+        toast.success("Image téléversée");
       }
     } catch (err) {
-      toast.error(`Upload failed: ${(err as Error).message}`);
+      toast.error(`Échec du téléversement : ${(err as Error).message}`);
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -130,7 +130,7 @@ function ImageUpload({
             disabled={uploading}
           >
             <Upload className="mr-2 h-3.5 w-3.5" />
-            {uploading ? "Uploading..." : "Upload Image"}
+            {uploading ? "Téléversement..." : "Téléverser une image"}
           </Button>
         )}
       </div>
@@ -225,14 +225,14 @@ function LeadershipTab({ content, upsert, companyId }: { content: Record<string,
 
   const save = async () => {
     await upsert.mutateAsync({ section: "cms", key: "leadership", value: leaders, companyId });
-    toast.success("Leadership saved!");
+    toast.success("Direction enregistrée !");
   };
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Direction / Leadership</h3>
-        <Button size="sm" onClick={addLeader}><Plus className="mr-2 h-3.5 w-3.5" /> Add</Button>
+        <Button size="sm" onClick={addLeader}><Plus className="mr-2 h-3.5 w-3.5" /> Ajouter</Button>
       </div>
       {leaders.map((l) => (
         <Card key={l.id}>
@@ -243,7 +243,7 @@ function LeadershipTab({ content, upsert, companyId }: { content: Record<string,
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <GripVertical className="h-4 w-4 text-muted-foreground" />
-                <CardTitle className="text-sm">{l.name || "New Director"}</CardTitle>
+                <CardTitle className="text-sm">{l.name || "Nouveau directeur"}</CardTitle>
                 {l.role && <Badge variant="outline" className="text-xs">{l.role}</Badge>}
               </div>
               <div className="flex items-center gap-1">
@@ -258,15 +258,15 @@ function LeadershipTab({ content, upsert, companyId }: { content: Record<string,
             <CardContent className="space-y-4 pt-0">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <Label>Name</Label>
+                  <Label>Nom</Label>
                   <Input value={l.name} onChange={(e) => updateLeader(l.id, "name", e.target.value)} className="mt-1" />
                 </div>
                 <div>
-                  <Label>Role</Label>
+                  <Label>Fonction</Label>
                   <Input value={l.role} onChange={(e) => updateLeader(l.id, "role", e.target.value)} className="mt-1" />
                 </div>
                 <div>
-                  <Label>Initials</Label>
+                  <Label>Initiales</Label>
                   <Input value={l.initials} onChange={(e) => updateLeader(l.id, "initials", e.target.value.toUpperCase().slice(0, 2))} className="mt-1" maxLength={2} />
                 </div>
               </div>
@@ -282,7 +282,7 @@ function LeadershipTab({ content, upsert, companyId }: { content: Record<string,
         </Card>
       ))}
       <Button onClick={save} disabled={upsert.isPending} className="gap-2">
-        <Save className="h-4 w-4" /> {upsert.isPending ? "Saving..." : "Save Leadership"}
+        <Save className="h-4 w-4" /> {upsert.isPending ? "Enregistrement..." : "Enregistrer la direction"}
       </Button>
     </div>
   );
@@ -316,14 +316,14 @@ function ProjectsTab({ content, upsert, companyId }: { content: Record<string, u
 
   const save = async () => {
     await upsert.mutateAsync({ section: "cms", key: "projects", value: projects, companyId });
-    toast.success("Projects saved!");
+    toast.success("Projets enregistrés !");
   };
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Projects</h3>
-        <Button size="sm" onClick={addProject}><Plus className="mr-2 h-3.5 w-3.5" /> Add Project</Button>
+        <h3 className="text-lg font-semibold">Projets</h3>
+        <Button size="sm" onClick={addProject}><Plus className="mr-2 h-3.5 w-3.5" /> Ajouter un projet</Button>
       </div>
       {projects.map((p) => (
         <Card key={p.id}>
@@ -334,9 +334,9 @@ function ProjectsTab({ content, upsert, companyId }: { content: Record<string, u
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <GripVertical className="h-4 w-4 text-muted-foreground" />
-                <CardTitle className="text-sm">{p.title || "New Project"}</CardTitle>
+                <CardTitle className="text-sm">{p.title || "Nouveau projet"}</CardTitle>
                 {p.category && <Badge variant="outline" className="text-xs">{p.category}</Badge>}
-                <Badge variant={p.status === "Completed" ? "default" : "secondary"} className="text-xs">{p.status}</Badge>
+                <Badge variant={p.status === "Completed" ? "default" : "secondary"} className="text-xs">{p.status === "Completed" ? "Terminé" : "En cours"}</Badge>
               </div>
               <div className="flex items-center gap-1">
                 <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); removeProject(p.id); }}>
@@ -350,11 +350,11 @@ function ProjectsTab({ content, upsert, companyId }: { content: Record<string, u
             <CardContent className="space-y-4 pt-0">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <Label>Title</Label>
+                  <Label>Titre</Label>
                   <Input value={p.title} onChange={(e) => updateProject(p.id, "title", e.target.value)} className="mt-1" />
                 </div>
                 <div>
-                  <Label>Category</Label>
+                  <Label>Catégorie</Label>
                   <Select value={p.category} onValueChange={(v) => updateProject(p.id, "category", v)}>
                     <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -367,19 +367,19 @@ function ProjectsTab({ content, upsert, companyId }: { content: Record<string, u
                   </Select>
                 </div>
                 <div>
-                  <Label>Location</Label>
+                  <Label>Lieu</Label>
                   <Input value={p.location} onChange={(e) => updateProject(p.id, "location", e.target.value)} className="mt-1" />
                 </div>
                 <div>
-                  <Label>Year</Label>
+                  <Label>Année</Label>
                   <Input value={p.year} onChange={(e) => updateProject(p.id, "year", e.target.value)} className="mt-1" />
                 </div>
                 <div>
-                  <Label>Size</Label>
-                  <Input value={p.size} onChange={(e) => updateProject(p.id, "size", e.target.value)} className="mt-1" placeholder="e.g. 480,000 sqft" />
+                  <Label>Taille</Label>
+                  <Input value={p.size} onChange={(e) => updateProject(p.id, "size", e.target.value)} className="mt-1" placeholder="ex. 480 000 m²" />
                 </div>
                 <div>
-                  <Label>Status</Label>
+                  <Label>Statut</Label>
                   <Select value={p.status} onValueChange={(v) => updateProject(p.id, "status", v)}>
                     <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -398,14 +398,14 @@ function ProjectsTab({ content, upsert, companyId }: { content: Record<string, u
                 onChange={(url) => updateProject(p.id, "img", url)}
                 companyId={companyId}
                 folder="projects"
-                label="Project Image"
+                label="Image du projet"
               />
             </CardContent>
           )}
         </Card>
       ))}
       <Button onClick={save} disabled={upsert.isPending} className="gap-2">
-        <Save className="h-4 w-4" /> {upsert.isPending ? "Saving..." : "Save Projects"}
+        <Save className="h-4 w-4" /> {upsert.isPending ? "Enregistrement..." : "Enregistrer les projets"}
       </Button>
     </div>
   );
@@ -459,14 +459,14 @@ function ServicesTab({ content, upsert, companyId }: { content: Record<string, u
 
   const save = async () => {
     await upsert.mutateAsync({ section: "cms", key: "services", value: services, companyId });
-    toast.success("Services saved!");
+    toast.success("Services enregistrés !");
   };
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold">Services</h3>
-        <Button size="sm" onClick={addService}><Plus className="mr-2 h-3.5 w-3.5" /> Add Service</Button>
+        <Button size="sm" onClick={addService}><Plus className="mr-2 h-3.5 w-3.5" /> Ajouter un service</Button>
       </div>
       {services.map((s) => (
         <Card key={s.id}>
@@ -477,7 +477,7 @@ function ServicesTab({ content, upsert, companyId }: { content: Record<string, u
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <GripVertical className="h-4 w-4 text-muted-foreground" />
-                <CardTitle className="text-sm">{s.title || "New Service"}</CardTitle>
+                <CardTitle className="text-sm">{s.title || "Nouveau service"}</CardTitle>
               </div>
               <div className="flex items-center gap-1">
                 <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); removeService(s.id); }}>
@@ -491,11 +491,11 @@ function ServicesTab({ content, upsert, companyId }: { content: Record<string, u
             <CardContent className="space-y-4 pt-0">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <Label>Title</Label>
+                  <Label>Titre</Label>
                   <Input value={s.title} onChange={(e) => updateService(s.id, "title", e.target.value)} className="mt-1" />
                 </div>
                 <div>
-                  <Label>Key (for i18n)</Label>
+                  <Label>Clé (pour i18n)</Label>
                   <Input value={s.key} onChange={(e) => updateService(s.id, "key", e.target.value)} className="mt-1" placeholder="e.g. commercial" />
                 </div>
               </div>
@@ -504,7 +504,7 @@ function ServicesTab({ content, upsert, companyId }: { content: Record<string, u
                 <Textarea value={s.desc} onChange={(e) => updateService(s.id, "desc", e.target.value)} className="mt-1" rows={2} />
               </div>
               <div>
-                <Label>Bullet Points</Label>
+                <Label>Points à puces</Label>
                 <div className="mt-2 space-y-2">
                   {s.points.map((point, i) => (
                     <div key={i} className="flex items-center gap-2">
@@ -519,7 +519,7 @@ function ServicesTab({ content, upsert, companyId }: { content: Record<string, u
                     </div>
                   ))}
                   <Button variant="outline" size="sm" onClick={() => addPoint(s.id)}>
-                    <Plus className="mr-2 h-3 w-3" /> Add Point
+                    <Plus className="mr-2 h-3 w-3" /> Ajouter un point
                   </Button>
                 </div>
               </div>
@@ -528,14 +528,14 @@ function ServicesTab({ content, upsert, companyId }: { content: Record<string, u
                 onChange={(url) => updateService(s.id, "icon", url)}
                 companyId={companyId}
                 folder="services"
-                label="Service Image"
+                label="Image du service"
               />
             </CardContent>
           )}
         </Card>
       ))}
       <Button onClick={save} disabled={upsert.isPending} className="gap-2">
-        <Save className="h-4 w-4" /> {upsert.isPending ? "Saving..." : "Save Services"}
+        <Save className="h-4 w-4" /> {upsert.isPending ? "Enregistrement..." : "Enregistrer les services"}
       </Button>
     </div>
   );
@@ -567,14 +567,14 @@ function MilestonesTab({ content, upsert, companyId }: { content: Record<string,
 
   const save = async () => {
     await upsert.mutateAsync({ section: "cms", key: "milestones", value: milestones, companyId });
-    toast.success("Milestones saved!");
+    toast.success("Étapes enregistrées !");
   };
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Milestones</h3>
-        <Button size="sm" onClick={addMilestone}><Plus className="mr-2 h-3.5 w-3.5" /> Add Milestone</Button>
+        <h3 className="text-lg font-semibold">Étapes</h3>
+        <Button size="sm" onClick={addMilestone}><Plus className="mr-2 h-3.5 w-3.5" /> Ajouter une étape</Button>
       </div>
       {milestones.map((m) => (
         <Card key={m.id}>
@@ -586,14 +586,14 @@ function MilestonesTab({ content, upsert, companyId }: { content: Record<string,
                   value={m.year}
                   onChange={(e) => updateMilestone(m.id, "year", e.target.value)}
                   className="w-20"
-                  placeholder="Year"
+                  placeholder="Année"
                 />
               </div>
               <Input
                 value={m.description}
                 onChange={(e) => updateMilestone(m.id, "description", e.target.value)}
                 className="flex-1"
-                placeholder="Milestone description"
+                placeholder="Description de l'étape"
               />
               <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={() => removeMilestone(m.id)}>
                 <Trash2 className="h-3.5 w-3.5 text-destructive" />
@@ -603,7 +603,7 @@ function MilestonesTab({ content, upsert, companyId }: { content: Record<string,
         </Card>
       ))}
       <Button onClick={save} disabled={upsert.isPending} className="gap-2">
-        <Save className="h-4 w-4" /> {upsert.isPending ? "Saving..." : "Save Milestones"}
+        <Save className="h-4 w-4" /> {upsert.isPending ? "Enregistrement..." : "Enregistrer les étapes"}
       </Button>
     </div>
   );
@@ -643,12 +643,12 @@ function FooterTab({ content, upsert, companyId }: { content: Record<string, unk
 
   const save = async () => {
     await upsert.mutateAsync({ section: "cms", key: "footer", value: data, companyId });
-    toast.success("Footer saved!");
+    toast.success("Pied de page enregistré !");
   };
 
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-semibold">Footer Content</h3>
+      <h3 className="text-lg font-semibold">Contenu du pied de page</h3>
 
       <Card>
         <CardHeader className="py-3"><CardTitle className="text-sm">Description</CardTitle></CardHeader>
@@ -665,16 +665,16 @@ function FooterTab({ content, upsert, companyId }: { content: Record<string, unk
       </Card>
 
       <Card>
-        <CardHeader className="py-3"><CardTitle className="text-sm">Contact Information</CardTitle></CardHeader>
+        <CardHeader className="py-3"><CardTitle className="text-sm">Téléphone</CardTitle></CardHeader>
         <CardContent className="space-y-3">
-          <div><Label>Phone</Label><Input value={data.contact.phone} onChange={(e) => updateContact("phone", e.target.value)} className="mt-1" /></div>
-          <div><Label>Email</Label><Input value={data.contact.email} onChange={(e) => updateContact("email", e.target.value)} className="mt-1" /></div>
-          <div><Label>Address</Label><Input value={data.contact.address} onChange={(e) => updateContact("address", e.target.value)} className="mt-1" /></div>
+          <div><Label>Téléphone</Label><Input value={data.contact.phone} onChange={(e) => updateContact("phone", e.target.value)} className="mt-1" /></div>
+          <div><Label>E-mail</Label><Input value={data.contact.email} onChange={(e) => updateContact("email", e.target.value)} className="mt-1" /></div>
+          <div><Label>Adresse</Label><Input value={data.contact.address} onChange={(e) => updateContact("address", e.target.value)} className="mt-1" /></div>
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader className="py-3"><CardTitle className="text-sm">Legal Information</CardTitle></CardHeader>
+        <CardHeader className="py-3"><CardTitle className="text-sm">Informations légales</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <div><Label>RCCM</Label><Input value={data.legal.rccm} onChange={(e) => updateLegal("rccm", e.target.value)} className="mt-1" /></div>
           <div><Label>Numéro Impôt</Label><Input value={data.legal.tax_number} onChange={(e) => updateLegal("tax_number", e.target.value)} className="mt-1" /></div>
@@ -686,7 +686,7 @@ function FooterTab({ content, upsert, companyId }: { content: Record<string, unk
       </Card>
 
       <Button onClick={save} disabled={upsert.isPending} className="gap-2">
-        <Save className="h-4 w-4" /> {upsert.isPending ? "Saving..." : "Save Footer"}
+        <Save className="h-4 w-4" /> {upsert.isPending ? "Enregistrement..." : "Enregistrer le pied de page"}
       </Button>
     </div>
   );

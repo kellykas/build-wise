@@ -25,70 +25,70 @@ export const Route = createFileRoute("/_authenticated/app/site-editor")({
 });
 
 const SECTIONS = [
-  { id: "hero", label: "Hero Section", icon: Type, fields: [
-    { key: "badge", label: "Badge Text", type: "text" },
-    { key: "title", label: "Main Title", type: "text" },
-    { key: "subtitle", label: "Subtitle", type: "textarea" },
-    { key: "cta_quote", label: "CTA Button 1", type: "text" },
-    { key: "cta_projects", label: "CTA Button 2", type: "text" },
-    { key: "phone_label", label: "Phone Label", type: "text" },
-    { key: "phone_number", label: "Phone Number", type: "text" },
+  { id: "hero", label: "Section Hero", icon: Type, fields: [
+    { key: "badge", label: "Texte du badge", type: "text" },
+    { key: "title", label: "Titre principal", type: "text" },
+    { key: "subtitle", label: "Sous-titre", type: "textarea" },
+    { key: "cta_quote", label: "Bouton 1 (Devis)", type: "text" },
+    { key: "cta_projects", label: "Bouton 2 (Projets)", type: "text" },
+    { key: "phone_label", label: "Libellé du téléphone", type: "text" },
+    { key: "phone_number", label: "Numéro de téléphone", type: "text" },
   ]},
-  { id: "stats", label: "Stats Bar", icon: Star, fields: [
-    { key: "items", label: "Stats Items (JSON array)", type: "json_array" },
+  { id: "stats", label: "Barre de statistiques", icon: Star, fields: [
+    { key: "items", label: "Statistiques (tableau JSON)", type: "json_array" },
   ]},
   { id: "services", label: "Services", icon: FileText, fields: [
-    { key: "title", label: "Section Title", type: "text" },
-    { key: "subtitle", label: "Section Subtitle", type: "textarea" },
-    { key: "view_all", label: "View All Link", type: "text" },
-    { key: "items", label: "Services (JSON array)", type: "json_array" },
+    { key: "title", label: "Titre de la section", type: "text" },
+    { key: "subtitle", label: "Sous-titre de la section", type: "textarea" },
+    { key: "view_all", label: "Lien « Voir tout »", type: "text" },
+    { key: "items", label: "Services (tableau JSON)", type: "json_array" },
   ]},
-  { id: "featured", label: "Featured Projects", icon: Image, fields: [
-    { key: "title", label: "Section Title", type: "text" },
-    { key: "subtitle", label: "Section Subtitle", type: "textarea" },
-    { key: "view_all", label: "View All Link", type: "text" },
-    { key: "items", label: "Projects (JSON array)", type: "json_array" },
+  { id: "featured", label: "Projets en vedette", icon: Image, fields: [
+    { key: "title", label: "Titre de la section", type: "text" },
+    { key: "subtitle", label: "Sous-titre de la section", type: "textarea" },
+    { key: "view_all", label: "Lien « Voir tout »", type: "text" },
+    { key: "items", label: "Projets (tableau JSON)", type: "json_array" },
   ]},
-  { id: "why_us", label: "Why Choose Us", icon: Award, fields: [
-    { key: "title", label: "Section Title", type: "text" },
-    { key: "subtitle", label: "Section Subtitle", type: "textarea" },
-    { key: "points", label: "Points (JSON array)", type: "json_array" },
+  { id: "why_us", label: "Pourquoi nous choisir", icon: Award, fields: [
+    { key: "title", label: "Titre de la section", type: "text" },
+    { key: "subtitle", label: "Sous-titre de la section", type: "textarea" },
+    { key: "points", label: "Points (tableau JSON)", type: "json_array" },
   ]},
-  { id: "testimonials", label: "Testimonials", icon: MessageSquare, fields: [
-    { key: "items", label: "Testimonials (JSON array)", type: "json_array" },
+  { id: "testimonials", label: "Témoignages", icon: MessageSquare, fields: [
+    { key: "items", label: "Témoignages (tableau JSON)", type: "json_array" },
   ]},
-  { id: "cta", label: "Call to Action", icon: Type, fields: [
-    { key: "title", label: "CTA Title", type: "text" },
-    { key: "subtitle", label: "CTA Subtitle", type: "textarea" },
-    { key: "quote_btn", label: "Quote Button", type: "text" },
-    { key: "hi_btn", label: "Hi Button", type: "text" },
+  { id: "cta", label: "Appel à l'action", icon: Type, fields: [
+    { key: "title", label: "Titre de l'appel à l'action", type: "text" },
+    { key: "subtitle", label: "Sous-titre", type: "textarea" },
+    { key: "quote_btn", label: "Bouton Devis", type: "text" },
+    { key: "hi_btn", label: "Bouton Bonjour", type: "text" },
   ]},
-  { id: "contact", label: "Contact Info", icon: Phone, fields: [
-    { key: "phone", label: "Phone", type: "text" },
-    { key: "email", label: "Email", type: "text" },
-    { key: "address", label: "Address", type: "text" },
-    { key: "hours", label: "Business Hours", type: "text" },
+  { id: "contact", label: "Coordonnées", icon: Phone, fields: [
+    { key: "phone", label: "Téléphone", type: "text" },
+    { key: "email", label: "E-mail", type: "text" },
+    { key: "address", label: "Adresse", type: "text" },
+    { key: "hours", label: "Horaires d'ouverture", type: "text" },
   ]},
-  { id: "about", label: "About Page", icon: FileText, fields: [
-    { key: "title", label: "Page Title", type: "text" },
-    { key: "mission", label: "Mission Statement", type: "textarea" },
-    { key: "values", label: "Values (JSON array)", type: "json_array" },
+  { id: "about", label: "Page À propos", icon: FileText, fields: [
+    { key: "title", label: "Titre de la page", type: "text" },
+    { key: "mission", label: "Énoncé de mission", type: "textarea" },
+    { key: "values", label: "Valeurs (tableau JSON)", type: "json_array" },
   ]},
-  { id: "footer", label: "Footer", icon: AlignLeft, fields: [
+  { id: "footer", label: "Pied de page", icon: AlignLeft, fields: [
     { key: "description", label: "Description", type: "textarea" },
-    { key: "copyright", label: "Copyright Text", type: "text" },
+    { key: "copyright", label: "Texte de copyright", type: "text" },
   ]},
   { id: "certifications", label: "Certifications", icon: Award, fields: [
-    { key: "items", label: "Certifications (JSON array)", type: "json_array" },
+    { key: "items", label: "Certifications (tableau JSON)", type: "json_array" },
   ]},
   { id: "nav", label: "Navigation", icon: Globe, fields: [
-    { key: "home", label: "Home", type: "text" },
-    { key: "about", label: "About", type: "text" },
+    { key: "home", label: "Accueil", type: "text" },
+    { key: "about", label: "À propos", type: "text" },
     { key: "services", label: "Services", type: "text" },
-    { key: "projects", label: "Projects", type: "text" },
+    { key: "projects", label: "Projets", type: "text" },
     { key: "contact", label: "Contact", type: "text" },
-    { key: "login", label: "Login", type: "text" },
-    { key: "dashboard", label: "Dashboard", type: "text" },
+    { key: "login", label: "Connexion", type: "text" },
+    { key: "dashboard", label: "Tableau de bord", type: "text" },
   ]},
 ];
 
@@ -137,7 +137,7 @@ function SectionEditor({
           try {
             parsedValue = JSON.parse(rawValue);
           } catch {
-            toast.error(`Invalid JSON for "${field.label}". Please check the format.`);
+            toast.error(`JSON invalide pour « ${field.label} ». Vérifiez le format.`);
             return;
           }
         } else {
@@ -151,9 +151,9 @@ function SectionEditor({
         });
       }
       setHasChanges(false);
-      toast.success(`${section.label} saved!`);
+      toast.success(`${section.label} enregistrée !`);
     } catch (err) {
-      toast.error(`Failed to save: ${(err as Error).message}`);
+      toast.error(`Échec de l'enregistrement : ${(err as Error).message}`);
     }
   };
 
@@ -169,7 +169,7 @@ function SectionEditor({
           <div className="flex items-center gap-2">
             <Icon className="h-4 w-4 text-primary" />
             <CardTitle className="text-base">{section.label}</CardTitle>
-            {hasChanges && <Badge variant="destructive" className="text-[10px]">Unsaved</Badge>}
+            {hasChanges && <Badge variant="destructive" className="text-[10px]">Non enregistré</Badge>}
           </div>
           {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </div>
@@ -205,7 +205,7 @@ function SectionEditor({
             className="gap-2"
           >
             <Save className="h-3.5 w-3.5" />
-            {upsert.isPending ? "Saving..." : "Save Changes"}
+            {upsert.isPending ? "Enregistrement..." : "Enregistrer les modifications"}
           </Button>
         </CardContent>
       )}
@@ -226,9 +226,9 @@ function SiteEditorPage() {
           <Globe className="h-5 w-5" />
         </span>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t("app.nav.settings")} / Site Editor</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t("app.nav.settings")} / Éditeur du site</h1>
           <p className="text-sm text-muted-foreground">
-            Edit all public-facing content on your website
+            Modifiez tout le contenu public de votre site web
           </p>
         </div>
       </div>

@@ -1,6 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+/** Undo accidental double JSON encoding from older saves (same as admin hook). */
+function normalize(value: unknown): unknown {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (
+      (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+      trimmed.startsWith("[") ||
+      trimmed.startsWith("{")
+    ) {
+      try {
+        return JSON.parse(trimmed);
+      } catch {
+        return value;
+      }
+    }
+  }
+  return value;
+}
+
 /**
  * Fetch site_content for public-facing pages.
  * No auth required — reads rows where company_id IS NULL (global defaults).
@@ -19,11 +38,11 @@ export function usePublicSiteContent() {
 
       const map: Record<string, unknown> = {};
       for (const row of (data ?? []) as { section: string; key: string; value: unknown }[]) {
-        map[`${row.section}.${row.key}`] = row.value;
+        map[`${row.section}.${row.key}`] = normalize(row.value);
       }
       return map;
     },
-    staleTime: 5 * 60_000,
+    staleTime: 30_000,
   });
 }
 

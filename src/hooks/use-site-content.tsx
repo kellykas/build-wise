@@ -165,6 +165,9 @@ export function useUpsertSiteContent() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["site-content"] });
       qc.invalidateQueries({ queryKey: ["site-content-section"] });
+      // Public pages use a different cache key; refresh them too so edits
+      // are visible immediately without waiting for the stale window.
+      qc.invalidateQueries({ queryKey: ["public-site-content"] });
     },
   });
 }
@@ -183,6 +186,7 @@ export function useDeleteSiteContent() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["site-content"] });
       qc.invalidateQueries({ queryKey: ["site-content-section"] });
+      qc.invalidateQueries({ queryKey: ["public-site-content"] });
     },
   });
 }
