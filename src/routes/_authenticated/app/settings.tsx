@@ -3,7 +3,7 @@ import { useState, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { createCompanyUser, deleteCompanyUser } from "@/lib/admin-users.functions";
+import { createCompanyUser } from "@/lib/admin-users.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -334,7 +334,6 @@ function UsersTab() {
   const [creating, setCreating] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Profile | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const deleteUserFn = useServerFn(deleteCompanyUser);
   const [draft, setDraft] = useState({ email: "", password: "", fullName: "", phone: "", role: "employee", employeeId: "", clientId: "" });
   const { data: profiles } = useQuery({
     queryKey: ["company-profiles"],
@@ -383,7 +382,28 @@ function UsersTab() {
     if (!deleteTarget) return;
     setDeleting(true);
     try {
-      await deleteUserFn({ data: { userId: deleteTarget.id } });
+      // Call Edge Function directly from client — bypasses server env var issues
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+      if (!token) throw new Error("Not authenticated");
+
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
+      if (!supabaseUrl || !supabaseKey) throw new Error("Supabase config missing");
+
+      const res = await fetch(`${supabaseUrl}/functions/v1/delete-user`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          "apikey": supabaseKey,
+        },
+        body: JSON.stringify({ userId: deleteTarget.id }),
+      });
+
+      const result = await res.json();
+      if (!res.ok || result.error) throw new Error(result.error || "Failed to delete user");
+
       toast.success(t("d.settings.user_deleted") || "User deleted");
       setDeleteTarget(null);
       qc.invalidateQueries({ queryKey: ["company-profiles"] });
