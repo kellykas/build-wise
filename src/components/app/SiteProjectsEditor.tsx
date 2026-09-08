@@ -19,18 +19,21 @@ import { diagnoseUploadError, buildStoragePath } from "@/lib/upload";
 /* Image Upload Component                                              */
 /* ------------------------------------------------------------------ */
 
-function ImageUpload({
+export function ImageUpload({
   value,
   onChange,
   companyId,
   folder,
   label,
+  bucket = "documents",
 }: {
   value: string;
   onChange: (url: string) => void;
   companyId?: string | null;
   folder: string;
   label: string;
+  /** Storage bucket the image is uploaded to. Defaults to the private documents bucket. */
+  bucket?: string;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -48,7 +51,7 @@ function ImageUpload({
       });
 
       const { error } = await supabase.storage
-        .from("documents")
+        .from(bucket)
         .upload(path, file, { upsert: true });
 
       if (error) {
@@ -57,7 +60,7 @@ function ImageUpload({
         return;
       }
 
-      const { data } = supabase.storage.from("documents").getPublicUrl(path);
+      const { data } = supabase.storage.from(bucket).getPublicUrl(path);
       if (data?.publicUrl) {
         onChange(data.publicUrl);
         toast.success("Image téléversée");

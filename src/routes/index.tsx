@@ -35,6 +35,12 @@ function Home_() {
     return siteText(content, section, key, fallback);
   };
 
+  // Hero background can be replaced from the Site Editor (Section Hero →
+  // image upload). Stored under section "hero", key "background_image".
+  const heroImageFallback =
+    "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1800&q=70&auto=format&fit=crop";
+  const heroImage = s("hero", "background_image", heroImageFallback);
+
   const serviceIcons = [Building2, Home, Factory, Hammer];
   const services = siteList<{ title: string; desc: string }>(content, "services", "items", [
     { title: t("services_section.commercial.title"), desc: t("services_section.commercial.desc") },
@@ -84,7 +90,7 @@ function Home_() {
       <section className="relative overflow-hidden border-b border-border">
         <div className="absolute inset-0 -z-10">
           <img
-            src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1800&q=70&auto=format&fit=crop"
+            src={heroImage}
             alt="Construction crew on a high-rise site at sunrise"
             className="h-full w-full object-cover"
           />

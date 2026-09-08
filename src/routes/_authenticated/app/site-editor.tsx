@@ -19,7 +19,7 @@ import {
   useUpsertSiteContent,
   getContentValue,
 } from "@/hooks/use-site-content";
-import { ProjectsEditor } from "@/components/app/SiteProjectsEditor";
+import { ProjectsEditor, ImageUpload } from "@/components/app/SiteProjectsEditor";
 
 export const Route = createFileRoute("/_authenticated/app/site-editor")({
   component: SiteEditorPage,
@@ -34,6 +34,7 @@ const SECTIONS = [
     { key: "cta_projects", label: "Bouton 2 (Projets)", type: "text" },
     { key: "phone_label", label: "Libellé du téléphone", type: "text" },
     { key: "phone_number", label: "Numéro de téléphone", type: "text" },
+    { key: "background_image", label: "Image de fond de la bannière", type: "image" },
   ]},
   { id: "stats", label: "Barre de statistiques", icon: Star, fields: [
     { key: "items", label: "Statistiques (tableau JSON)", type: "json_array" },
@@ -211,6 +212,29 @@ function SectionEditor({
       {expanded && (
         <CardContent className="space-y-4 pt-0">
           {section.fields.map((field) => {
+            if (field.type === "image") {
+              return (
+                <div key={field.key}>
+                  <ImageUpload
+                    value={localValues[field.key] ?? ""}
+                    onChange={(url) => handleValueChange(field.key, url)}
+                    companyId={companyId}
+                    folder="hero"
+                    bucket="site-images"
+                    label={field.label}
+                  />
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">ou collez une URL d'image :</span>
+                    <Input
+                      value={localValues[field.key] ?? ""}
+                      onChange={(e) => handleValueChange(field.key, e.target.value)}
+                      className="h-8"
+                      placeholder="https://…"
+                    />
+                  </div>
+                </div>
+              );
+            }
             return (
               <div key={field.key}>
                 <Label className="text-sm font-medium">{field.label}</Label>
