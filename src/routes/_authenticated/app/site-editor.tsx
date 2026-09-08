@@ -19,6 +19,7 @@ import {
   useUpsertSiteContent,
   getContentValue,
 } from "@/hooks/use-site-content";
+import { ProjectsEditor } from "@/components/app/SiteProjectsEditor";
 
 export const Route = createFileRoute("/_authenticated/app/site-editor")({
   component: SiteEditorPage,
@@ -240,15 +241,18 @@ function SiteEditorPage() {
           ))}
         </div>
       ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
-          {SECTIONS.map((section) => (
-            <SectionEditor
-              key={section.id}
-              section={section}
-              content={content ?? {}}
-              upsert={upsert}
-            />
-          ))}
+        <div className="space-y-6">
+          <ProjectsEditor content={content ?? {}} upsert={upsert} companyId={profile?.company_id} />
+          <div className="grid gap-4 lg:grid-cols-2">
+            {SECTIONS.map((section) => (
+              <SectionEditor
+                key={section.id}
+                section={section}
+                content={content ?? {}}
+                upsert={upsert}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>

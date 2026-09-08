@@ -1,0 +1,311 @@
+import { useState, useRef } from "react";
+import {
+  FolderKanban, Plus, Trash2, Save, Upload, ChevronDown, ChevronRight,
+  GripVertical, Image as ImageIcon, ExternalLink,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
+import { useUpsertSiteContent, getContentValue } from "@/hooks/use-site-content";
+import { supabase } from "@/integrations/supabase/client";
+import { diagnoseUploadError, buildStoragePath } from "@/lib/upload";
+
+/* ------------------------------------------------------------------ */
+/* Image Upload Component                                              */
+/* ------------------------------------------------------------------ */
+
+function ImageUpload({
+  value,
+  onChange,
+  companyId,
+  folder,
+  label,
+}: {
+  value: string;
+  onChange: (url: string) => void;
+  companyId?: string | null;
+  folder: string;
+  label: string;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !companyId) return;
+
+    setUploading(true);
+    try {
+      const path = buildStoragePath({
+        companyId,
+        folder,
+        fileName: file.name,
+      });
+
+      const { error } = await supabase.storage
+        .from("documents")
+        .upload(path, file, { upsert: true });
+
+      if (error) {
+        const diag = diagnoseUploadError(error, "storage");
+        toast.error(diag.message);
+        return;
+      }
+
+      const { data } = supabase.storage.from("documents").getPublicUrl(path);
+      if (data?.publicUrl) {
+        onChange(data.publicUrl);
+        toast.success("Image téléversée");
+      }
+    } catch (err) {
+      toast.error(`Échec du téléversement : ${(err as Error).message}`);
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
+
+  return (
+    <div>
+      <Label className="text-sm font-medium">{label}</Label>
+      <div className="mt-1 flex items-center gap-3">
+        {value ? (
+          <div className="relative">
+            <img
+              src={value}
+              alt=""
+              className="h-20 w-20 rounded-lg border border-border object-cover"
+            />
+            <button
+              type="button"
+              onClick={() => onChange("")}
+              className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-xs text-destructive-foreground"
+            >
+              <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12" /></svg>
+            </button>
+          </div>
+        ) : (
+          <div
+            onClick={() => fileRef.current?.click()}
+            className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-border transition-colors hover:border-primary/50"
+          >
+            {uploading ? (
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            ) : (
+              <ImageIcon className="h-6 w-6 text-muted-foreground" />
+            )}
+          </div>
+        )}
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          onChange={handleUpload}
+          className="hidden"
+        />
+        {!value && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => fileRef.current?.click()}
+            disabled={uploading}
+          >
+            <Upload className="mr-2 h-3.5 w-3.5" />
+            {uploading ? "Téléversement..." : "Téléverser une image"}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Types                                                               */
+/* ------------------------------------------------------------------ */
+
+export interface SiteProject {
+  id: string;
+  title: string;
+  category: string;
+  location: string;
+  year: string;
+  size: string;
+  status: string;
+  blurb: string;
+  img: string;
+}
+
+/* ------------------------------------------------------------------ */
+/* Projects Editor — feeds the public /projets page (cms.projects)     */
+/* ------------------------------------------------------------------ */
+
+export function ProjectsEditor({
+  content,
+  upsert,
+  companyId,
+}: {
+  content: Record<string, unknown>;
+  upsert: ReturnType<typeof useUpsertSiteContent>;
+  companyId?: string | null;
+}) {
+  const raw = getContentValue(content, "cms", "projects", []) as SiteProject[];
+  const [projects, setProjects] = useState<SiteProject[]>(() =>
+    raw.length > 0 ? raw : []
+  );
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const addProject = () => {
+    const id = crypto.randomUUID();
+    setProjects([...projects, { id, title: "", category: "commercial", location: "", year: "2025", size: "", status: "Completed", blurb: "", img: "" }]);
+    setExpandedId(id);
+  };
+
+  const updateProject = (id: string, field: keyof SiteProject, value: string) => {
+    setProjects(projects.map((p) => (p.id === id ? { ...p, [field]: value } : p)));
+  };
+
+  const removeProject = (id: string) => {
+    setProjects(projects.filter((p) => p.id !== id));
+    if (expandedId === id) setExpandedId(null);
+  };
+
+  const save = async () => {
+    await upsert.mutateAsync({ section: "cms", key: "projects", value: projects, companyId });
+    toast.success("Projets enregistrés !");
+  };
+
+  return (
+    <Card>
+      <CardHeader className="pb-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <FolderKanban className="h-5 w-5 text-primary" />
+            <div>
+              <CardTitle className="text-base">Projets du site public</CardTitle>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Ces projets apparaissent sur la page « /projets » de votre site. Cliquez sur
+                « Enregistrer les projets » pour publier vos modifications.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button asChild variant="outline" size="sm">
+              <a href="/projects" target="_blank" rel="noreferrer">
+                <ExternalLink className="mr-2 h-3.5 w-3.5" /> Voir la page Projets
+              </a>
+            </Button>
+            <Button size="sm" onClick={addProject}>
+              <Plus className="mr-2 h-3.5 w-3.5" /> Ajouter un projet
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4 pt-0">
+        {projects.length === 0 && (
+          <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+            Aucun projet pour le moment. Cliquez sur « Ajouter un projet » pour créer le premier
+            projet affiché sur votre site.
+          </div>
+        )}
+        {projects.map((p) => (
+          <Card key={p.id}>
+            <CardHeader
+              className="cursor-pointer select-none py-3"
+              onClick={() => setExpandedId(expandedId === p.id ? null : p.id)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <GripVertical className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm">{p.title || "Nouveau projet"}</CardTitle>
+                  {p.category && <Badge variant="outline" className="text-xs">{p.category}</Badge>}
+                  <Badge variant={p.status === "Completed" ? "default" : "secondary"} className="text-xs">
+                    {p.status === "Completed" ? "Terminé" : "En cours"}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeProject(p.id);
+                    }}
+                  >
+                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                  </Button>
+                  {expandedId === p.id ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                </div>
+              </div>
+            </CardHeader>
+            {expandedId === p.id && (
+              <CardContent className="space-y-4 pt-0">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <Label>Titre</Label>
+                    <Input value={p.title} onChange={(e) => updateProject(p.id, "title", e.target.value)} className="mt-1" />
+                  </div>
+                  <div>
+                    <Label>Catégorie</Label>
+                    <Select value={p.category} onValueChange={(v) => updateProject(p.id, "category", v)}>
+                      <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="commercial">Commercial</SelectItem>
+                        <SelectItem value="residential">Résidentiel</SelectItem>
+                        <SelectItem value="industrial">Industriel</SelectItem>
+                        <SelectItem value="renovation">Rénovation</SelectItem>
+                        <SelectItem value="infrastructure">Infrastructure</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>Lieu</Label>
+                    <Input value={p.location} onChange={(e) => updateProject(p.id, "location", e.target.value)} className="mt-1" />
+                  </div>
+                  <div>
+                    <Label>Année</Label>
+                    <Input value={p.year} onChange={(e) => updateProject(p.id, "year", e.target.value)} className="mt-1" />
+                  </div>
+                  <div>
+                    <Label>Taille</Label>
+                    <Input value={p.size} onChange={(e) => updateProject(p.id, "size", e.target.value)} className="mt-1" placeholder="ex. 480 000 m²" />
+                  </div>
+                  <div>
+                    <Label>Statut</Label>
+                    <Select value={p.status} onValueChange={(v) => updateProject(p.id, "status", v)}>
+                      <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Completed">Terminé</SelectItem>
+                        <SelectItem value="In progress">En cours</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div>
+                  <Label>Description</Label>
+                  <Textarea value={p.blurb} onChange={(e) => updateProject(p.id, "blurb", e.target.value)} className="mt-1" rows={3} />
+                </div>
+                <ImageUpload
+                  value={p.img}
+                  onChange={(url) => updateProject(p.id, "img", url)}
+                  companyId={companyId}
+                  folder="projects"
+                  label="Image du projet"
+                />
+              </CardContent>
+            )}
+          </Card>
+        ))}
+        <Button onClick={save} disabled={upsert.isPending} className="gap-2">
+          <Save className="h-4 w-4" /> {upsert.isPending ? "Enregistrement..." : "Enregistrer les projets"}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}

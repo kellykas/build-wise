@@ -21,6 +21,7 @@ import {
   useUpsertSiteContent,
   getContentValue,
 } from "@/hooks/use-site-content";
+import { ProjectsEditor } from "@/components/app/SiteProjectsEditor";
 import { supabase } from "@/integrations/supabase/client";
 import { diagnoseUploadError, buildStoragePath, safeFileName } from "@/lib/upload";
 
@@ -150,18 +151,6 @@ interface Leadership {
   photo: string;
 }
 
-interface Project {
-  id: string;
-  title: string;
-  category: string;
-  location: string;
-  year: string;
-  size: string;
-  status: string;
-  blurb: string;
-  img: string;
-}
-
 interface Service {
   id: string;
   key: string;
@@ -283,129 +272,6 @@ function LeadershipTab({ content, upsert, companyId }: { content: Record<string,
       ))}
       <Button onClick={save} disabled={upsert.isPending} className="gap-2">
         <Save className="h-4 w-4" /> {upsert.isPending ? "Enregistrement..." : "Enregistrer la direction"}
-      </Button>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* Projects Tab                                                        */
-/* ------------------------------------------------------------------ */
-
-function ProjectsTab({ content, upsert, companyId }: { content: Record<string, unknown>; upsert: ReturnType<typeof useUpsertSiteContent>; companyId?: string | null }) {
-  const raw = getContentValue(content, "cms", "projects", []) as Project[];
-  const [projects, setProjects] = useState<Project[]>(() =>
-    raw.length > 0 ? raw : []
-  );
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-
-  const addProject = () => {
-    const id = crypto.randomUUID();
-    setProjects([...projects, { id, title: "", category: "commercial", location: "", year: "2025", size: "", status: "Completed", blurb: "", img: "" }]);
-    setExpandedId(id);
-  };
-
-  const updateProject = (id: string, field: keyof Project, value: string) => {
-    setProjects(projects.map((p) => p.id === id ? { ...p, [field]: value } : p));
-  };
-
-  const removeProject = (id: string) => {
-    setProjects(projects.filter((p) => p.id !== id));
-    if (expandedId === id) setExpandedId(null);
-  };
-
-  const save = async () => {
-    await upsert.mutateAsync({ section: "cms", key: "projects", value: projects, companyId });
-    toast.success("Projets enregistrés !");
-  };
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Projets</h3>
-        <Button size="sm" onClick={addProject}><Plus className="mr-2 h-3.5 w-3.5" /> Ajouter un projet</Button>
-      </div>
-      {projects.map((p) => (
-        <Card key={p.id}>
-          <CardHeader
-            className="cursor-pointer select-none py-3"
-            onClick={() => setExpandedId(expandedId === p.id ? null : p.id)}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <GripVertical className="h-4 w-4 text-muted-foreground" />
-                <CardTitle className="text-sm">{p.title || "Nouveau projet"}</CardTitle>
-                {p.category && <Badge variant="outline" className="text-xs">{p.category}</Badge>}
-                <Badge variant={p.status === "Completed" ? "default" : "secondary"} className="text-xs">{p.status === "Completed" ? "Terminé" : "En cours"}</Badge>
-              </div>
-              <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => { e.stopPropagation(); removeProject(p.id); }}>
-                  <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                </Button>
-                {expandedId === p.id ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-              </div>
-            </div>
-          </CardHeader>
-          {expandedId === p.id && (
-            <CardContent className="space-y-4 pt-0">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <Label>Titre</Label>
-                  <Input value={p.title} onChange={(e) => updateProject(p.id, "title", e.target.value)} className="mt-1" />
-                </div>
-                <div>
-                  <Label>Catégorie</Label>
-                  <Select value={p.category} onValueChange={(v) => updateProject(p.id, "category", v)}>
-                    <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="commercial">Commercial</SelectItem>
-                      <SelectItem value="residential">Résidentiel</SelectItem>
-                      <SelectItem value="industrial">Industriel</SelectItem>
-                      <SelectItem value="renovation">Rénovation</SelectItem>
-                      <SelectItem value="infrastructure">Infrastructure</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Lieu</Label>
-                  <Input value={p.location} onChange={(e) => updateProject(p.id, "location", e.target.value)} className="mt-1" />
-                </div>
-                <div>
-                  <Label>Année</Label>
-                  <Input value={p.year} onChange={(e) => updateProject(p.id, "year", e.target.value)} className="mt-1" />
-                </div>
-                <div>
-                  <Label>Taille</Label>
-                  <Input value={p.size} onChange={(e) => updateProject(p.id, "size", e.target.value)} className="mt-1" placeholder="ex. 480 000 m²" />
-                </div>
-                <div>
-                  <Label>Statut</Label>
-                  <Select value={p.status} onValueChange={(v) => updateProject(p.id, "status", v)}>
-                    <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Completed">Terminé</SelectItem>
-                      <SelectItem value="In progress">En cours</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div>
-                <Label>Description</Label>
-                <Textarea value={p.blurb} onChange={(e) => updateProject(p.id, "blurb", e.target.value)} className="mt-1" rows={3} />
-              </div>
-              <ImageUpload
-                value={p.img}
-                onChange={(url) => updateProject(p.id, "img", url)}
-                companyId={companyId}
-                folder="projects"
-                label="Image du projet"
-              />
-            </CardContent>
-          )}
-        </Card>
-      ))}
-      <Button onClick={save} disabled={upsert.isPending} className="gap-2">
-        <Save className="h-4 w-4" /> {upsert.isPending ? "Enregistrement..." : "Enregistrer les projets"}
       </Button>
     </div>
   );
@@ -746,7 +612,7 @@ function CMSPage() {
             <LeadershipTab content={content ?? {}} upsert={upsert} companyId={profile?.company_id} />
           </TabsContent>
           <TabsContent value="projects">
-            <ProjectsTab content={content ?? {}} upsert={upsert} companyId={profile?.company_id} />
+            <ProjectsEditor content={content ?? {}} upsert={upsert} companyId={profile?.company_id} />
           </TabsContent>
           <TabsContent value="services">
             <ServicesTab content={content ?? {}} upsert={upsert} companyId={profile?.company_id} />
