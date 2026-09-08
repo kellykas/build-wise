@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { usePublicSiteContent, getPublicContentValue } from "@/hooks/use-public-site-content";
 import { toast } from "sonner";
 import { Mail, Phone, MapPin } from "lucide-react";
 
@@ -20,6 +21,28 @@ function AuthPage() {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [view, setView] = useState<"sign_in" | "sign_up">("sign_in");
+
+  // Contact details + copyright come from the site CMS (same source as the
+  // public Contact page / footer): cms.footer.contact first, then flat
+  // contact.* keys, then the site defaults. Editable in the Site Editor
+  // under « Coordonnées du site » and « Pied de page ».
+  const { data: content } = usePublicSiteContent();
+  const cmsFooter = (getPublicContentValue(content, "cms", "footer", {}) ?? {}) as {
+    contact?: Record<string, string>;
+    copyright?: string;
+  };
+  const cmsContact = cmsFooter.contact ?? {};
+  const cmsText = (s: string, k: string, fb: string) => {
+    const v = getPublicContentValue(content, s, k, "");
+    return typeof v === "string" && v.trim() !== "" ? v.trim() : fb;
+  };
+  const phone = cmsContact.phone?.trim() || cmsText("contact", "phone", "+243 825 913 789");
+  const email = cmsContact.email?.trim() || cmsText("contact", "email", "hello@scer-lconstruct.com");
+  const address = cmsContact.address?.trim() || cmsText("contact", "address", "Boulevard Mobutu N°6, Réf. Résidence Equateur, commune Makiso");
+  const copyright =
+    cmsText("footer", "copyright", "") ||
+    cmsFooter.copyright?.trim() ||
+    t("footer.copyright");
 
   useEffect(() => {
     if (!loading && session) navigate({ to: "/app" });
@@ -75,11 +98,11 @@ function AuthPage() {
           </p>
         </div>
         <div className="space-y-3 text-xs text-sidebar-foreground/50">
-          <div className="flex items-center gap-2"><Phone className="h-3.5 w-3.5" /> +1 (555) 240-8800</div>
-          <div className="flex items-center gap-2"><Mail className="h-3.5 w-3.5" /> hello@buildflow.co</div>
-          <div className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5" /> 240 Riverside Ave, Suite 1100</div>
+          <div className="flex items-center gap-2"><Phone className="h-3.5 w-3.5" /> {phone}</div>
+          <div className="flex items-center gap-2"><Mail className="h-3.5 w-3.5" /> {email}</div>
+          <div className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5" /> {address}</div>
         </div>
-        <div className="text-xs text-sidebar-foreground/50">© {new Date().getFullYear()} Scer-L/Construct Sarl</div>
+        <div className="text-xs text-sidebar-foreground/50">{copyright}</div>
       </div>
 
       {/* Right panel - form */}
