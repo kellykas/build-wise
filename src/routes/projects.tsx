@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { usePublicSiteContent, getPublicContentValue } from "@/hooks/use-public-site-content";
+import { usePublicSiteContent } from "@/hooks/use-public-site-content";
 
 /* ------------------------------------------------------------------ */
 /* Types & data                                                        */
@@ -193,9 +193,14 @@ function ProjectsPage() {
   const navigate = useNavigate({ from: "/projects" });
   const { data: siteContent } = usePublicSiteContent();
 
-  // Load projects from CMS with fallback to defaults
-  const cmsProjects = getPublicContentValue(siteContent, "cms", "projects") as { title: string; category: string; location: string; year: string; size: string; status: string; blurb: string; img: string }[] | null;
-  const allProjects: Project[] = (cmsProjects && cmsProjects.length > 0)
+  // Load projects from CMS. The built-in defaults are only used when there is
+  // NO site_content row at all (fresh install). If the row exists but is empty,
+  // we intentionally show no projects so deleted projects never come back.
+  const rawProjects = siteContent?.["cms.projects"];
+  const cmsProjects: { title: string; category: string; location: string; year: string; size: string; status: string; blurb: string; img: string }[] | null = Array.isArray(rawProjects)
+    ? (rawProjects as { title: string; category: string; location: string; year: string; size: string; status: string; blurb: string; img: string }[])
+    : null;
+  const allProjects: Project[] = cmsProjects !== null
     ? cmsProjects.map((p) => ({
         title: p.title,
         category: p.category as Project["category"],
