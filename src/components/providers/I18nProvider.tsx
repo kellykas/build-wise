@@ -8,7 +8,7 @@ import fr from "@/i18n/fr.json";
 // Initialize i18n once — this module is imported by the provider component
 // which is guaranteed to be included in the SSR bundle because it wraps children.
 // Always start on the default language ("fr") so SSR and the client's first
-// render match exactly; the saved/browser language is applied after hydration.
+// render match exactly; the saved language is applied after hydration.
 if (!i18n.isInitialized) {
   i18n.use(initReactI18next).init({
     resources: {
@@ -28,12 +28,13 @@ if (!i18n.isInitialized) {
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  // After hydration, switch to the user's saved (or browser) language.
-  // Doing this post-mount keeps SSR HTML and the first client render identical.
+  // After hydration, honor an explicitly saved choice (set via the language
+  // switcher) and otherwise stay on the default French. The browser language
+  // is deliberately NOT used to auto-switch to English — French is the app's
+  // primary language unless the user picks another one.
   useEffect(() => {
     const saved = localStorage.getItem("i18nextLng");
-    const browser = navigator.language?.slice(0, 2);
-    const target = saved || (browser === "en" ? "en" : "fr");
+    const target = saved === "en" ? "en" : "fr";
     if (target !== i18n.language) {
       i18n.changeLanguage(target);
     }

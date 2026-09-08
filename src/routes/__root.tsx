@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import i18n from "i18next";
 import { useTranslation } from "react-i18next";
 import { I18nProvider } from "@/components/providers/I18nProvider";
 
@@ -89,8 +90,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  // Default language is French (configured on the shared i18next instance);
+  // the attribute is kept in sync client-side by I18nProvider after mount.
+  const lang = i18n.isInitialized && i18n.language ? i18n.language : "fr";
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <head><HeadContent /></head>
       <body>
         {children}

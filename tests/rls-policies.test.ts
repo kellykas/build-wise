@@ -32,6 +32,10 @@ function sql(query: string): string[][] {
 const UPLOAD_TABLES = ["documents", "projects", "project_members", "audit_logs"];
 
 describe.skipIf(!hasDatabase)("public schema policies", () => {
+  // Vitest still evaluates skipped describe bodies at collection time, so bail
+  // out explicitly before any psql call (the suite is meant to skip cleanly
+  // in environments without a reachable database / psql client).
+  if (!hasDatabase) return;
   const policies = sql(
     `select tablename, policyname, coalesce(qual,'') || ' ' || coalesce(with_check,'')
      from pg_policies where schemaname='public'`,
@@ -65,6 +69,7 @@ describe.skipIf(!hasDatabase)("public schema policies", () => {
 });
 
 describe.skipIf(!hasDatabase)("Data API grants", () => {
+  if (!hasDatabase) return;
   it("grants authenticated access to every table used by uploads", () => {
     for (const table of UPLOAD_TABLES) {
       for (const priv of ["SELECT", "INSERT"]) {
@@ -78,6 +83,7 @@ describe.skipIf(!hasDatabase)("Data API grants", () => {
 });
 
 describe.skipIf(!hasDatabase)("storage policies for the documents bucket", () => {
+  if (!hasDatabase) return;
   const policies = sql(
     `select policyname, cmd, coalesce(qual,'') || ' ' || coalesce(with_check,'')
      from pg_policies where schemaname='storage' and tablename='objects'`,
@@ -109,6 +115,7 @@ describe.skipIf(!hasDatabase)("storage policies for the documents bucket", () =>
 });
 
 describe.skipIf(!hasDatabase)("multi-role accounts", () => {
+  if (!hasDatabase) return;
   it("keeps a staff role alongside the client role so staff policies still apply", () => {
     const multi = sql(
       `select user_id::text as user_id, string_agg(role::text, ',' order by role::text) as roles
