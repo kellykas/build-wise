@@ -41,6 +41,28 @@ type Profile = { id: string; full_name: string; email: string; phone: string | n
 type UserRole = { id: string; user_id: string; role: string };
 type CheckResult = { name: string; ok: boolean; message: string };
 
+/** Turns the raw zod validation JSON returned by createCompanyUser into a readable French message. */
+function friendlyCreateUserError(raw: string): string | null {
+  if (!raw?.trim().startsWith("[")) return null;
+  try {
+    const issues = JSON.parse(raw) as Array<{ path?: Array<string | number>; message?: string }>;
+    const first = issues[0];
+    if (!first) return null;
+    if (first.path?.includes("email")) {
+      return "Adresse e-mail invalide — les accents ne sont pas acceptés (ex. ingenieur@… au lieu de ingénieur@…).";
+    }
+    if (first.path?.includes("password")) {
+      return "Le mot de passe doit contenir au moins 8 caractères.";
+    }
+    if (first.path?.includes("fullName")) {
+      return "Le nom complet doit contenir au moins 2 caractères.";
+    }
+    return first.message ?? null;
+  } catch {
+    return null;
+  }
+}
+
 function SettingsPage() {
   const { t } = useTranslation();
   const { isAdmin, hasRole } = useAuth();
@@ -436,7 +458,8 @@ function UsersTab() {
       qc.invalidateQueries({ queryKey: ["employees-user-link"] });
       qc.invalidateQueries({ queryKey: ["clients-user-link"] });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t("d.settings.create_error"));
+      const message = error instanceof Error ? error.message : "";
+      toast.error(friendlyCreateUserError(message) ?? (message || t("d.settings.create_error")));
     } finally {
       setCreating(false);
     }

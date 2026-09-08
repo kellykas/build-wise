@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { normalizeEmail } from "@/lib/utils";
 
 export const resetUserPassword = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -116,7 +117,9 @@ export const deleteCompanyUser = createServerFn({ method: "POST" })
 export const createCompanyUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((data) => z.object({
-    email: z.string().email(),
+    // Strip accents/whitespace first (e.g. ingénieur@… → ingenieur@…) so the
+    // ASCII-only email check passes and GoTrue receives a deliverable address.
+    email: z.string().transform((v) => normalizeEmail(v)).pipe(z.string().email()),
     password: z.string().min(8),
     fullName: z.string().min(2),
     phone: z.string().optional(),
