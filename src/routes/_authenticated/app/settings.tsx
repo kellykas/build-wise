@@ -328,6 +328,8 @@ function ProfileTab() {
 
 function UsersTab() {
   const { t } = useTranslation();
+  const { hasRole } = useAuth();
+  const canDeleteUsers = hasRole("super_admin");
   const qc = useQueryClient();
   const createUser = useServerFn(createCompanyUser);
   const [createOpen, setCreateOpen] = useState(false);
@@ -380,6 +382,11 @@ function UsersTab() {
 
   const submitDelete = async () => {
     if (!deleteTarget) return;
+    if (!canDeleteUsers) {
+      setDeleteTarget(null);
+      toast.error("Only super admins can delete users");
+      return;
+    }
     setDeleting(true);
     try {
       // Call Edge Function directly from client — bypasses server env var issues
@@ -467,9 +474,11 @@ function UsersTab() {
                   <SelectTrigger className="h-8 w-44"><SelectValue placeholder="+ Assign role" /></SelectTrigger>
                   <SelectContent>{ROLES.map((r) => <SelectItem key={r} value={r}>{r.replace("_", " ")}</SelectItem>)}</SelectContent>
                 </Select>
-                <Button size="sm" variant="destructive" className="h-8 px-2" onClick={() => setDeleteTarget(p)} title="Delete user">
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
+                {canDeleteUsers && (
+                  <Button size="sm" variant="destructive" className="h-8 px-2" onClick={() => setDeleteTarget(p)} title="Delete user">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                )}
               </div>
             </div>
           </div>

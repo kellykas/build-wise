@@ -38,14 +38,14 @@ serve(async (req: Request) => {
 
     const callerId = userData.user.id;
 
-    // Check caller has admin/owner/director role
+    // Check caller has super_admin role only
     const { data: callerRoles } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", callerId);
 
     const canDelete = (callerRoles ?? []).some((r: { role: string }) =>
-      ["super_admin", "company_owner", "director"].includes(r.role)
+      ["super_admin"].includes(r.role)
     );
 
     if (!canDelete) {
