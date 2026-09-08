@@ -109,9 +109,9 @@ export function SiteFooter() {
   // CMS content always takes priority over i18n fallbacks
   const description = siteText(content, "footer", "description", cms.description || t("footer.description"));
   const copyright = siteText(content, "footer", "copyright", cms.copyright || t("footer.copyright"));
-  const phone = cms.contact?.phone || "+1 (555) 240-8800";
-  const email = cms.contact?.email || "hello@buildflow.co";
-  const address = cms.contact?.address || "240 Riverside Ave, Suite 1100";
+  const phone = cms.contact?.phone?.trim() || siteText(content, "contact", "phone", "+243 825 913 789");
+  const email = cms.contact?.email?.trim() || siteText(content, "contact", "email", "hello@scer-lconstruct.com");
+  const address = cms.contact?.address?.trim() || siteText(content, "contact", "address", "Boulevard Mobutu N°6, Réf. Résidence Equateur, commune Makiso");
   const legal = [
     cms.legal?.rccm || "CD/KIS/RCCM/21.8-00068",
     cms.legal?.tax_number ? `Numéro Impôt : ${cms.legal.tax_number}` : "Numéro Impôt : A2213934W",

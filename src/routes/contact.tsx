@@ -11,6 +11,7 @@ import { Mail, Phone, MapPin, Clock, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { usePublicSiteContent, getPublicContentValue } from "@/hooks/use-public-site-content";
 
 type SearchParams = { type?: "quote" | "contact" };
 
@@ -33,10 +34,26 @@ export const Route = createFileRoute("/contact")({
 
 function ContactPage() {
   const { t } = useTranslation();
+  const { data: content } = usePublicSiteContent();
   const { type: initialType } = Route.useSearch();
   const [type, setType] = useState<"quote" | "contact">(initialType ?? "contact");
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+
+  // Contact details come from the site CMS (cms.footer.contact, edited in
+  // the Site Editor / CMS Editor), with flat contact.* keys as a fallback.
+  const cmsFooter = (getPublicContentValue(content, "cms", "footer", {}) ?? {}) as {
+    contact?: Record<string, string>;
+  };
+  const cmsContact = cmsFooter.contact ?? {};
+  const g = (s: string, k: string, fb: string) => {
+    const v = getPublicContentValue(content, s, k, "");
+    return typeof v === "string" && v.trim() !== "" ? v.trim() : fb;
+  };
+  const phone = cmsContact.phone?.trim() || g("contact", "phone", "+243 825 913 789");
+  const email = cmsContact.email?.trim() || g("contact", "email", "hello@scer-lconstruct.com");
+  const address = cmsContact.address?.trim() || g("contact", "address", "Boulevard Mobutu N°6, Réf. Résidence Equateur, commune Makiso");
+  const hours = cmsContact.hours?.trim() || g("contact", "hours", t("contact_page.hours"));
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -96,13 +113,13 @@ function ContactPage() {
               <h2 className="text-xl font-semibold">{t("contact_page.reach")}</h2>
               <div className="mt-5 space-y-4 text-sm">
                 <div className="flex items-start gap-3"><Phone className="mt-0.5 h-4 w-4 text-primary" />
-                  <div><div className="font-medium text-foreground">+1 (555) 240-8800</div><div className="text-muted-foreground">{t("contact_page.hours")}</div></div>
+                  <div><div className="font-medium text-foreground">{phone}</div><div className="text-muted-foreground">{hours}</div></div>
                 </div>
                 <div className="flex items-start gap-3"><Mail className="mt-0.5 h-4 w-4 text-primary" />
-                  <div><div className="font-medium text-foreground">hello@buildflow.co</div><div className="text-muted-foreground">{t("contact_page.for_bids")}</div></div>
+                  <div><div className="font-medium text-foreground">{email}</div><div className="text-muted-foreground">{t("contact_page.for_bids")}</div></div>
                 </div>
                 <div className="flex items-start gap-3"><MapPin className="mt-0.5 h-4 w-4 text-primary" />
-                  <div><div className="font-medium text-foreground">{t("contact_page.head_office")}</div><div className="text-muted-foreground">240 Riverside Ave, Suite 1100</div></div>
+                  <div><div className="font-medium text-foreground">{t("contact_page.head_office")}</div><div className="text-muted-foreground">{address}</div></div>
                 </div>
               </div>
             </div>

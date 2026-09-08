@@ -64,11 +64,11 @@ const SECTIONS = [
     { key: "quote_btn", label: "Bouton Devis", type: "text" },
     { key: "hi_btn", label: "Bouton Bonjour", type: "text" },
   ]},
-  { id: "contact", label: "Coordonnées", icon: Phone, fields: [
-    { key: "phone", label: "Téléphone", type: "text" },
-    { key: "email", label: "E-mail", type: "text" },
-    { key: "address", label: "Adresse", type: "text" },
-    { key: "hours", label: "Horaires d'ouverture", type: "text" },
+  { id: "cms_footer", label: "Coordonnées du site", icon: Phone, fields: [
+    { key: "contact.phone", label: "Téléphone", type: "text" },
+    { key: "contact.email", label: "E-mail", type: "text" },
+    { key: "contact.address", label: "Adresse", type: "text" },
+    { key: "contact.hours", label: "Horaires d'ouverture", type: "text" },
   ]},
   { id: "about", label: "Page À propos", icon: FileText, fields: [
     { key: "title", label: "Titre de la page", type: "text" },
@@ -97,10 +97,12 @@ function SectionEditor({
   section,
   content,
   upsert,
+  companyId,
 }: {
   section: typeof SECTIONS[number];
   content: Record<string, unknown>;
   upsert: ReturnType<typeof useUpsertSiteContent>;
+  companyId?: string | null;
 }) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
@@ -108,6 +110,16 @@ function SectionEditor({
 
   const initial = useMemo(() => {
     const out: Record<string, string> = {};
+    if (section.id === "cms_footer") {
+      // Coordinates are stored in the cms.footer object (contact.* sub-fields).
+      const footer = (getContentValue(content, "cms", "footer", {}) ?? {}) as Record<string, unknown>;
+      for (const field of section.fields) {
+        let raw: unknown = footer;
+        for (const p of field.key.split(".")) raw = (raw as Record<string, unknown> | undefined)?.[p];
+        out[field.key] = typeof raw === "string" ? raw : "";
+      }
+      return out;
+    }
     for (const field of section.fields) {
       const raw = getContentValue(content, section.id, field.key, field.type === "json_array" ? [] : "");
       out[field.key] =
@@ -130,6 +142,26 @@ function SectionEditor({
 
   const handleSave = async () => {
     try {
+      if (section.id === "cms_footer") {
+        // Save the coordinates into the cms.footer object (same source the
+        // public Contact page and footer read), in both scopes when possible.
+        const footer = (getContentValue(content, "cms", "footer", {}) ?? {}) as Record<string, unknown>;
+        const existingContact = (typeof footer.contact === "object" && footer.contact !== null ? footer.contact : {}) as Record<string, unknown>;
+        const contact: Record<string, unknown> = { ...existingContact };
+        for (const field of section.fields) {
+          contact[field.key.replace("contact.", "")] = localValues[field.key] ?? "";
+        }
+        await upsert.mutateAsync({
+          section: "cms",
+          key: "footer",
+          value: { ...footer, contact },
+          companyId,
+        });
+        setHasChanges(false);
+        toast.success("Coordonnées enregistrées !");
+        return;
+      }
+
       for (const field of section.fields) {
         const rawValue = localValues[field.key] ?? "";
         let parsedValue: unknown;
@@ -149,6 +181,7 @@ function SectionEditor({
           section: section.id,
           key: field.key,
           value: parsedValue,
+          companyId,
         });
       }
       setHasChanges(false);
@@ -250,6 +283,7 @@ function SiteEditorPage() {
                 section={section}
                 content={content ?? {}}
                 upsert={upsert}
+                companyId={profile?.company_id}
               />
             ))}
           </div>
