@@ -188,8 +188,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     { label: t(k.groups.library), items: [
       { to: "/app/documents", label: t(k.nav.documents), icon: FileText },
       { to: "/app/notification-log", label: t(k.nav.notification_log), icon: History, roles: [...ADMIN] },
-      { to: "/app/cms", label: t("app.nav.cms"), icon: Globe, roles: [...ADMIN, "project_manager"] },
-      { to: "/app/site-editor", label: t("app.nav.site_editor"), icon: Globe, roles: [...ADMIN, "project_manager"] },
+      { to: "/app/cms", label: t("app.nav.cms"), icon: Globe, roles: OPS },
+      { to: "/app/site-editor", label: t("app.nav.site_editor"), icon: Globe, roles: OPS },
       { to: "/app/settings", label: t(k.nav.settings), icon: Settings },
     ]},
   ];
