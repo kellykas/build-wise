@@ -22,7 +22,7 @@ function normalize(value: unknown): unknown {
 
 /**
  * Fetch site_content for public-facing pages.
- * No auth required — reads rows where company_id IS NULL (global defaults).
+ * No auth required — reads all rows. Company-specific rows override global defaults.
  * Returns a flat map keyed by "section.key" for easy access.
  */
 export function usePublicSiteContent() {
@@ -31,13 +31,16 @@ export function usePublicSiteContent() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("site_content")
-        .select("section, key, value")
-        .is("company_id", null);
+        .select("section, key, value, company_id");
 
       if (error) throw error;
 
+      const rows = (data ?? []) as { section: string; key: string; value: unknown; company_id: string | null }[];
+      // global rows first, company rows last so they win
+      rows.sort((a, b) => (a.company_id ? 1 : 0) - (b.company_id ? 1 : 0));
+
       const map: Record<string, unknown> = {};
-      for (const row of (data ?? []) as { section: string; key: string; value: unknown }[]) {
+      for (const row of rows) {
         map[`${row.section}.${row.key}`] = normalize(row.value);
       }
       return map;
