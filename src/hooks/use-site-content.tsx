@@ -46,10 +46,11 @@ export function useSiteContent(companyId?: string | null) {
     queryFn: async () => {
       let query = db.from("site_content").select("section, key, value, company_id") as any;
       if (companyId) {
+        // Authenticated workspace: this company's rows + global defaults.
         query = query.or(`company_id.eq.${companyId},company_id.is.null`);
-      } else {
-        query = query.is("company_id", null);
       }
+      // Public pages (no companyId): read every row so company-scoped CMS
+      // edits are visible — company rows override the global defaults below.
       const { data, error } = await query;
       if (error) throw error;
 
@@ -134,33 +135,53 @@ export function useUpsertSiteContent() {
       section,
       key,
       value,
+      companyId,
     }: {
       section: string;
       key: string;
       value: unknown;
       companyId?: string | null;
     }) => {
-      const existing = await (db
-        .from("site_content")
-        .select("id")
-        .eq("section", section)
-        .eq("key", key)
-        .is("company_id", null)
-        .maybeSingle() as any);
-      if (existing.error) throw existing.error;
+      const upsertScope = async (scopeCompanyId: string | null) => {
+        let existing;
+        if (scopeCompanyId) {
+          existing = await (db
+            .from("site_content")
+            .select("id")
+            .eq("section", section)
+            .eq("key", key)
+            .eq("company_id", scopeCompanyId)
+            .maybeSingle() as any);
+        } else {
+          existing = await (db
+            .from("site_content")
+            .select("id")
+            .eq("section", section)
+            .eq("key", key)
+            .is("company_id", null)
+            .maybeSingle() as any);
+        }
+        if (existing.error) throw existing.error;
 
-      if (existing.data?.id) {
-        const { error } = await (db
-          .from("site_content")
-          .update({ value, updated_at: new Date().toISOString() })
-          .eq("id", existing.data.id) as any);
-        if (error) throw error;
-      } else {
-        const { error } = await (db
-          .from("site_content")
-          .insert({ section, key, value, company_id: null }) as any);
-        if (error) throw error;
-      }
+        if (existing.data?.id) {
+          const { error } = await (db
+            .from("site_content")
+            .update({ value, updated_at: new Date().toISOString() })
+            .eq("id", existing.data.id) as any);
+          if (error) throw error;
+        } else {
+          const { error } = await (db
+            .from("site_content")
+            .insert({ section, key, value, company_id: scopeCompanyId }) as any);
+          if (error) throw error;
+        }
+      };
+
+      // Always keep the global default in sync, and also the company-scoped
+      // row (when editing from a company workspace) — readers that prefer the
+      // company row (admin editor + public site) must see the same value.
+      await upsertScope(null);
+      if (companyId) await upsertScope(companyId);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["site-content"] });
