@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { usePublicSiteContent, getPublicContentValue } from "@/hooks/use-public-site-content";
 import { toast } from "sonner";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Connexion — Scer-L/Construct Sarl" }] }),
@@ -20,7 +20,6 @@ function AuthPage() {
   const { session, loading } = useAuth();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
-  const [view, setView] = useState<"sign_in" | "sign_up">("sign_in");
 
   // Contact details + copyright come from the site CMS (same source as the
   // public Contact page / footer): cms.footer.contact first, then flat
@@ -65,24 +64,6 @@ function AuthPage() {
     }
   };
 
-  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setBusy(true);
-    const fd = new FormData(e.currentTarget);
-    const email = String(fd.get("email"));
-    const password = String(fd.get("password"));
-    try {
-      const { error } = await supabase.auth.signUp({ email, password });
-      if (error) throw error;
-      toast.success("Compte créé ! Vérifiez votre boîte de réception pour confirmer votre inscription.");
-      setView("sign_in");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Échec de l'inscription");
-    } finally {
-      setBusy(false);
-    }
-  };
-
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       {/* Left panel - branding */}
@@ -114,55 +95,32 @@ function AuthPage() {
             Scer-L/Construct
           </Link>
 
-          {view === "sign_in" ? (
-            <>
-              <h1 className="text-2xl font-bold">{t("auth.welcome_back", "Bon retour")}</h1>
-              <p className="mt-1 text-sm text-muted-foreground">{t("auth.sign_in_desc", "Connectez-vous à votre compte Scer-L/Construct.")}</p>
+          <h1 className="text-2xl font-bold">{t("auth.welcome_back", "Bon retour")}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{t("auth.sign_in_desc", "Connectez-vous à votre compte Scer-L/Construct.")}</p>
 
-              <form onSubmit={handleSignIn} className="mt-6 space-y-4">
-                <div>
-                  <Label>{t("auth.email", "E-mail")}</Label>
-                  <Input required type="email" name="email" className="mt-1" placeholder="votre@email.com" />
-                </div>
-                <div>
-                  <Label>{t("auth.password", "Mot de passe")}</Label>
-                  <Input required type="password" name="password" className="mt-1" placeholder="••••••••" />
-                </div>
-                <Button disabled={busy} type="submit" className="w-full">
-                  {busy ? t("auth.signing_in", "Connexion...") : t("auth.sign_in", "Se connecter")}
-                </Button>
-              </form>
+          <form onSubmit={handleSignIn} className="mt-6 space-y-4">
+            <div>
+              <Label>{t("auth.email", "E-mail")}</Label>
+              <Input required type="email" name="email" className="mt-1" placeholder="votre@email.com" />
+            </div>
+            <div>
+              <Label>{t("auth.password", "Mot de passe")}</Label>
+              <Input required type="password" name="password" className="mt-1" placeholder="••••••••" />
+            </div>
+            <Button disabled={busy} type="submit" className="w-full">
+              {busy ? t("auth.signing_in", "Connexion...") : t("auth.sign_in", "Se connecter")}
+            </Button>
+          </form>
 
-              <p className="mt-6 text-center text-xs text-muted-foreground">
-                {t("auth.no_account", "Vous n'avez pas de compte ?")}{" "}
-                <button type="button" onClick={() => setView("sign_up")} className="text-primary hover:underline">{t("auth.sign_up_link", "S'inscrire")}</button>
-              </p>
-            </>
-          ) : (
-            <>
-              <h1 className="text-2xl font-bold">{t("auth.create_account", "Créer un compte")}</h1>
-              <p className="mt-1 text-sm text-muted-foreground">{t("auth.sign_up_desc", "Inscrivez-vous pour accéder à Scer-L/Construct.")}</p>
-
-              <form onSubmit={handleSignUp} className="mt-6 space-y-4">
-                <div>
-                  <Label>{t("auth.email", "E-mail")}</Label>
-                  <Input required type="email" name="email" className="mt-1" placeholder="votre@email.com" />
-                </div>
-                <div>
-                  <Label>{t("auth.password", "Mot de passe")}</Label>
-                  <Input required type="password" name="password" minLength={6} className="mt-1" placeholder="••••••••" />
-                </div>
-                <Button disabled={busy} type="submit" className="w-full">
-                  {busy ? t("auth.creating", "Création...") : t("auth.sign_up", "S'inscrire")}
-                </Button>
-              </form>
-
-              <p className="mt-6 text-center text-xs text-muted-foreground">
-                {t("auth.has_account", "Vous avez déjà un compte ?")}{" "}
-                <button type="button" onClick={() => setView("sign_in")} className="text-primary hover:underline">{t("auth.sign_in_link", "Se connecter")}</button>
-              </p>
-            </>
-          )}
+          <div className="mt-6 flex items-start gap-2 rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0" />
+            <p>
+              {t(
+                "auth.no_public_signup",
+                "Les comptes sont créés par l'administration. Contactez le super administrateur ou le service informatique pour obtenir un accès.",
+              )}
+            </p>
+          </div>
         </div>
       </div>
     </div>

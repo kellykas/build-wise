@@ -1,74 +1,45 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { normalizeEmail } from "@/lib/utils";
 
 export const resetUserPassword = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .validator((data) => z.object({
     userId: z.string().uuid(),
     newPassword: z.string().min(8),
   }).parse(data))
-  .handler(async ({ data, context }) => {
-    const { data: callerProfile, error: profileError } = await context.supabase
-      .from("profiles")
-      .select("company_id")
-      .eq("id", context.userId)
-      .maybeSingle();
+  .handler(async ({ data }) => {
+    // Read auth token directly from request — no env vars needed.
+    // The actual password reset runs in the reset-password Edge Function,
+    // which holds the service role key on Supabase (not on the Vercel server).
+    const { getRequest } = await import("@tanstack/react-start/server");
+    const request = getRequest();
+    const authHeader = request?.headers?.get("authorization") ?? "";
 
-    if (profileError || !callerProfile?.company_id) {
-      throw new Error("Your account is not linked to a company workspace.");
+    if (!authHeader) {
+      throw new Error("Unauthorized: No authorization header");
     }
 
-    const { data: callerRoles, error: rolesError } = await context.supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", context.userId);
+    const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const supabaseKey = (import.meta as any).env?.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY || (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
 
-    if (rolesError) throw rolesError;
-
-    const canResetPasswords = (callerRoles ?? []).some((row) =>
-      ["super_admin", "company_owner", "director", "project_manager"].includes(String(row.role)),
-    );
-
-    if (!canResetPasswords) {
-      throw new Error("You do not have permission to reset passwords.");
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error("Supabase configuration is missing.");
     }
 
-    // Verify the target user belongs to the same company
-    const { data: targetRoles } = await context.supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", data.userId);
-
-    const isTargetInCompany = (targetRoles ?? []).some((row) =>
-      row.role === "client" || row.role === "employee"
-    );
-
-    if (!isTargetInCompany) {
-      throw new Error("You can only reset passwords for clients and employees.");
-    }
-
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    // Reset the password via Supabase admin API
-    const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
-      data.userId,
-      { password: data.newPassword }
-    );
-
-    if (updateError) throw updateError;
-
-    // Audit log
-    await supabaseAdmin.from("audit_logs").insert({
-      company_id: callerProfile.company_id,
-      actor_id: context.userId,
-      actor_email: (context.claims as { email?: string } | null)?.email ?? null,
-      action: "user.password_reset",
-      entity_type: "user",
-      entity_id: data.userId,
-      metadata: { reset_at: new Date().toISOString() },
+    const res = await fetch(`${supabaseUrl}/functions/v1/reset-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": authHeader,
+        "apikey": supabaseKey,
+      },
+      body: JSON.stringify({ userId: data.userId, newPassword: data.newPassword }),
     });
+
+    const result = await res.json();
+    if (!res.ok || result.error) {
+      throw new Error(result.error || "Failed to reset password");
+    }
 
     return { success: true };
   });
