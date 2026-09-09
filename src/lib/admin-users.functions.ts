@@ -115,7 +115,6 @@ export const deleteCompanyUser = createServerFn({ method: "POST" })
   });
 
 export const createCompanyUser = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .validator((data) => z.object({
     // Strip accents/whitespace first (e.g. ingénieur@… → ingenieur@…) so the
     // ASCII-only email check passes and GoTrue receives a deliverable address.
@@ -127,108 +126,39 @@ export const createCompanyUser = createServerFn({ method: "POST" })
     employeeId: z.string().uuid().optional().or(z.literal("")),
     clientId: z.string().uuid().optional().or(z.literal("")),
   }).parse(data))
-  .handler(async ({ data, context }) => {
-    const { data: callerProfile, error: profileError } = await context.supabase
-      .from("profiles")
-      .select("company_id")
-      .eq("id", context.userId)
-      .maybeSingle();
+  .handler(async ({ data }) => {
+    // Read auth token directly from request — no env vars needed.
+    // The actual user creation runs in the create-user Edge Function, which
+    // holds the service role key on Supabase (not on the Vercel server).
+    const { getRequest } = await import("@tanstack/react-start/server");
+    const request = getRequest();
+    const authHeader = request?.headers?.get("authorization") ?? "";
 
-    if (profileError || !callerProfile?.company_id) {
-      throw new Error("Your account is not linked to a company workspace.");
+    if (!authHeader) {
+      throw new Error("Unauthorized: No authorization header");
     }
 
-    const { data: callerRoles, error: rolesError } = await context.supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", context.userId);
+    const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const supabaseKey = (import.meta as any).env?.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY || (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
 
-    if (rolesError) throw rolesError;
-
-    const canManageUsers = (callerRoles ?? []).some((row) =>
-      ["super_admin", "company_owner", "director", "hr_manager"].includes(String(row.role)),
-    );
-
-    if (!canManageUsers) {
-      throw new Error("You do not have permission to create users.");
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error("Supabase configuration is missing.");
     }
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: created, error: createError } = await supabaseAdmin.auth.admin.createUser({
-      email: data.email,
-      password: data.password,
-      email_confirm: true,
-      user_metadata: { full_name: data.fullName },
-    });
-
-    if (createError) throw createError;
-    if (!created.user) throw new Error("The user account could not be created.");
-
-    const userId = created.user.id;
-    const companyId = callerProfile.company_id;
-
-    const { error: profileUpsertError } = await supabaseAdmin.from("profiles").upsert({
-      id: userId,
-      company_id: companyId,
-      full_name: data.fullName,
-      email: data.email,
-      phone: data.phone || null,
-    });
-    if (profileUpsertError) throw profileUpsertError;
-
-    const { error: roleError } = await supabaseAdmin.from("user_roles").insert({
-      user_id: userId,
-      company_id: companyId,
-      role: data.role,
-    });
-    if (roleError) throw roleError;
-
-    if (data.employeeId) {
-      const { error } = await supabaseAdmin
-        .from("employees")
-        .update({ user_id: userId, email: data.email })
-        .eq("id", data.employeeId)
-        .eq("company_id", companyId);
-      if (error) throw error;
-    }
-
-    if (data.role === "client") {
-      if (data.clientId) {
-        // Link existing client record to this user
-        const { error } = await supabaseAdmin
-          .from("clients")
-          .update({ user_id: userId, email: data.email })
-          .eq("id", data.clientId)
-          .eq("company_id", companyId);
-        if (error) throw error;
-      } else {
-        // Create new client record for invited clients
-        const { error: clientError } = await supabaseAdmin.from("clients").insert({
-          company_id: companyId,
-          user_id: userId,
-          name: data.fullName,
-          email: data.email,
-          phone: data.phone || null,
-        });
-        if (clientError) throw clientError;
-      }
-    }
-
-    await supabaseAdmin.from("audit_logs").insert({
-      company_id: companyId,
-      actor_id: context.userId,
-      actor_email: (context.claims as { email?: string } | null)?.email ?? null,
-      action: "user.create",
-      entity_type: "user",
-      entity_id: userId,
-      metadata: {
-        email: data.email,
-        full_name: data.fullName,
-        role: data.role,
-        linked_employee_id: data.employeeId || null,
-        linked_client_id: data.clientId || null,
+    const res = await fetch(`${supabaseUrl}/functions/v1/create-user`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": authHeader,
+        "apikey": supabaseKey,
       },
+      body: JSON.stringify(data),
     });
 
-    return { id: userId, email: data.email };
+    const result = await res.json();
+    if (!res.ok || result.error) {
+      throw new Error(result.error || "Failed to create user");
+    }
+
+    return { id: result.id, email: result.email };
   });
