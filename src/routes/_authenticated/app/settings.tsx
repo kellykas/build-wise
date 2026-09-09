@@ -15,7 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { CheckCircle2, Loader2, Settings as SettingsIcon, ShieldCheck, UserPlus, XCircle, Search, Users, RefreshCw, Save, Bell, Trash2 } from "lucide-react";
+import { CheckCircle2, Key, Loader2, Settings as SettingsIcon, ShieldCheck, UserPlus, XCircle, Search, Users, RefreshCw, Save, Bell, Trash2 } from "lucide-react";
+import { ResetPasswordDialog } from "@/components/app/ResetPasswordDialog";
 import { toast } from "sonner";
 import { recordAudit } from "@/lib/audit";
 import { TEMPLATE_DEFAULTS, TEMPLATE_LABELS } from "@/lib/notification-templates";
@@ -352,6 +353,7 @@ function UsersTab() {
   const { t } = useTranslation();
   const { hasRole } = useAuth();
   const canDeleteUsers = hasRole("super_admin");
+  const canResetPassword = hasRole("super_admin", "company_owner", "director", "project_manager");
   const qc = useQueryClient();
   const createUser = useServerFn(createCompanyUser);
   const [createOpen, setCreateOpen] = useState(false);
@@ -497,6 +499,13 @@ function UsersTab() {
                   <SelectTrigger className="h-8 w-44"><SelectValue placeholder="+ Assign role" /></SelectTrigger>
                   <SelectContent>{ROLES.map((r) => <SelectItem key={r} value={r}>{r.replace("_", " ")}</SelectItem>)}</SelectContent>
                 </Select>
+                {canResetPassword && (
+                  <ResetPasswordDialog userId={p.id} userName={p.full_name ?? p.email}>
+                    <Button size="sm" variant="outline" className="h-8 px-2" title="Réinitialiser le mot de passe">
+                      <Key className="h-3.5 w-3.5" />
+                    </Button>
+                  </ResetPasswordDialog>
+                )}
                 {canDeleteUsers && (
                   <Button size="sm" variant="destructive" className="h-8 px-2" onClick={() => setDeleteTarget(p)} title="Delete user">
                     <Trash2 className="h-3.5 w-3.5" />

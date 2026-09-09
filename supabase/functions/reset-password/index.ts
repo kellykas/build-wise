@@ -95,20 +95,16 @@ serve(async (req: Request) => {
       );
     }
 
-    // Target must be a client or employee of the same company
+    // Target must belong to the same company (any role)
     const { data: targetRoles } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", userId)
       .eq("company_id", callerProfile.company_id);
 
-    const isTargetInCompany = (targetRoles ?? []).some((r: { role: string }) =>
-      r.role === "client" || r.role === "employee"
-    );
-
-    if (!isTargetInCompany) {
+    if (!(targetRoles ?? []).length) {
       return new Response(
-        JSON.stringify({ error: "You can only reset passwords for clients and employees." }),
+        JSON.stringify({ error: "This user does not belong to your company." }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
