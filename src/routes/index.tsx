@@ -12,7 +12,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Scer-L/Construct Sarl, Engagés pour construire vos rêves" },
-      { name: "description", content: "Full-service general contractor delivering commercial, residential, industrial and infrastructure projects on time and on budget. Engagés pour construire vos rêves." },
+      { name: "description", content: "Entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure. À temps. Dans le budget. Engagés pour construire vos rêves." },
     ],
   }),
   component: Home_,

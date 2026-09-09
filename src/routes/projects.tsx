@@ -422,12 +422,12 @@ function ProjectsPage() {
                         : "bg-accent/90 text-accent-foreground"
                     }`}
                   >
-                    {featured.status}
+                    {featured.status === "Completed" ? t("projects_page.filter_completed") : t("projects_page.filter_in_progress")}
                   </span>
                 </div>
                 <div className="flex flex-col justify-center p-8 md:p-10">
                   <div className="text-xs font-medium uppercase tracking-widest text-primary">
-                    Featured · {featured.category}
+                    {t("projects_page.featured")} · {t(`projects_page.${featured.category}`)}
                   </div>
                   <h2 className="mt-3 text-2xl font-bold md:text-3xl">
                     {featured.title}
@@ -479,12 +479,12 @@ function ProjectsPage() {
                           : "bg-accent/85 text-accent-foreground"
                       }`}
                     >
-                      {p.status}
+                      {p.status === "Completed" ? t("projects_page.filter_completed") : t("projects_page.filter_in_progress")}
                     </span>
                   </div>
                   <div className="p-5">
                     <div className="text-xs uppercase tracking-wide text-primary">
-                      {p.category}
+                      {t(`projects_page.${p.category}`)}
                     </div>
                     <h3 className="mt-1 text-lg font-semibold">{p.title}</h3>
                     <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
