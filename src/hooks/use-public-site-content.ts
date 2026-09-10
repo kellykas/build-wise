@@ -45,7 +45,9 @@ export function usePublicSiteContent() {
       }
       return map;
     },
-    staleTime: 30_000,
+    initialData: {},
+    staleTime: 5_000,
+    refetchInterval: 60_000,
   });
 }
 

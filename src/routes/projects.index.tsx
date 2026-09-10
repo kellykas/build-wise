@@ -43,116 +43,7 @@ interface Project {
   imgs?: string[];
 }
 
-const defaultProjects: Project[] = [
-  {
-    id: "default-1",
-    title: "Tour Riverside",
-    category: "commercial",
-    location: "Centre-ville",
-    year: "2024",
-    size: "32 étages · 44 500 m²",
-    status: "Completed",
-    blurb:
-      "Tour de bureaux de classe A avec commerces au rez-de-chaussée et 3 niveaux de parking souterrain. Certifié LEED Or.",
-    img: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=70&auto=format&fit=crop",
-  },
-  {
-    id: "default-2",
-    title: "Résidences Maple Heights",
-    category: "residential",
-    location: "Quartier Nord",
-    year: "2023",
-    size: "186 unités",
-    status: "Completed",
-    blurb:
-      "Ensemble résidentiel multifamilial à deux tours avec équipements sur le toit, espaces de coworking et parking souterrain.",
-    img: "https://images.unsplash.com/photo-1448630360428-65456885c650?w=1200&q=70&auto=format&fit=crop",
-  },
-  {
-    id: "default-3",
-    title: "Hub logistique Northgate",
-    category: "industrial",
-    location: "Zone portuaire",
-    year: "2024",
-    size: "57 600 m²",
-    status: "Completed",
-    blurb:
-      "Centre de distribution transbordeur avec 84 quais de chargement et connexion ferroviaire.",
-    img: "https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=1200&q=70&auto=format&fit=crop",
-  },
-  {
-    id: "default-4",
-    title: "Hôtel Grand Heritage",
-    category: "renovation",
-    location: "Vieille ville",
-    year: "2023",
-    size: "210 chambres",
-    status: "Completed",
-    blurb:
-      "Restauration complète d'un monument de 1924 avec mise aux normes sismiques et systèmes modernisés.",
-    img: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=1200&q=70&auto=format&fit=crop",
-  },
-  {
-    id: "default-5",
-    title: "Échangeur côtier",
-    category: "infrastructure",
-    location: "Route côtière 9",
-    year: "2022",
-    size: "3,9 km",
-    status: "Completed",
-    blurb:
-      "Échangeur à quatre niveaux et doubles structures de pont achevés trois mois avant le calendrier.",
-    img: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1200&q=70&auto=format&fit=crop",
-  },
-  {
-    id: "default-6",
-    title: "Campus médical Skyline",
-    category: "commercial",
-    location: "Quartier Ouest",
-    year: "2025",
-    size: "8 bâtiments · 102 000 m²",
-    status: "In progress",
-    blurb:
-      "Campus médical par phases avec centre chirurgical, bureaux médicaux, parkings et centrale technique.",
-    img: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=1200&q=70&auto=format&fit=crop",
-  },
-  {
-    id: "default-7",
-    title: "Domaine Oakwood",
-    category: "residential",
-    location: "Hillview Estates",
-    year: "2024",
-    size: "1 150 m²",
-    status: "Completed",
-    blurb:
-      "Résidence de luxe contemporaine avec piscine intérieure, cave à vin et galerie pour 6 voitures.",
-    img: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&q=70&auto=format&fit=crop",
-  },
-  {
-    id: "default-8",
-    title: "Usine Pioneer",
-    category: "industrial",
-    location: "Zone industrielle Sud",
-    year: "2023",
-    size: "31 600 m²",
-    status: "Completed",
-    blurb:
-      "Installation industrielle à grande hauteur avec laboratoires propres et sous-station de 12 MW.",
-    img: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=1200&q=70&auto=format&fit=crop",
-  },
-  {
-    id: "default-9",
-    title: "Modernisation de la bibliothèque civique",
-    category: "renovation",
-    location: "Centre-ville",
-    year: "2024",
-    size: "7 250 m²",
-    status: "In progress",
-    blurb:
-      "Réutilisation adaptative d'un monument civique du milieu du siècle, restant ouvert au public pendant les travaux.",
-    img: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=1200&q=70&auto=format&fit=crop",
-  },
-];
+
 
 /* ------------------------------------------------------------------ */
 /* Route definition                                                    */
@@ -193,7 +84,7 @@ function ProjectsPage() {
   const { t } = useTranslation();
   const search = useSearch({ from: "/projects/" }) as unknown as ProjectsSearchParams;
   const navigate = useNavigate({ from: "/projects/" });
-  const { data: siteContent } = usePublicSiteContent();
+  const { data: siteContent, isLoading } = usePublicSiteContent();
 
   const rawProjects = siteContent?.["cms.projects"];
   const cmsProjects: { id?: string; title: string; category: string; location: string; year: string; size: string; status: string; blurb: string; description?: string; img: string; imgs?: string[] }[] | null = Array.isArray(rawProjects)
@@ -213,7 +104,7 @@ function ProjectsPage() {
         img: p.img,
         imgs: p.imgs,
       }))
-    : defaultProjects;
+    : [];
 
   const categoryFilters: { key: Category; label: string; icon: React.ElementType }[] = [
     { key: "all", label: t("projects_page.all"), icon: SlidersHorizontal },
@@ -386,8 +277,29 @@ function ProjectsPage() {
           </div>
         </section>
 
+        {/* ---- Loading skeleton ---- */}
+        {isLoading && (
+          <section className="mx-auto max-w-7xl px-4 pt-10 sm:px-6">
+            <div className="animate-pulse rounded-xl border border-border bg-card p-4">
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="grid gap-4">
+                    <div className="aspect-[4/3] rounded-lg bg-muted" />
+                    <div className="space-y-2">
+                      <div className="h-3 w-24 rounded bg-muted" />
+                      <div className="h-5 w-3/4 rounded bg-muted" />
+                      <div className="h-3 w-full rounded bg-muted" />
+                      <div className="h-3 w-2/3 rounded bg-muted" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* ---- Empty state ---- */}
-        {filtered.length === 0 && (
+        {!isLoading && filtered.length === 0 && (
           <section className="mx-auto max-w-7xl px-4 py-24 text-center sm:px-6">
             <FolderOpen className="mx-auto h-12 w-12 text-muted-foreground/40" />
             <h2 className="mt-4 text-xl font-semibold">{t("projects_page.no_match")}</h2>
