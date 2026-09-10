@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as ProjectsProjectIdRouteImport } from './routes/projects.$projectId'
 import { Route as AuthenticatedAppRouteRouteImport } from './routes/_authenticated/app/route'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app/index'
@@ -86,6 +87,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProjectsRoute,
 } as any)
 const ProjectsProjectIdRoute = ProjectsProjectIdRouteImport.update({
   id: '/$projectId',
@@ -304,6 +310,7 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRoute
   '/app': typeof AuthenticatedAppRouteRouteWithChildren
   '/projects/$projectId': typeof ProjectsProjectIdRoute
+  '/projects/': typeof ProjectsIndexRoute
   '/app/attendance': typeof AuthenticatedAppAttendanceRoute
   '/app/calendar': typeof AuthenticatedAppCalendarRoute
   '/app/client-portal': typeof AuthenticatedAppClientPortalRoute
@@ -344,9 +351,9 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
-  '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/projects/$projectId': typeof ProjectsProjectIdRoute
+  '/projects': typeof ProjectsIndexRoute
   '/app/attendance': typeof AuthenticatedAppAttendanceRoute
   '/app/calendar': typeof AuthenticatedAppCalendarRoute
   '/app/client-portal': typeof AuthenticatedAppClientPortalRoute
@@ -390,6 +397,7 @@ export interface FileRoutesById {
   '/services': typeof ServicesRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteRouteWithChildren
   '/projects/$projectId': typeof ProjectsProjectIdRoute
+  '/projects/': typeof ProjectsIndexRoute
   '/_authenticated/app/attendance': typeof AuthenticatedAppAttendanceRoute
   '/_authenticated/app/calendar': typeof AuthenticatedAppCalendarRoute
   '/_authenticated/app/client-portal': typeof AuthenticatedAppClientPortalRoute
@@ -436,6 +444,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/app'
     | '/projects/$projectId'
+    | '/projects/'
     | '/app/attendance'
     | '/app/calendar'
     | '/app/client-portal'
@@ -476,9 +485,9 @@ export interface FileRouteTypes {
     | '/about'
     | '/auth'
     | '/contact'
-    | '/projects'
     | '/services'
     | '/projects/$projectId'
+    | '/projects'
     | '/app/attendance'
     | '/app/calendar'
     | '/app/client-portal'
@@ -521,6 +530,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/_authenticated/app'
     | '/projects/$projectId'
+    | '/projects/'
     | '/_authenticated/app/attendance'
     | '/_authenticated/app/calendar'
     | '/_authenticated/app/client-portal'
@@ -618,6 +628,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/projects/': {
+      id: '/projects/'
+      path: '/'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof ProjectsIndexRouteImport
+      parentRoute: typeof ProjectsRoute
     }
     '/projects/$projectId': {
       id: '/projects/$projectId'
@@ -1001,10 +1018,12 @@ const AuthenticatedRouteRouteWithChildren =
 
 interface ProjectsRouteChildren {
   ProjectsProjectIdRoute: typeof ProjectsProjectIdRoute
+  ProjectsIndexRoute: typeof ProjectsIndexRoute
 }
 
 const ProjectsRouteChildren: ProjectsRouteChildren = {
   ProjectsProjectIdRoute: ProjectsProjectIdRoute,
+  ProjectsIndexRoute: ProjectsIndexRoute,
 }
 
 const ProjectsRouteWithChildren = ProjectsRoute._addFileChildren(
