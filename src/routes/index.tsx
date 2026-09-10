@@ -54,11 +54,18 @@ function Home_() {
     "https://images.unsplash.com/photo-1448630360428-65456885c650?w=900&q=70&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=900&q=70&auto=format&fit=crop",
   ];
-  const featured = siteList<{ title: string; tag: string; img?: string }>(content, "featured", "items", [
+  const featured = siteList<{ title: string; tag: string; img?: string; imgs?: string[] }>(content, "featured", "items", [
     { title: t("featured.riverside.title"), tag: t("featured.riverside.tag") },
     { title: t("featured.maple.title"), tag: t("featured.maple.tag") },
     { title: t("featured.northgate.title"), tag: t("featured.northgate.tag") },
-  ]).map((p, i) => ({ ...p, img: p.img || featuredImgs[i % featuredImgs.length] }));
+  ]).map((p, i) => ({
+    ...p,
+    // Support multiple images per featured project (imgs array).
+    // If only a single img string is provided, wrap it in an array.
+    imgs: p.imgs && Array.isArray(p.imgs) && p.imgs.length > 0
+      ? p.imgs
+      : (p.img ? [p.img] : [featuredImgs[i % featuredImgs.length]]),
+  }));
 
   const stats = siteList<{ v: string; l: string }>(content, "stats", "items", [
     { v: "500+", l: t("stats.projects") },
@@ -173,9 +180,31 @@ function Home_() {
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             {featured.map((p) => (
               <Link key={p.title} to="/projects" className="group overflow-hidden rounded-2xl border border-border bg-card">
-                <div className="aspect-[4/3] overflow-hidden bg-muted">
-                  <img src={p.img} alt={p.title} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
-                </div>
+                {/* Multiple images: carousel-style grid when more than one */}
+                {p.imgs && p.imgs.length > 1 ? (
+                  <div className="aspect-[4/3] overflow-hidden bg-muted">
+                    <div className="grid h-full w-full grid-cols-3 gap-0">
+                      {p.imgs.slice(0, 3).map((img, idx) => (
+                        <img
+                          key={idx}
+                          src={img}
+                          alt={`${p.title} ${idx + 1}`}
+                          loading="lazy"
+                          className="h-full w-full object-cover"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="aspect-[4/3] overflow-hidden bg-muted">
+                    <img
+                      src={p.imgs?.[0] ?? featuredImgs[0]}
+                      alt={p.title}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                )}
                 <div className="p-5">
                   <div className="text-xs uppercase tracking-wide text-primary">{p.tag}</div>
                   <div className="mt-1 text-lg font-semibold">{p.title}</div>

@@ -19,7 +19,7 @@ import {
   useUpsertSiteContent,
   getContentValue,
 } from "@/hooks/use-site-content";
-import { ProjectsEditor, ImageUpload } from "@/components/app/SiteProjectsEditor";
+import { ProjectsEditor, FeaturedItemsEditor, ImageUpload } from "@/components/app/SiteProjectsEditor";
 
 export const Route = createFileRoute("/_authenticated/app/site-editor")({
   component: SiteEditorPage,
@@ -49,7 +49,7 @@ const SECTIONS = [
     { key: "title", label: "Titre de la section", type: "text" },
     { key: "subtitle", label: "Sous-titre de la section", type: "textarea" },
     { key: "view_all", label: "Lien « Voir tout »", type: "text" },
-    { key: "items", label: "Projets (tableau JSON)", type: "json_array" },
+    { key: "items", label: "Projets (éditeur visuel)", type: "featured_items" },
   ]},
   { id: "why_us", label: "Pourquoi nous choisir", icon: Award, fields: [
     { key: "title", label: "Titre de la section", type: "text" },
@@ -232,6 +232,17 @@ function SectionEditor({
                       placeholder="https://…"
                     />
                   </div>
+                </div>
+              );
+            }
+            if (field.type === "featured_items") {
+              return (
+                <div key={field.key}>
+                  <FeaturedItemsEditor
+                    content={content}
+                    upsert={upsert}
+                    companyId={companyId}
+                  />
                 </div>
               );
             }

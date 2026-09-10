@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import {
   FolderKanban, Plus, Trash2, Save, Upload, ChevronDown, ChevronRight,
-  GripVertical, Image as ImageIcon, ExternalLink,
+  GripVertical, Image, Image as ImageIcon, ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -126,12 +126,9 @@ export function ImageUpload({
       </div>
     </div>
   );
-}
-
-/* ------------------------------------------------------------------ */
+}/* ------------------------------------------------------------------ */
 /* Types                                                               */
 /* ------------------------------------------------------------------ */
-
 export interface SiteProject {
   id: string;
   title: string;
@@ -142,6 +139,14 @@ export interface SiteProject {
   status: string;
   blurb: string;
   img: string;
+}
+
+export interface FeaturedItem {
+  id: string;
+  title: string;
+  tag: string;
+  img?: string;
+  imgs?: string[];
 }
 
 /* ------------------------------------------------------------------ */
@@ -307,6 +312,213 @@ export function ProjectsEditor({
         ))}
         <Button onClick={save} disabled={upsert.isPending} className="gap-2">
           <Save className="h-4 w-4" /> {upsert.isPending ? "Enregistrement..." : "Enregistrer les projets"}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Featured Items Editor — visual editor for cms.featured.items        */
+/* ------------------------------------------------------------------ */
+export function FeaturedItemsEditor({
+  content,
+  upsert,
+  companyId,
+}: {
+  content: Record<string, unknown>;
+  upsert: ReturnType<typeof useUpsertSiteContent>;
+  companyId?: string | null;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const raw = getContentValue(content, "featured", "items", []) as FeaturedItem[];
+  const [items, setItems] = useState<FeaturedItem[]>(() =>
+    raw.length > 0 ? raw : []
+  );
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const handleFeaturedUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || !files.length || !companyId) return;
+
+    for (const file of Array.from(files)) {
+      const path = buildStoragePath({
+        companyId,
+        folder: "featured",
+        fileName: file.name,
+      });
+
+      const { error } = await supabase.storage
+        .from("site-images")
+        .upload(path, file, { upsert: true });
+
+      if (error) {
+        const diag = diagnoseUploadError(error, "storage");
+        toast.error(diag.message);
+        continue;
+      }
+
+      const { data } = supabase.storage.from("site-images").getPublicUrl(path);
+      if (data?.publicUrl) {
+        setItems((prev) => {
+          // Update the first expanded item (the one being edited)
+          return prev.map((p) =>
+            p.id === expandedId
+              ? { ...p, imgs: [...(p.imgs || []), ...(p.img ? [p.img] : []), data.publicUrl] }
+              : p
+          );
+        });
+        toast.success("Photo ajoutée");
+      }
+    }
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
+  const addItem = () => {
+    const id = crypto.randomUUID();
+    setItems([...items, { id, title: "", tag: "", img: "" }]);
+    setExpandedId(id);
+  };
+
+  const updateItem = (id: string, field: keyof FeaturedItem, value: string | string[]) => {
+    setItems(items.map((p) => (p.id === id ? { ...p, [field]: value } : p)));
+  };
+
+  const removeItem = (id: string) => {
+    setItems(items.filter((p) => p.id !== id));
+    if (expandedId === id) setExpandedId(null);
+  };
+
+  const save = async () => {
+    await upsert.mutateAsync({ section: "featured", key: "items", value: items, companyId });
+    toast.success("Projets en vedette enregistrés !");
+  };
+
+  return (
+    <Card>
+      <CardHeader className="pb-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Image className="h-5 w-5 text-primary" />
+            <div>
+              <CardTitle className="text-base">Projets en vedette (bannière d'accueil)</CardTitle>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Ces projets apparaissent sur la bannière d'accueil (« / »). Vous pouvez ajouter
+                plusieurs photos par projet.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button size="sm" onClick={addItem}>
+              <Plus className="mr-2 h-3.5 w-3.5" /> Ajouter un projet
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4 pt-0">
+        {items.length === 0 && (
+          <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+            Aucun projet en vedette. Cliquez sur « Ajouter un projet » pour créer le premier.
+          </div>
+        )}
+        {items.map((p) => (
+          <Card key={p.id}>
+            <CardHeader
+              className="cursor-pointer select-none py-3"
+              onClick={() => setExpandedId(expandedId === p.id ? null : p.id)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <GripVertical className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm">{p.title || "Nouveau projet"}</CardTitle>
+                  <Badge variant="outline" className="text-xs">{p.tag || "Sans étiquette"}</Badge>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeItem(p.id);
+                    }}
+                  >
+                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                  </Button>
+                  {expandedId === p.id ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                </div>
+              </div>
+            </CardHeader>
+            {expandedId === p.id && (
+              <CardContent className="space-y-4 pt-0">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <Label>Titre</Label>
+                    <Input value={p.title} onChange={(e) => updateItem(p.id, "title", e.target.value)} className="mt-1" />
+                  </div>
+                  <div>
+                    <Label>Étiquette</Label>
+                    <Input value={p.tag} onChange={(e) => updateItem(p.id, "tag", e.target.value)} className="mt-1" placeholder="ex. Nouveau" />
+                  </div>
+                </div>
+                {/* Multiple images upload */}
+                <div>
+                  <Label className="text-sm font-medium">Photos du projet</Label>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    Ajoutez plusieurs photos. La première sera affichée seule,
+                    2-3 photos seront affichées en grille, plus de 3 seront limitées à 3.
+                  </p>
+                  <div className="mt-2">
+                    {(p.imgs && p.imgs.length > 0 ? p.imgs : []).concat(p.img ? [p.img] : []).map((url, idx) => (
+                      <div key={idx} className="relative inline-block mr-2">
+                        <img
+                          src={url}
+                          alt=""
+                          className="h-16 w-16 rounded-lg border border-border object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newImgs = (p.imgs || []).filter((_, i) => i !== idx);
+                            updateItem(p.id, "imgs", newImgs);
+                          }}
+                          className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-xs text-destructive-foreground"
+                        >
+                          <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12" /></svg>
+                        </button>
+                      </div>
+                    ))}
+                    <div
+                      onClick={() => fileRef.current?.click()}
+                      className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-border transition-colors hover:border-primary/50"
+                    >
+                      <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                  </div>
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleFeaturedUpload}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileRef.current?.click()}
+                  >
+                    <Upload className="mr-2 h-3.5 w-3.5" />
+                    Ajouter une photo
+                  </Button>
+                </div>
+              </CardContent>
+            )}
+          </Card>
+        ))}
+        <Button onClick={save} disabled={upsert.isPending} className="gap-2">
+          <Save className="h-4 w-4" /> {upsert.isPending ? "Enregistrement..." : "Enregistrer les projets en vedette"}
         </Button>
       </CardContent>
     </Card>
