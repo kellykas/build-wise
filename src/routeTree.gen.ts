@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProjectsProjectIdRouteImport } from './routes/projects.$projectId'
 import { Route as AuthenticatedAppRouteRouteImport } from './routes/_authenticated/app/route'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app/index'
 import { Route as ApiPublicKnockWebhookRouteImport } from './routes/api/public/knock-webhook'
@@ -85,6 +86,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsProjectIdRoute = ProjectsProjectIdRouteImport.update({
+  id: '/$projectId',
+  path: '/$projectId',
+  getParentRoute: () => ProjectsRoute,
 } as any)
 const AuthenticatedAppRouteRoute = AuthenticatedAppRouteRouteImport.update({
   id: '/app',
@@ -294,9 +300,10 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
-  '/projects': typeof ProjectsRoute
+  '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/app': typeof AuthenticatedAppRouteRouteWithChildren
+  '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/app/attendance': typeof AuthenticatedAppAttendanceRoute
   '/app/calendar': typeof AuthenticatedAppCalendarRoute
   '/app/client-portal': typeof AuthenticatedAppClientPortalRoute
@@ -337,8 +344,9 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
-  '/projects': typeof ProjectsRoute
+  '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
+  '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/app/attendance': typeof AuthenticatedAppAttendanceRoute
   '/app/calendar': typeof AuthenticatedAppCalendarRoute
   '/app/client-portal': typeof AuthenticatedAppClientPortalRoute
@@ -378,9 +386,10 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
-  '/projects': typeof ProjectsRoute
+  '/projects': typeof ProjectsRouteWithChildren
   '/services': typeof ServicesRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteRouteWithChildren
+  '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/_authenticated/app/attendance': typeof AuthenticatedAppAttendanceRoute
   '/_authenticated/app/calendar': typeof AuthenticatedAppCalendarRoute
   '/_authenticated/app/client-portal': typeof AuthenticatedAppClientPortalRoute
@@ -426,6 +435,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/app'
+    | '/projects/$projectId'
     | '/app/attendance'
     | '/app/calendar'
     | '/app/client-portal'
@@ -468,6 +478,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/projects'
     | '/services'
+    | '/projects/$projectId'
     | '/app/attendance'
     | '/app/calendar'
     | '/app/client-portal'
@@ -509,6 +520,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/services'
     | '/_authenticated/app'
+    | '/projects/$projectId'
     | '/_authenticated/app/attendance'
     | '/_authenticated/app/calendar'
     | '/_authenticated/app/client-portal'
@@ -551,7 +563,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
-  ProjectsRoute: typeof ProjectsRoute
+  ProjectsRoute: typeof ProjectsRouteWithChildren
   ServicesRoute: typeof ServicesRoute
   ApiPublicKnockWebhookRoute: typeof ApiPublicKnockWebhookRoute
 }
@@ -606,6 +618,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/projects/$projectId': {
+      id: '/projects/$projectId'
+      path: '/$projectId'
+      fullPath: '/projects/$projectId'
+      preLoaderRoute: typeof ProjectsProjectIdRouteImport
+      parentRoute: typeof ProjectsRoute
     }
     '/_authenticated/app': {
       id: '/_authenticated/app'
@@ -980,13 +999,25 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface ProjectsRouteChildren {
+  ProjectsProjectIdRoute: typeof ProjectsProjectIdRoute
+}
+
+const ProjectsRouteChildren: ProjectsRouteChildren = {
+  ProjectsProjectIdRoute: ProjectsProjectIdRoute,
+}
+
+const ProjectsRouteWithChildren = ProjectsRoute._addFileChildren(
+  ProjectsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
-  ProjectsRoute: ProjectsRoute,
+  ProjectsRoute: ProjectsRouteWithChildren,
   ServicesRoute: ServicesRoute,
   ApiPublicKnockWebhookRoute: ApiPublicKnockWebhookRoute,
 }

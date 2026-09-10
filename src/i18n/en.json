@@ -885,7 +885,14 @@
       "newest": "Newest first",
       "oldest": "Oldest first",
       "az": "A → Z"
-    }
+    },
+    "back_to_projects": "Back to projects",
+    "detail_description": "Detailed description",
+    "project_info": "Project information",
+    "location_label": "Location",
+    "year_label": "Year",
+    "size_label": "Area",
+    "gallery_title": "Photo gallery"
   },
   "contact_page": {
     "meta_title": "Contact & Request a Quote — Scer-L/Construct Sarl",

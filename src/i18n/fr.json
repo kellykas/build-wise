@@ -885,7 +885,14 @@
       "newest": "Plus récents",
       "oldest": "Plus anciens",
       "az": "A → Z"
-    }
+    },
+    "back_to_projects": "Retour aux projets",
+    "detail_description": "Description détaillée",
+    "project_info": "Informations du projet",
+    "location_label": "Lieu",
+    "year_label": "Année",
+    "size_label": "Superficie",
+    "gallery_title": "Galerie photos"
   },
   "contact_page": {
     "meta_title": "Contact & demande de devis — Scer-L/Construct Sarl",

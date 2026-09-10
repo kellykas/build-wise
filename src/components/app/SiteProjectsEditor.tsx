@@ -126,7 +126,88 @@ export function ImageUpload({
       </div>
     </div>
   );
-}/* ------------------------------------------------------------------ */
+}
+
+/* ------------------------------------------------------------------ */
+/* Multi-photo upload for projects                                     */
+/* ------------------------------------------------------------------ */
+function ProjectPhotosUpload({
+  projectId,
+  imgs,
+  companyId,
+  onChange,
+}: {
+  projectId: string;
+  imgs: string[];
+  companyId?: string | null;
+  onChange: (imgs: string[]) => void;
+}) {
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || !files.length || !companyId) return;
+
+    const newUrls: string[] = [];
+    for (const file of Array.from(files)) {
+      const path = buildStoragePath({
+        companyId,
+        projectId,
+        folder: "projects",
+        fileName: file.name,
+      });
+      const { error } = await supabase.storage
+        .from("site-images")
+        .upload(path, file, { upsert: true });
+      if (error) {
+        toast.error(diagnoseUploadError(error, "storage").message);
+        continue;
+      }
+      const { data } = supabase.storage.from("site-images").getPublicUrl(path);
+      if (data?.publicUrl) newUrls.push(data.publicUrl);
+    }
+    if (newUrls.length) {
+      onChange([...imgs, ...newUrls]);
+      toast.success(`${newUrls.length} photo(s) ajoutée(s)`);
+    }
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
+  return (
+    <div>
+      <Label className="text-sm font-medium">Photos supplémentaires</Label>
+      <p className="mt-0.5 text-xs text-muted-foreground">
+        Ajoutez des photos pour la galerie de la page de détail du projet.
+      </p>
+      <div className="mt-2 flex flex-wrap gap-2">
+        {imgs.map((url, idx) => (
+          <div key={idx} className="relative">
+            <img src={url} alt="" className="h-20 w-20 rounded-lg border border-border object-cover" />
+            <button
+              type="button"
+              onClick={() => onChange(imgs.filter((_, i) => i !== idx))}
+              className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-xs text-destructive-foreground"
+            >
+              <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12" /></svg>
+            </button>
+          </div>
+        ))}
+        <div
+          onClick={() => fileRef.current?.click()}
+          className="flex h-20 w-20 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-border transition-colors hover:border-primary/50"
+        >
+          <ImageIcon className="h-5 w-5 text-muted-foreground" />
+        </div>
+      </div>
+      <input ref={fileRef} type="file" accept="image/*" multiple onChange={handleUpload} className="hidden" />
+      <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => fileRef.current?.click()}>
+        <Upload className="mr-2 h-3.5 w-3.5" /> Ajouter des photos
+      </Button>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* Types                                                               */
 /* ------------------------------------------------------------------ */
 export interface SiteProject {
@@ -138,7 +219,9 @@ export interface SiteProject {
   size: string;
   status: string;
   blurb: string;
+  description?: string;
   img: string;
+  imgs?: string[];
 }
 
 export interface FeaturedItem {
@@ -174,7 +257,7 @@ export function ProjectsEditor({
     setExpandedId(id);
   };
 
-  const updateProject = (id: string, field: keyof SiteProject, value: string) => {
+  const updateProject = (id: string, field: keyof SiteProject, value: string | string[]) => {
     setProjects(projects.map((p) => (p.id === id ? { ...p, [field]: value } : p)));
   };
 
@@ -299,13 +382,30 @@ export function ProjectsEditor({
                   <Label>Description</Label>
                   <Textarea value={p.blurb} onChange={(e) => updateProject(p.id, "blurb", e.target.value)} className="mt-1" rows={3} />
                 </div>
+                <div>
+                  <Label>Description détaillée</Label>
+                  <Textarea
+                    value={p.description || ""}
+                    onChange={(e) => updateProject(p.id, "description", e.target.value)}
+                    className="mt-1"
+                    rows={4}
+                    placeholder="Description détaillée du projet pour la page de détail..."
+                  />
+                </div>
                 <ImageUpload
                   value={p.img}
                   onChange={(url) => updateProject(p.id, "img", url)}
                   companyId={companyId}
                   folder="projects"
                   bucket="site-images"
-                  label="Image du projet"
+                  label="Image principale"
+                />
+                {/* Additional photos */}
+                <ProjectPhotosUpload
+                  projectId={p.id}
+                  imgs={p.imgs || []}
+                  companyId={companyId}
+                  onChange={(imgs) => updateProject(p.id, "imgs", imgs)}
                 />
               </CardContent>
             )}

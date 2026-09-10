@@ -35,6 +35,7 @@ type Status = "all" | "completed" | "in-progress";
 type SortKey = "newest" | "oldest" | "az";
 
 interface Project {
+  id?: string;
   title: string;
   category: Exclude<Category, "all">;
   location: string;
@@ -42,11 +43,14 @@ interface Project {
   size: string;
   status: "Completed" | "In progress";
   blurb: string;
+  description?: string;
   img: string;
+  imgs?: string[];
 }
 
 const defaultProjects: Project[] = [
   {
+    id: "default-1",
     title: "Tour Riverside",
     category: "commercial",
     location: "Centre-ville",
@@ -58,6 +62,7 @@ const defaultProjects: Project[] = [
     img: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=70&auto=format&fit=crop",
   },
   {
+    id: "default-2",
     title: "Résidences Maple Heights",
     category: "residential",
     location: "Quartier Nord",
@@ -69,6 +74,7 @@ const defaultProjects: Project[] = [
     img: "https://images.unsplash.com/photo-1448630360428-65456885c650?w=1200&q=70&auto=format&fit=crop",
   },
   {
+    id: "default-3",
     title: "Hub logistique Northgate",
     category: "industrial",
     location: "Zone portuaire",
@@ -80,6 +86,7 @@ const defaultProjects: Project[] = [
     img: "https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=1200&q=70&auto=format&fit=crop",
   },
   {
+    id: "default-4",
     title: "Hôtel Grand Heritage",
     category: "renovation",
     location: "Vieille ville",
@@ -91,6 +98,7 @@ const defaultProjects: Project[] = [
     img: "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=1200&q=70&auto=format&fit=crop",
   },
   {
+    id: "default-5",
     title: "Échangeur côtier",
     category: "infrastructure",
     location: "Route côtière 9",
@@ -102,6 +110,7 @@ const defaultProjects: Project[] = [
     img: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1200&q=70&auto=format&fit=crop",
   },
   {
+    id: "default-6",
     title: "Campus médical Skyline",
     category: "commercial",
     location: "Quartier Ouest",
@@ -113,6 +122,7 @@ const defaultProjects: Project[] = [
     img: "https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=1200&q=70&auto=format&fit=crop",
   },
   {
+    id: "default-7",
     title: "Domaine Oakwood",
     category: "residential",
     location: "Hillview Estates",
@@ -124,6 +134,7 @@ const defaultProjects: Project[] = [
     img: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1200&q=70&auto=format&fit=crop",
   },
   {
+    id: "default-8",
     title: "Usine Pioneer",
     category: "industrial",
     location: "Zone industrielle Sud",
@@ -135,6 +146,7 @@ const defaultProjects: Project[] = [
     img: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=1200&q=70&auto=format&fit=crop",
   },
   {
+    id: "default-9",
     title: "Modernisation de la bibliothèque civique",
     category: "renovation",
     location: "Centre-ville",
@@ -197,11 +209,12 @@ function ProjectsPage() {
   // NO site_content row at all (fresh install). If the row exists but is empty,
   // we intentionally show no projects so deleted projects never come back.
   const rawProjects = siteContent?.["cms.projects"];
-  const cmsProjects: { title: string; category: string; location: string; year: string; size: string; status: string; blurb: string; img: string }[] | null = Array.isArray(rawProjects)
-    ? (rawProjects as { title: string; category: string; location: string; year: string; size: string; status: string; blurb: string; img: string }[])
+  const cmsProjects: { id?: string; title: string; category: string; location: string; year: string; size: string; status: string; blurb: string; description?: string; img: string; imgs?: string[] }[] | null = Array.isArray(rawProjects)
+    ? (rawProjects as { id?: string; title: string; category: string; location: string; year: string; size: string; status: string; blurb: string; description?: string; img: string; imgs?: string[] }[])
     : null;
   const allProjects: Project[] = cmsProjects !== null
     ? cmsProjects.map((p) => ({
+        id: p.id,
         title: p.title,
         category: p.category as Project["category"],
         location: p.location,
@@ -209,7 +222,9 @@ function ProjectsPage() {
         size: p.size,
         status: p.status as Project["status"],
         blurb: p.blurb,
+        description: p.description,
         img: p.img,
+        imgs: p.imgs,
       }))
     : defaultProjects;
 
@@ -233,6 +248,8 @@ function ProjectsPage() {
     { key: "oldest", label: t("projects_page.sort_oldest") },
     { key: "az", label: t("projects_page.sort_az") },
   ];
+
+  const getProjectSlug = (p: Project) => p.id || p.title.toLowerCase().replace(/\s+/g, "-");
 
   const q = search.q ?? "";
   const category = (search.category ?? "all") as Category;
@@ -404,8 +421,8 @@ function ProjectsPage() {
         {featured && (
           <section className="mx-auto max-w-7xl px-4 pt-10 sm:px-6">
             <Link
-              to="/projects"
-              search={{ q: search.q, category: search.category, status: search.status, sort: search.sort }}
+              to="/projects/$projectId"
+              params={{ projectId: getProjectSlug(featured) }}
               className="group block overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-1 hover:shadow-2xl"
             >
               <div className="grid md:grid-cols-2">
@@ -461,9 +478,11 @@ function ProjectsPage() {
           <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {rest.map((p) => (
-                <article
+                <Link
+                  to="/projects/$projectId"
+                  params={{ projectId: getProjectSlug(p) }}
                   key={p.title}
-                  className="group overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-1 hover:shadow-xl"
+                  className="group block overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-1 hover:shadow-xl"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                     <img
@@ -502,7 +521,7 @@ function ProjectsPage() {
                       </div>
                     </div>
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
           </section>
