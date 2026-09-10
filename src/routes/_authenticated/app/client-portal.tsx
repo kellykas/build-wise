@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { buildStoragePath } from "@/lib/upload";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -85,8 +86,8 @@ function ClientPortalPage() {
   // Photos
   const { data: photos } = useQuery({ queryKey: ["portal-photos", selectedProject], enabled: !!selectedProject, queryFn: async () => { const { data, error } = await supabase.from("documents").select("id, name, storage_path, created_at, uploaded_by").eq("project_id", selectedProject).eq("folder", PHOTO_FOLDER).order("created_at", { ascending: false }); if (error) throw error; return (data ?? []) as ProgressPhoto[]; } });
 
-  // Sign photo URLs
-  useEffect(() => { (async () => { if (!photos?.length) { setSigned({}); return; } const paths = photos.map((p) => p.storage_path); const { data } = await supabase.storage.from("documents").createSignedUrls(paths, 3600); const map: Record<string, string> = {}; (data ?? []).forEach((s, i) => { if (s.signedUrl) map[paths[i]] = s.signedUrl; }); setSigned(map); })(); }, [photos]);
+  // Build public URLs for photos (stored in the public site-images bucket).
+  useEffect(() => { if (!photos?.length) { setSigned({}); return; } const map: Record<string, string> = {}; for (const p of photos) { map[p.storage_path] = supabase.storage.from("site-images").getPublicUrl(p.storage_path).data?.publicUrl ?? ""; } setSigned(map); }, [photos]);
 
   // Sign document URLs
   useEffect(() => { (async () => { if (!documents?.length) { setDocSigned({}); return; } const paths = documents.map((d) => d.storage_path); const { data } = await supabase.storage.from("documents").createSignedUrls(paths, 3600); const map: Record<string, string> = {}; (data ?? []).forEach((s, i) => { if (s.signedUrl) map[paths[i]] = s.signedUrl; }); setDocSigned(map); })(); }, [documents]);
@@ -106,11 +107,11 @@ function ClientPortalPage() {
     let ok = 0;
     for (const file of files) {
       if (!file.type.startsWith("image/")) { toast.error(`${file.name}: only images`); continue; }
-      const path = buildProgressPhotoPath({ companyId: profile.company_id, projectId: selectedProject, fileName: file.name });
-      const up = await supabase.storage.from("documents").upload(path, file, { contentType: file.type });
+      const path = buildStoragePath({ companyId: profile.company_id, projectId: selectedProject, folder: "client-portal", fileName: file.name });
+      const up = await supabase.storage.from("site-images").upload(path, file, { contentType: file.type });
       if (up.error) { toast.error(up.error.message); continue; }
       const ins = await supabase.from("documents").insert({ company_id: profile.company_id, project_id: selectedProject, name: caption.trim() || file.name, folder: PHOTO_FOLDER, mime_type: file.type, size_bytes: file.size, storage_path: path, uploaded_by: user?.id ?? null } as never);
-      if (ins.error) { await supabase.storage.from("documents").remove([path]); toast.error(ins.error.message); continue; }
+      if (ins.error) { await supabase.storage.from("site-images").remove([path]); toast.error(ins.error.message); continue; }
       await recordAudit({ action: "portal.photo.upload", entity_type: "project", entity_id: selectedProject, metadata: { name: file.name, company_id: profile.company_id, project_id: selectedProject } });
       ok++;
     }
@@ -122,7 +123,7 @@ function ClientPortalPage() {
 
   const deletePhoto = async (photo: ProgressPhoto) => {
     if (!confirm(`Delete "${photo.name}"?`)) return;
-    const { error: se } = await supabase.storage.from("documents").remove([photo.storage_path]);
+    const { error: se } = await supabase.storage.from("site-images").remove([photo.storage_path]);
     if (se) return toast.error(se.message);
     const { error: de } = await supabase.from("documents").delete().eq("id", photo.id);
     if (de) return toast.error(de.message);
