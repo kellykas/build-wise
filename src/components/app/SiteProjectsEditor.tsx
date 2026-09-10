@@ -304,6 +304,7 @@ export function ProjectsEditor({
                   onChange={(url) => updateProject(p.id, "img", url)}
                   companyId={companyId}
                   folder="projects"
+                  bucket="site-images"
                   label="Image du projet"
                 />
               </CardContent>
@@ -361,12 +362,14 @@ export function FeaturedItemsEditor({
       const { data } = supabase.storage.from("site-images").getPublicUrl(path);
       if (data?.publicUrl) {
         setItems((prev) => {
-          // Update the first expanded item (the one being edited)
-          return prev.map((p) =>
-            p.id === expandedId
-              ? { ...p, imgs: [...(p.imgs || []), ...(p.img ? [p.img] : []), data.publicUrl] }
-              : p
-          );
+          const updated = [...prev];
+          const idx = expandedId ? updated.findIndex((p) => p.id === expandedId) : 0;
+          if (idx >= 0) {
+            const item = updated[idx];
+            const existing = (item.imgs || []);
+            updated[idx] = { ...item, imgs: [...existing, data.publicUrl] };
+          }
+          return updated;
         });
         toast.success("Photo ajoutée");
       }
