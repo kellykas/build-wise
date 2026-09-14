@@ -24,6 +24,10 @@ function normalize(value: unknown): unknown {
  * Fetch site_content for public-facing pages.
  * No auth required — reads all rows. Company-specific rows override global defaults.
  * Returns a flat map keyed by "section.key" for easy access.
+ *
+ * Uses the same anon Supabase client as useSiteContent (which is proven to
+ * work at SSR on the home page). The site_content table has a public read
+ * policy, so the anon key can read it.
  */
 export function usePublicSiteContent() {
   return useQuery<Record<string, unknown>>({
@@ -45,9 +49,7 @@ export function usePublicSiteContent() {
       }
       return map;
     },
-    initialData: {},
-    staleTime: 5_000,
-    refetchInterval: 60_000,
+    staleTime: 30_000,
   });
 }
 

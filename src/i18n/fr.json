@@ -214,7 +214,8 @@
       "address": "Adresse",
       "tax_number": "Numéro fiscal",
       "notes": "Notes",
-      "actions": "Actions"
+      "actions": "Actions",
+      "projects": "Projets"
     },
     "projects": {
       "title": "Projets",
@@ -241,7 +242,9 @@
       "end_date": "Date de fin",
       "description": "Description",
       "edit": "Modifier",
-      "project": "Projet"
+      "project": "Projet",
+      "client": "Client",
+      "no_client": "Aucun client"
     },
     "tasks": {
       "new_task": "Nouvelle tâche",
@@ -683,7 +686,20 @@
       "photos_uploaded": "photo(s) téléversée(s)",
       "photo_deleted": "Photo supprimée",
       "delete_confirm": "Supprimer",
-      "complete_label": "Terminé"
+      "complete_label": "Terminé",
+      "timeline": "Chronologie",
+      "timeline_subtitle": "Suivi de l'avancement du projet",
+      "milestone": "Jalon",
+      "milestones": "Jalons",
+      "project_start": "Début du projet",
+      "project_end": "Fin du projet",
+      "today": "Aujourd'hui",
+      "on_track": "En bonne voie",
+      "behind_schedule": "En retard",
+      "no_tasks_timeline": "Aucune tâche avec date d'échéance pour afficher sur la chronologie.",
+      "completed_milestone": "Terminé",
+      "in_progress_milestone": "En cours",
+      "pending_milestone": "En attente"
     },
     "espace": {
       "title": "Espace client",

@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_authenticated/app/projects/")({
 });
 
 type Project = {
-  id: string; name: string; project_number: string | null;
+  id: string; name: string; project_number: string | null; client_id: string | null;
   location: string | null; status: string; priority: string;
   budget: number; progress: number; start_date: string | null; end_date: string | null;
 };
@@ -29,10 +29,11 @@ const statusColors: Record<string, string> = {
   cancelled: "bg-destructive/15 text-destructive",
 };
 
-function getFields(t: (key: string) => string): Field[] {
+function getFields(t: (key: string) => string, clientOptions: { value: string; label: string }[]): Field[] {
   return [
     { key: "name", label: t("d.projects.project_name"), required: true, span: 2 },
     { key: "location", label: t("d.projects.location") },
+    { key: "client_id", label: t("d.projects.client"), type: "select", options: clientOptions },
     { key: "status", label: t("d.projects.status_label"), type: "select", options: [
       { value: "planning", label: t("d.projects.planning") }, { value: "in_progress", label: t("d.projects.in_progress") },
       { value: "on_hold", label: t("d.projects.on_hold") }, { value: "completed", label: t("d.projects.completed") },
@@ -67,9 +68,28 @@ function ProjectsPage() {
     },
   });
 
+  // Fetch clients for the client assignment dropdown
+  const { data: clients } = useQuery({
+    queryKey: ["module", "clients"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("clients").select("id, name").order("name");
+      if (error) throw error;
+      return (data ?? []) as { id: string; name: string }[];
+    },
+  });
+
+  const clientOptions = [
+    { value: "", label: t("d.projects.no_client", "Aucun client") },
+    ...(clients ?? []).map((c) => ({ value: c.id, label: c.name })),
+  ];
+
   const columns: Column<Project>[] = [
     { key: "name", label: t("d.projects.project"), render: (r) => <span className="font-medium">{r.name}</span> },
     { key: "location", label: t("d.projects.location") },
+    { key: "client_id", label: t("d.projects.client", "Client"), render: (r) => {
+      const client = clients?.find((c) => c.id === r.client_id);
+      return client ? <span className="text-muted-foreground">{client.name}</span> : <span className="text-muted-foreground/50">—</span>;
+    }},
     { key: "status", label: t("d.projects.status_label"), render: (r) => (
       <Badge variant="secondary" className={statusColors[r.status] ?? ""}>{r.status?.replace("_", " ")}</Badge>
     )},
@@ -143,7 +163,7 @@ function ProjectsPage() {
         onOpenChange={(v) => { if (!v) { setOpen(false); setEditing(null); } }}
         table="projects"
         title={t("d.projects.project")}
-        fields={getFields(t)}
+        fields={getFields(t, clientOptions)}
         row={editing as unknown as Record<string, unknown> | null}
       />
     </>

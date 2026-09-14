@@ -1,8 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { ModulePage, type Column } from "@/components/app/ModulePage";
 import { Users, UserPlus, Key } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { EditDialog, type Field } from "@/components/app/EditDialog";
 import { InviteClientDialog } from "@/components/app/InviteClientDialog";
 import { ResetPasswordDialog } from "@/components/app/ResetPasswordDialog";
@@ -22,6 +25,25 @@ function ClientsPage() {
   const [editing, setEditing] = useState<Client | null>(null);
   const [newOpen, setNewOpen] = useState(false);
 
+  // Fetch project-client assignments
+  const { data: projectClients } = useQuery({
+    queryKey: ["client-project-assignments"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("projects").select("id, name, client_id").not("client_id", "is", null);
+      if (error) throw error;
+      return (data ?? []) as { id: string; name: string; client_id: string }[];
+    },
+  });
+
+  // Group projects by client_id for quick lookup
+  const projectsByClient: Record<string, { id: string; name: string }[]> = {};
+  for (const p of projectClients ?? []) {
+    if (p.client_id) {
+      if (!projectsByClient[p.client_id]) projectsByClient[p.client_id] = [];
+      projectsByClient[p.client_id].push({ id: p.id, name: p.name });
+    }
+  }
+
   const fields: Field[] = [
     { key: "name", label: t("d.clients.name"), required: true },
     { key: "company", label: t("d.clients.company") },
@@ -37,6 +59,22 @@ function ClientsPage() {
     { key: "company" as const, label: t("d.clients.company") },
     { key: "email" as const, label: t("d.clients.email") },
     { key: "phone" as const, label: t("d.clients.phone") },
+    { key: "projects" as const, label: t("d.clients.projects", "Projets"), render: (row: Client) => {
+      const assigned = projectsByClient[row.id];
+      if (!assigned || assigned.length === 0) {
+        return <span className="text-xs text-muted-foreground/50">—</span>;
+      }
+      return (
+        <div className="flex flex-wrap gap-1">
+          {assigned.slice(0, 3).map((p) => (
+            <Badge key={p.id} variant="secondary" className="text-xs font-normal">
+              {p.name.length > 20 ? p.name.slice(0, 20) + "…" : p.name}
+            </Badge>
+          ))}
+          {assigned.length > 3 && <Badge variant="secondary" className="text-xs font-normal">+{assigned.length - 3}</Badge>}
+        </div>
+      );
+    }},
     ...(canResetPassword ? [{
       key: "actions" as const,
       label: t("d.clients.actions"),

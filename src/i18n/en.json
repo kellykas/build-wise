@@ -214,7 +214,8 @@
       "address": "Address",
       "tax_number": "Tax number",
       "notes": "Notes",
-      "actions": "Actions"
+      "actions": "Actions",
+      "projects": "Projects"
     },
     "projects": {
       "title": "Projects",
@@ -241,7 +242,9 @@
       "end_date": "End date",
       "description": "Description",
       "edit": "Edit",
-      "project": "Project"
+      "project": "Project",
+      "client": "Client",
+      "no_client": "No client"
     },
     "tasks": {
       "new_task": "New task",
@@ -683,7 +686,20 @@
       "photos_uploaded": "photo(s) uploaded",
       "photo_deleted": "Photo deleted",
       "delete_confirm": "Delete",
-      "complete_label": "Complete"
+      "complete_label": "Complete",
+      "timeline": "Timeline",
+      "timeline_subtitle": "Track your project progress",
+      "milestone": "Milestone",
+      "milestones": "Milestones",
+      "project_start": "Project start",
+      "project_end": "Project end",
+      "today": "Today",
+      "on_track": "On track",
+      "behind_schedule": "Behind schedule",
+      "no_tasks_timeline": "No tasks with due dates to display on the timeline.",
+      "completed_milestone": "Completed",
+      "in_progress_milestone": "In progress",
+      "pending_milestone": "Pending"
     },
     "espace": {
       "title": "Client space",

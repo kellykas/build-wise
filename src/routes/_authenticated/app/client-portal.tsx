@@ -186,6 +186,7 @@ function ClientPortalPage() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-4">
           <TabsTrigger value="overview">{t("d.portal.overview")}</TabsTrigger>
+          <TabsTrigger value="timeline">{t("d.portal.timeline")}</TabsTrigger>
           <TabsTrigger value="invoices">{t("d.portal.invoices")} ({invoices?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="photos">{t("d.portal.photos")} ({photos?.length ?? 0})</TabsTrigger>
           <TabsTrigger value="documents">{t("d.portal.documents")} ({documents?.length ?? 0})</TabsTrigger>
@@ -203,6 +204,19 @@ function ClientPortalPage() {
             </CardContent></Card>
           </div>
           {sortedPhotos.length > 0 && <Card><CardHeader><CardTitle className="text-base">{t("d.portal.recent_photos")}</CardTitle></CardHeader><CardContent><div className="grid gap-3 grid-cols-2 sm:grid-cols-4">{sortedPhotos.slice(0, 4).map((p) => <button key={p.id} type="button" onClick={() => setLightbox(p)} className="group overflow-hidden rounded-md border border-border hover:border-primary">{signed[p.storage_path] ? <img src={signed[p.storage_path]} alt={p.name} loading="lazy" className="h-24 w-full object-cover transition group-hover:scale-105" /> : <div className="h-24 w-full animate-pulse bg-muted" />}<div className="p-2"><div className="truncate text-xs font-medium">{p.name}</div></div></button>)}</div>{sortedPhotos.length > 4 && <Button variant="ghost" size="sm" className="mt-3 w-full" onClick={() => setActiveTab("photos")}>View all →</Button>}</CardContent></Card>}
+        </TabsContent>
+
+        {/* Timeline */}
+        <TabsContent value="timeline" className="space-y-6">
+          {current && (
+            <ProjectTimeline
+              startDate={current.start_date}
+              endDate={current.end_date}
+              progress={current.progress}
+              status={current.status}
+              tasks={tasks ?? []}
+            />
+          )}
         </TabsContent>
 
         {/* Invoices */}
@@ -238,6 +252,234 @@ function ClientPortalPage() {
           </div>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Project Timeline                                                     */
+/* ------------------------------------------------------------------ */
+
+type Task = { id: string; name: string; status: string; priority: string; due_date: string | null; progress: number | null };
+
+function ProjectTimeline({
+  startDate,
+  endDate,
+  progress,
+  status,
+  tasks,
+}: {
+  startDate: string | null;
+  endDate: string | null;
+  progress: number;
+  status: string;
+  tasks: Task[];
+}) {
+  const { t } = useTranslation();
+
+  const now = new Date();
+  const start = startDate ? new Date(startDate) : null;
+  const end = endDate ? new Date(endDate) : null;
+
+  // Calculate timeline range
+  const rangeStart = start ?? new Date(Math.min(...tasks.filter((tk) => tk.due_date).map((tk) => new Date(tk.due_date!).getTime()), now.getTime()));
+  const rangeEnd = end ?? new Date(Math.max(...tasks.filter((tk) => tk.due_date).map((tk) => new Date(tk.due_date!).getTime()), now.getTime()));
+  const totalDays = Math.max(1, (rangeEnd.getTime() - rangeStart.getTime()) / (1000 * 60 * 60 * 24));
+
+  const toPercent = (date: Date) => Math.max(0, Math.min(100, ((date.getTime() - rangeStart.getTime()) / (rangeEnd.getTime() - rangeStart.getTime())) * 100));
+
+  const todayPct = toPercent(now);
+  const startPct = start ? toPercent(start) : 0;
+  const endPct = end ? toPercent(end) : 100;
+
+  // Check if behind schedule: expected progress based on time elapsed
+  const daysElapsed = Math.max(0, (now.getTime() - (start?.getTime() ?? rangeStart.getTime())) / (1000 * 60 * 60 * 24));
+  const expectedProgress = Math.min(100, (daysElapsed / totalDays) * 100);
+  const isBehind = progress < expectedProgress - 10;
+
+  // Sort tasks by due_date for the milestone list
+  const milestones = tasks
+    .filter((tk) => tk.due_date)
+    .sort((a, b) => new Date(a.due_date!).getTime() - new Date(b.due_date!).getTime());
+
+  const milestoneStatusColor = (s: string) => {
+    if (s === "completed") return "bg-green-500";
+    if (s === "in_progress") return "bg-primary";
+    if (s === "overdue") return "bg-destructive";
+    return "bg-muted-foreground/40";
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header card */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h3 className="text-lg font-semibold">{t("d.portal.timeline")}</h3>
+              <p className="text-sm text-muted-foreground">{t("d.portal.timeline_subtitle")}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge variant={isBehind ? "destructive" : "default"}>
+                {isBehind ? t("d.portal.behind_schedule") : t("d.portal.on_track")}
+              </Badge>
+              <Badge variant="outline">{status.replace(/_/g, " ")}</Badge>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Visual timeline bar */}
+      <Card>
+        <CardContent className="p-5">
+          {/* Date labels */}
+          <div className="mb-2 flex justify-between text-xs text-muted-foreground">
+            <span>{start ? start.toLocaleDateString() : t("d.portal.project_start")}</span>
+            <span>{end ? end.toLocaleDateString() : t("d.portal.project_end")}</span>
+          </div>
+
+          {/* Timeline track */}
+          <div className="relative h-8 rounded-full bg-muted">
+            {/* Project duration bar */}
+            <div
+              className="absolute top-0 h-full rounded-full bg-primary/10"
+              style={{ left: `${startPct}%`, width: `${Math.max(0, endPct - startPct)}%` }}
+            />
+
+            {/* Progress fill */}
+            <div
+              className="absolute top-0 h-full rounded-full bg-primary/30 transition-all duration-500"
+              style={{ left: `${startPct}%`, width: `${Math.min(progress, 100) * (endPct - startPct) / 100}%` }}
+            />
+
+            {/* Today marker */}
+            <div
+              className="absolute top-0 z-10 flex h-full flex-col items-center"
+              style={{ left: `${todayPct}%` }}
+            >
+              <div className="h-full w-0.5 bg-foreground/60" />
+              <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium text-foreground">{t("d.portal.today")}</span>
+            </div>
+
+            {/* Task milestone dots */}
+            {milestones.map((tk) => {
+              const pct = toPercent(new Date(tk.due_date!));
+              const isCompleted = tk.status === "completed";
+              const isOverdue = tk.status === "overdue";
+              return (
+                <div
+                  key={tk.id}
+                  className="absolute top-1/2 z-20 -translate-y-1/2 group"
+                  style={{ left: `${pct}%` }}
+                >
+                  <div
+                    className={`h-3 w-3 rounded-full border-2 border-background transition ${
+                      isCompleted ? "bg-green-500" : isOverdue ? "bg-destructive" : "bg-primary"
+                    }`}
+                  />
+                  {/* Tooltip */}
+                  <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 hidden w-40 -translate-x-1/2 rounded-md border border-border bg-popover p-2 text-xs shadow-md group-hover:block">
+                    <div className="font-medium line-clamp-1">{tk.name}</div>
+                    <div className="text-muted-foreground">
+                      {new Date(tk.due_date!).toLocaleDateString()}{' · '}{isCompleted
+                        ? t("d.portal.completed_milestone")
+                        : isOverdue
+                          ? t("d.portal.behind_schedule")
+                          : tk.status === "in_progress"
+                            ? t("d.portal.in_progress_milestone")
+                            : t("d.portal.pending_milestone")
+                      }
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Spacer for today label */}
+          <div className="mt-6" />
+
+          {/* Legend */}
+          <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-primary" /> {t("d.portal.project_start")}</div>
+            <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-green-500" /> {t("d.portal.completed_milestone")}</div>
+            <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-primary" /> {t("d.portal.in_progress_milestone")}</div>
+            <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-destructive" /> {t("d.portal.behind_schedule")}</div>
+            <div className="flex items-center gap-1.5"><div className="h-2.5 w-2.5 rounded-full bg-muted-foreground/40" /> {t("d.portal.pending_milestone")}</div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Milestone list */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{t("d.portal.milestones")}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {milestones.length === 0 ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">{t("d.portal.no_tasks_timeline")}</p>
+          ) : (
+            <div className="relative space-y-0">
+              {/* Vertical line */}
+              <div className="absolute left-[15px] top-2 bottom-2 w-0.5 bg-border" />
+
+              {milestones.map((tk) => {
+                const isCompleted = tk.status === "completed";
+                const isOverdue = tk.status === "overdue";
+                const isInProgress = tk.status === "in_progress";
+                return (
+                  <div key={tk.id} className="relative flex gap-4 py-3">
+                    {/* Dot */}
+                    <div className="relative z-10 mt-0.5">
+                      <div className={`h-[30px] w-[30px] rounded-full border-2 flex items-center justify-center ${
+                        isCompleted ? "border-green-500 bg-green-500/10" :
+                        isOverdue ? "border-destructive bg-destructive/10" :
+                        isInProgress ? "border-primary bg-primary/10" :
+                        "border-border bg-background"
+                      }`}>
+                        {isCompleted ? (
+                          <CheckCircle2 className="h-4 w-4 text-green-600" />
+                        ) : isOverdue ? (
+                          <Clock className="h-4 w-4 text-destructive" />
+                        ) : isInProgress ? (
+                          <TrendingUp className="h-4 w-4 text-primary" />
+                        ) : (
+                          <Calendar className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm font-medium">{tk.name}</span>
+                        <Badge
+                          variant={isCompleted ? "default" : isOverdue ? "destructive" : "secondary"}
+                          className="text-[10px]"
+                        >
+                          {isCompleted ? t("d.portal.completed_milestone") : isOverdue ? t("d.portal.behind_schedule") : isInProgress ? t("d.portal.in_progress_milestone") : t("d.portal.pending_milestone")}
+                        </Badge>
+                      </div>
+                      <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {new Date(tk.due_date!).toLocaleDateString()}
+                        </span>
+                        {tk.progress != null && tk.progress > 0 && (
+                          <span className="flex items-center gap-1">
+                            <TrendingUp className="h-3 w-3" />
+                            {tk.progress}%
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
