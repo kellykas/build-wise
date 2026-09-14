@@ -6,7 +6,7 @@ import {
   Building2, Home, Factory, Hammer, Ruler, Truck,
   ArrowRight, CheckCircle2, ShieldCheck,
 } from "lucide-react";
-import { usePublicSiteContent, getPublicContentValue } from "@/hooks/use-public-site-content";
+import { useSiteContent, getContentValue } from "@/hooks/use-site-content";
 
 const serviceKeys = [
   { key: "commercial", icon: Building2 },
@@ -37,10 +37,10 @@ type CmsService = { id: string; key: string; title: string; desc: string; points
 
 function ServicesPage() {
   const { t } = useTranslation();
-  const { data: siteContent } = usePublicSiteContent();
+  const { data: siteContent } = useSiteContent();
 
   // Load services from CMS if available
-  const cmsServices = getPublicContentValue(siteContent, "cms", "services") as CmsService[] | null;
+  const cmsServices = getContentValue(siteContent, "cms", "services") as CmsService[] | null;
   const hasCmsServices = cmsServices && cmsServices.length > 0;
 
   return (

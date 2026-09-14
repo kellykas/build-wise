@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { SiteHeader, SiteFooter } from "@/components/marketing/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Award, HeartHandshake, ShieldCheck, Sparkles, Users, Leaf } from "lucide-react";
-import { usePublicSiteContent, getPublicContentValue } from "@/hooks/use-public-site-content";
+import { useSiteContent, getContentValue } from "@/hooks/use-site-content";
 
 // These defaults are only used when the CMS has no data.
 // They use hardcoded French text to match the default language.
@@ -45,11 +45,11 @@ export const Route = createFileRoute("/about")({
 
 function AboutPage() {
   const { t } = useTranslation();
-  const { data: siteContent } = usePublicSiteContent();
+  const { data: siteContent } = useSiteContent();
 
   // Load from CMS with fallbacks
-  const cmsLeadership = getPublicContentValue(siteContent, "cms", "leadership") as { name: string; role: string; initials: string; photo: string }[] | null;
-  const cmsMilestones = getPublicContentValue(siteContent, "cms", "milestones") as { year: string; description: string }[] | null;
+  const cmsLeadership = getContentValue(siteContent, "cms", "leadership") as { name: string; role: string; initials: string; photo: string }[] | null;
+  const cmsMilestones = getContentValue(siteContent, "cms", "milestones") as { year: string; description: string }[] | null;
   const leadership = (cmsLeadership && cmsLeadership.length > 0)
     ? cmsLeadership.map((l) => ({ name: l.name, k: l.name.toLowerCase().replace(/\s+/g, "_"), role: l.role, initials: l.initials }))
     : defaultLeadershipFr;

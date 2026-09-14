@@ -11,7 +11,7 @@ import { Mail, Phone, MapPin, Clock, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { usePublicSiteContent, getPublicContentValue } from "@/hooks/use-public-site-content";
+import { useSiteContent, getContentValue } from "@/hooks/use-site-content";
 
 type SearchParams = { type?: "quote" | "contact" };
 
@@ -34,7 +34,7 @@ export const Route = createFileRoute("/contact")({
 
 function ContactPage() {
   const { t } = useTranslation();
-  const { data: content } = usePublicSiteContent();
+  const { data: content } = useSiteContent();
   const { type: initialType } = Route.useSearch();
   const [type, setType] = useState<"quote" | "contact">(initialType ?? "contact");
   const [loading, setLoading] = useState(false);
@@ -42,12 +42,12 @@ function ContactPage() {
 
   // Contact details come from the site CMS (cms.footer.contact, edited in
   // the Site Editor / CMS Editor), with flat contact.* keys as a fallback.
-  const cmsFooter = (getPublicContentValue(content, "cms", "footer", {}) ?? {}) as {
+  const cmsFooter = (getContentValue(content, "cms", "footer", {}) ?? {}) as {
     contact?: Record<string, string>;
   };
   const cmsContact = cmsFooter.contact ?? {};
   const g = (s: string, k: string, fb: string) => {
-    const v = getPublicContentValue(content, s, k, "");
+    const v = getContentValue(content, s, k, "");
     return typeof v === "string" && v.trim() !== "" ? v.trim() : fb;
   };
   const phone = cmsContact.phone?.trim() || g("contact", "phone", "+243 825 913 789");

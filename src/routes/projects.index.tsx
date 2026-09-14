@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader, SiteFooter } from "@/components/marketing/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +20,6 @@ import {
 } from "lucide-react";
 import { useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { usePublicSiteContent } from "@/hooks/use-public-site-content";
 
 /* ------------------------------------------------------------------ */
 /* Types & data                                                        */
@@ -43,10 +43,24 @@ interface Project {
   imgs?: string[];
 }
 
+/* ------------------------------------------------------------------ */
+/* Server-side data fetch                                              */
+/* ------------------------------------------------------------------ */
 
+async function fetchSiteContent() {
+  const { data, error } = await supabase.from("site_content").select("section, key, value, company_id");
+  if (error) throw error;
+  const rows = (data ?? []) as { section: string; key: string; value: unknown; company_id: string | null }[];
+  rows.sort((a, b) => (a.company_id ? 1 : 0) - (b.company_id ? 1 : 0));
+  const map: Record<string, unknown> = {};
+  for (const row of rows) {
+    map[`${row.section}.${row.key}`] = row.value;
+  }
+  return map;
+}
 
 /* ------------------------------------------------------------------ */
-/* Route definition                                                    */
+/* Route                                                               */
 /* ------------------------------------------------------------------ */
 
 export interface ProjectsSearchParams {
@@ -57,6 +71,9 @@ export interface ProjectsSearchParams {
 }
 
 export const Route = createFileRoute("/projects/")({
+  loader: async () => ({
+    siteContent: await fetchSiteContent(),
+  }),
   head: () => ({
     meta: [
       { title: "Nos projets — Scer-L/Construct Sarl" },
@@ -84,7 +101,7 @@ function ProjectsPage() {
   const { t } = useTranslation();
   const search = useSearch({ from: "/projects/" }) as unknown as ProjectsSearchParams;
   const navigate = useNavigate({ from: "/projects/" });
-  const { data: siteContent, isLoading } = usePublicSiteContent();
+  const { siteContent } = Route.useLoaderData();
 
   const rawProjects = siteContent?.["cms.projects"];
   const cmsProjects: { id?: string; title: string; category: string; location: string; year: string; size: string; status: string; blurb: string; description?: string; img: string; imgs?: string[] }[] | null = Array.isArray(rawProjects)
@@ -278,7 +295,7 @@ function ProjectsPage() {
         </section>
 
         {/* ---- Loading skeleton ---- */}
-        {isLoading && (
+        {!siteContent && (
           <section className="mx-auto max-w-7xl px-4 pt-10 sm:px-6">
             <div className="animate-pulse rounded-xl border border-border bg-card p-4">
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -299,7 +316,7 @@ function ProjectsPage() {
         )}
 
         {/* ---- Empty state ---- */}
-        {!isLoading && filtered.length === 0 && (
+        {siteContent && filtered.length === 0 && (
           <section className="mx-auto max-w-7xl px-4 py-24 text-center sm:px-6">
             <FolderOpen className="mx-auto h-12 w-12 text-muted-foreground/40" />
             <h2 className="mt-4 text-xl font-semibold">{t("projects_page.no_match")}</h2>

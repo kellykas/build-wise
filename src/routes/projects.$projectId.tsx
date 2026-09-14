@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
 import { SiteHeader, SiteFooter } from "@/components/marketing/SiteHeader";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +15,6 @@ import {
   X,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { usePublicSiteContent } from "@/hooks/use-public-site-content";
 import { useState } from "react";
 
 /* ------------------------------------------------------------------ */
@@ -35,8 +35,6 @@ interface Project {
   imgs?: string[];
 }
 
-
-
 const categoryIcons: Record<string, React.ElementType> = {
   commercial: Building2,
   residential: Home,
@@ -46,10 +44,29 @@ const categoryIcons: Record<string, React.ElementType> = {
 };
 
 /* ------------------------------------------------------------------ */
+/* Server-side data fetch                                              */
+/* ------------------------------------------------------------------ */
+
+async function fetchSiteContent() {
+  const { data, error } = await supabase.from("site_content").select("section, key, value, company_id");
+  if (error) throw error;
+  const rows = (data ?? []) as { section: string; key: string; value: unknown; company_id: string | null }[];
+  rows.sort((a, b) => (a.company_id ? 1 : 0) - (b.company_id ? 1 : 0));
+  const map: Record<string, unknown> = {};
+  for (const row of rows) {
+    map[`${row.section}.${row.key}`] = row.value;
+  }
+  return map;
+}
+
+/* ------------------------------------------------------------------ */
 /* Route                                                               */
 /* ------------------------------------------------------------------ */
 
 export const Route = createFileRoute("/projects/$projectId")({
+  loader: async () => ({
+    siteContent: await fetchSiteContent(),
+  }),
   head: () => ({
     meta: [{ title: "Détail du projet — Scer-L/Construct Sarl" }],
   }),
@@ -63,7 +80,7 @@ export const Route = createFileRoute("/projects/$projectId")({
 function ProjectDetailPage() {
   const { projectId } = Route.useParams();
   const { t } = useTranslation();
-  const { data: siteContent, isLoading } = usePublicSiteContent();
+  const { siteContent } = Route.useLoaderData();
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
 
   // Resolve project from CMS
@@ -80,22 +97,16 @@ function ProjectDetailPage() {
       p.title.toLowerCase().replace(/\s+/g, "-") === projectId,
   );
 
-  // CMS unavailable / still loading: show a clear "not ready" state
-  if (isLoading || cmsProjects === null) {
+  // Still fetching on the server or client: show a skeleton
+  if (!siteContent) {
     return (
       <div className="flex min-h-screen flex-col">
         <SiteHeader />
-        <main className="flex flex-1 items-center justify-center px-4 py-24 text-center">
-          <div>
-            <h1 className="text-3xl font-bold">Données non disponibles</h1>
-            <p className="mt-3 text-muted-foreground">
-              Les projets ne sont pas encore chargés. Réessayez dans un instant.
-            </p>
-            <Link to="/projects">
-              <Button variant="outline" className="mt-6">
-                <ArrowLeft className="mr-2 h-4 w-4" /> Retour aux projets
-              </Button>
-            </Link>
+        <main className="flex flex-1 items-center justify-center px-4 py-24">
+          <div className="animate-pulse rounded-xl border border-border bg-card p-8 max-w-md text-center">
+            <div className="h-8 w-3/4 rounded bg-muted" />
+            <div className="mt-4 h-4 w-full rounded bg-muted" />
+            <div className="mt-4 h-4 w-5/6 rounded bg-muted" />
           </div>
         </main>
         <SiteFooter />
@@ -103,7 +114,7 @@ function ProjectDetailPage() {
     );
   }
 
-  // CMS available but this id doesn't match any project
+  // CMS loaded but this id doesn't match any project
   if (!project) {
     return (
       <div className="flex min-h-screen flex-col">
