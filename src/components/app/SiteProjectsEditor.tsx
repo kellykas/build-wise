@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import {
   FolderKanban, Plus, Trash2, Save, Upload, ChevronDown, ChevronRight,
-  GripVertical, Image, Image as ImageIcon, ExternalLink,
+  GripVertical, Image, Image as ImageIcon, ExternalLink, Wrench,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -208,6 +208,101 @@ function ProjectPhotosUpload({
 }
 
 /* ------------------------------------------------------------------ */
+/* Broken-image repair — overwrite stub files with real image data      */
+/* ------------------------------------------------------------------ */
+
+/** Original filename without the "<timestamp>-" prefix. */
+function originalFileName(path: string): string {
+  return path.split("/").pop()!.replace(/^\d+-/, "");
+}
+
+async function repairBrokenProjectImages(companyId: string): Promise<{ repaired: number; skipped: number }> {
+  const base = `${companyId}/general`;
+
+  // 1. Gather objects across relevant folders.
+  const all: { path: string; size: number }[] = [];
+  for (const folder of ["projects", "featured", "hero"]) {
+    const prefix = `${base}/${folder}`;
+    const { data, error } = await supabase.storage.from("site-images").list(prefix, { limit: 100 });
+    if (error) continue;
+    for (const o of data) {
+      const meta = (o as unknown as { metadata?: { size?: number } }).metadata;
+      all.push({ path: `${prefix}/${o.name}`, size: meta?.size ?? 0 });
+    }
+  }
+
+  // 2. Largest real file per original filename.
+  const bestByName = new Map<string, { path: string; size: number }>();
+  for (const f of all) {
+    const orig = originalFileName(f.path);
+    const cur = bestByName.get(orig);
+    if (!cur || f.size > cur.size) bestByName.set(orig, f);
+  }
+
+  // 3. Repair each stub in projects/ by re-uploading the real bytes.
+  const stubs = all.filter((f) => f.path.startsWith(`${base}/projects`) && f.size <= 500);
+  let repaired = 0;
+  let skipped = 0;
+  for (const stub of stubs) {
+    const best = bestByName.get(originalFileName(stub.path));
+    if (!best || best.size <= 500) {
+      skipped++;
+      continue;
+    }
+    const res = await fetch(`${supabase.storage.from("site-images").getPublicUrl(best.path).data.publicUrl}`);
+    if (!res.ok) {
+      skipped++;
+      continue;
+    }
+    const buf = await res.arrayBuffer();
+    const ct = res.headers.get("content-type") ?? "image/jpeg";
+    const reUp = await supabase.storage
+      .from("site-images")
+      .upload(stub.path, new Blob([buf], { type: ct }), { upsert: true, contentType: ct });
+    if (reUp.error) {
+      skipped++;
+      continue;
+    }
+    repaired++;
+  }
+  return { repaired, skipped };
+}
+
+function RepairImagesButton({ companyId }: { companyId?: string | null }) {
+  const [busy, setBusy] = useState(false);
+  if (!companyId) return null;
+
+  const run = async () => {
+    setBusy(true);
+    try {
+      const { repaired, skipped } = await repairBrokenProjectImages(companyId);
+      if (repaired === 0 && skipped === 0) {
+        toast.info("Aucune image cassée à réparer.");
+      } else if (skipped > 0) {
+        toast.warning(`${repaired} image(s) réparée(s), ${skipped} ignorée(s) (aucune source disponible).`);
+      } else {
+        toast.success(`${repaired} image(s) réparée(s) avec succès !`);
+      }
+    } catch (err) {
+      toast.error(`Échec de la réparation : ${(err as Error).message}`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Button asChild variant="outline" size="sm" className="cursor-default">
+      <span className="inline-flex">
+        <button type="button" onClick={run} disabled={busy} className="inline-flex items-center gap-1.5 px-2 py-1">
+          <Wrench className="h-3.5 w-3.5" />
+          {busy ? "Réparation..." : "Réparer les images"}
+        </button>
+      </span>
+    </Button>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* Types                                                               */
 /* ------------------------------------------------------------------ */
 export interface SiteProject {
@@ -286,6 +381,7 @@ export function ProjectsEditor({
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <RepairImagesButton companyId={companyId} />
             <Button asChild variant="outline" size="sm">
               <a href="/projects" target="_blank" rel="noreferrer">
                 <ExternalLink className="mr-2 h-3.5 w-3.5" /> Voir la page Projets
