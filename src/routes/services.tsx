@@ -4,7 +4,7 @@ import { SiteHeader, SiteFooter } from "@/components/marketing/SiteHeader";
 import { Button } from "@/components/ui/button";
 import {
   Building2, Home, Factory, Hammer, Ruler, Truck,
-  ArrowRight, CheckCircle2, ShieldCheck,
+  ArrowRight,
 } from "lucide-react";
 import { useSiteContent, getContentValue } from "@/hooks/use-site-content";
 
@@ -47,58 +47,70 @@ function ServicesPage() {
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
       <main className="flex-1">
-        <section className="border-b border-border bg-gradient-to-b from-primary/5 to-transparent">
-          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+        {/* Intro */}
+        <section className="border-b border-border">
+          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20">
             <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">
-                <ShieldCheck className="h-3.5 w-3.5 text-accent" /> {t("services_page.badge")}
-              </div>
-              <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">{t("services_page.title")}</h1>
-              <p className="mt-4 text-base text-muted-foreground sm:text-lg">{t("services_page.subtitle")}</p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Link to="/contact" search={{ type: "quote" }}><Button size="lg">{t("services_page.cta_quote")} <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
-                <Link to="/projects"><Button size="lg" variant="outline">{t("services_page.cta_projects")}</Button></Link>
+              <span className="eyebrow-rule" />
+              <span className="eyebrow">{t("services_page.badge")}</span>
+              <h1 className="mt-4 text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl">{t("services_page.title")}</h1>
+              <p className="mt-5 text-base leading-relaxed text-muted-foreground sm:text-lg">{t("services_page.subtitle")}</p>
+              <div className="mt-8 flex flex-wrap gap-4">
+                <Link to="/contact" search={{ type: "quote" }}><Button>{t("services_page.cta_quote")} <ArrowRight className="ml-1 h-4 w-4" /></Button></Link>
+                <Link
+                  to="/projects"
+                  className="link-underline inline-flex h-9 items-center text-sm font-semibold text-foreground"
+                >
+                  {t("services_page.cta_projects")}
+                </Link>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Services — open editorial columns */}
+        <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-24">
+          <div className="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
             {hasCmsServices ? (
               // Render from CMS data
               cmsServices.map((s) => (
-                <div key={s.id} className="group rounded-2xl border border-border bg-card p-6 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
-                  <h3 className="text-lg font-semibold">{s.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">{s.desc}</p>
+                <div key={s.id} className="group border-t-2 border-border pt-6">
+                  <h3 className="text-lg font-semibold leading-snug">{s.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.desc}</p>
                   {s.points && s.points.length > 0 && (
                     <ul className="mt-4 space-y-2 text-sm">
                       {s.points.filter(Boolean).map((p, i) => (
-                        <li key={i} className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" /> <span>{p}</span></li>
+                        <li key={i} className="flex items-start gap-2.5 leading-relaxed">
+                          <span aria-hidden className="mt-[0.55rem] h-1 w-1 shrink-0 rounded-full bg-primary" />
+                          <span>{p}</span>
+                        </li>
                       ))}
                     </ul>
                   )}
-                  <Link to="/contact" search={{ type: "quote" }} className="mt-5 inline-flex items-center text-sm font-medium text-primary group-hover:underline">
-                    {t("services_page.quote_for_this")} <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                  <Link to="/contact" search={{ type: "quote" }} className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-primary">
+                    <span className="link-underline">{t("services_page.quote_for_this")}</span>
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                   </Link>
                 </div>
               ))
             ) : (
               // Fallback: render from i18n translations
               serviceKeys.map((s) => (
-                <div key={s.key} className="group rounded-2xl border border-border bg-card p-6 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
-                  <div className="grid h-12 w-12 place-items-center rounded-lg bg-primary/10 text-primary">
-                    <s.icon className="h-6 w-6" />
-                  </div>
-                  <h3 className="mt-5 text-lg font-semibold">{t(`services_page.items.${s.key}.title`)}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">{t(`services_page.items.${s.key}.desc`)}</p>
+                <div key={s.key} className="group border-t-2 border-border pt-6">
+                  <s.icon className="h-5 w-5 text-primary" />
+                  <h3 className="mt-4 text-lg font-semibold leading-snug">{t(`services_page.items.${s.key}.title`)}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t(`services_page.items.${s.key}.desc`)}</p>
                   <ul className="mt-4 space-y-2 text-sm">
                     {["p1", "p2", "p3", "p4"].map((p) => (
-                      <li key={p} className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" /> <span>{t(`services_page.items.${s.key}.${p}`)}</span></li>
+                      <li key={p} className="flex items-start gap-2.5 leading-relaxed">
+                        <span aria-hidden className="mt-[0.55rem] h-1 w-1 shrink-0 rounded-full bg-primary" />
+                        <span>{t(`services_page.items.${s.key}.${p}`)}</span>
+                      </li>
                     ))}
                   </ul>
-                  <Link to="/contact" search={{ type: "quote" }} className="mt-5 inline-flex items-center text-sm font-medium text-primary group-hover:underline">
-                    {t("services_page.quote_for_this")} <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                  <Link to="/contact" search={{ type: "quote" }} className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-primary">
+                    <span className="link-underline">{t("services_page.quote_for_this")}</span>
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                   </Link>
                 </div>
               ))
@@ -106,28 +118,31 @@ function ServicesPage() {
           </div>
         </section>
 
-        <section className="border-y border-border bg-card/40">
+        {/* Process — numbered editorial row */}
+        <section className="section-line bg-secondary/50">
           <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
             <div className="max-w-2xl">
+              <span className="eyebrow-rule" />
               <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{t("services_page.process_title")}</h2>
-              <p className="mt-3 text-muted-foreground">{t("services_page.process_subtitle")}</p>
+              <p className="mt-3 leading-relaxed text-muted-foreground">{t("services_page.process_subtitle")}</p>
             </div>
-            <div className="mt-12 grid gap-6 sm:grid-cols-2 md:grid-cols-4">
+            <ol className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 md:grid-cols-4">
               {steps.map((s, i) => (
-                <div key={s} className="rounded-xl border border-border bg-card p-6">
-                  <div className="text-sm font-mono text-primary">{`0${i + 1}`}</div>
-                  <div className="mt-3 font-semibold">{t(`services_page.process.${s}_t`)}</div>
-                  <div className="mt-1 text-sm text-muted-foreground">{t(`services_page.process.${s}_d`)}</div>
-                </div>
+                <li key={s} className="border-t border-border pt-5">
+                  <div className="font-mono text-sm text-primary">{`0${i + 1}`}</div>
+                  <div className="mt-3 font-semibold leading-snug">{t(`services_page.process.${s}_t`)}</div>
+                  <div className="mt-2 text-sm leading-relaxed text-muted-foreground">{t(`services_page.process.${s}_d`)}</div>
+                </li>
               ))}
-            </div>
+            </ol>
           </div>
         </section>
 
+        {/* Final CTA */}
         <section className="mx-auto max-w-5xl px-4 py-20 text-center sm:px-6">
-          <h2 className="text-3xl font-bold md:text-4xl">{t("services_page.final_title")}</h2>
-          <p className="mt-3 text-muted-foreground">{t("services_page.final_subtitle")}</p>
-          <Link to="/contact" search={{ type: "quote" }}><Button size="lg" className="mt-6">{t("services_page.cta_quote")} <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
+          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{t("services_page.final_title")}</h2>
+          <p className="mt-3 leading-relaxed text-muted-foreground">{t("services_page.final_subtitle")}</p>
+          <Link to="/contact" search={{ type: "quote" }}><Button size="lg" className="mt-7">{t("services_page.cta_quote")} <ArrowRight className="ml-1 h-4 w-4" /></Button></Link>
         </section>
       </main>
       <SiteFooter />

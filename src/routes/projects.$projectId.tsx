@@ -156,16 +156,16 @@ function ProjectDetailPage() {
           </Link>
         </div>
 
-        {/* Hero image */}
-        <section className="mx-auto max-w-6xl px-4 pt-4 sm:px-6">
-          <div className="relative overflow-hidden rounded-2xl border border-border">
-            <img
-              src={project.img}
-              alt={project.title}
-              className="h-[40vh] w-full object-cover md:h-[55vh]"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-            <div className="absolute bottom-0 left-0 p-6 md:p-10">
+        {/* Hero image — full-bleed editorial treatment */}
+        <section className="relative">
+          <img
+            src={project.img}
+            alt={project.title}
+            className="h-[40vh] w-full object-cover md:h-[55vh]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0">
+            <div className="mx-auto max-w-6xl px-4 pb-6 sm:px-6 md:pb-10">
               <div className="flex items-center gap-2 text-sm text-white/80">
                 <Icon className="h-4 w-4" />
                 {categoryLabel}
@@ -182,7 +182,7 @@ function ProjectDetailPage() {
                     : t("projects_page.filter_in_progress")}
                 </span>
               </div>
-              <h1 className="mt-2 text-3xl font-bold text-white md:text-4xl">
+              <h1 className="mt-2 text-3xl font-bold tracking-tight text-white md:text-4xl">
                 {project.title}
               </h1>
             </div>
@@ -211,7 +211,7 @@ function ProjectDetailPage() {
             </div>
 
             {/* Right: info card */}
-            <div className="rounded-xl border border-border bg-card p-5">
+            <div className="h-fit border-l-2 border-primary bg-secondary/50 p-5">
               <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
                 {t("projects_page.project_info", "Informations du projet")}
               </h3>
@@ -260,13 +260,13 @@ function ProjectDetailPage() {
                   key={idx}
                   type="button"
                   onClick={() => setLightboxIdx(idx + 1)}
-                  className="group relative overflow-hidden rounded-xl border border-border bg-muted transition hover:-translate-y-1 hover:shadow-lg"
+                  className="group relative overflow-hidden bg-muted"
                 >
                   <img
                     src={url}
                     alt={`${project.title} — photo ${idx + 2}`}
                     loading="lazy"
-                    className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105"
+                    className="aspect-[4/3] w-full object-cover transition duration-500 ease-out group-hover:scale-[1.03]"
                   />
                 </button>
               ))}

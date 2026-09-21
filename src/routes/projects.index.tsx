@@ -9,13 +9,7 @@ import {
   Calendar,
   Ruler,
   Search,
-  SlidersHorizontal,
   X,
-  Building2,
-  Home,
-  Factory,
-  Hammer,
-  Waves,
   FolderOpen,
 } from "lucide-react";
 import { useMemo, useCallback } from "react";
@@ -123,13 +117,13 @@ function ProjectsPage() {
       }))
     : [];
 
-  const categoryFilters: { key: Category; label: string; icon: React.ElementType }[] = [
-    { key: "all", label: t("projects_page.all"), icon: SlidersHorizontal },
-    { key: "commercial", label: t("projects_page.commercial"), icon: Building2 },
-    { key: "residential", label: t("projects_page.residential"), icon: Home },
-    { key: "industrial", label: t("projects_page.industrial"), icon: Factory },
-    { key: "renovation", label: t("projects_page.renovation"), icon: Hammer },
-    { key: "infrastructure", label: t("projects_page.infrastructure"), icon: Waves },
+  const categoryFilters: { key: Category; label: string }[] = [
+    { key: "all", label: t("projects_page.all") },
+    { key: "commercial", label: t("projects_page.commercial") },
+    { key: "residential", label: t("projects_page.residential") },
+    { key: "industrial", label: t("projects_page.industrial") },
+    { key: "renovation", label: t("projects_page.renovation") },
+    { key: "infrastructure", label: t("projects_page.infrastructure") },
   ];
 
   const statusFilters: { key: Status; label: string }[] = [
@@ -204,19 +198,20 @@ function ProjectsPage() {
 
       <main className="flex-1">
         {/* ---- Hero banner ---- */}
-        <section className="border-b border-border bg-gradient-to-b from-primary/5 to-transparent">
-          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-            <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
+        <section className="border-b border-border">
+          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20">
+            <span className="eyebrow-rule" />
+            <h1 className="text-4xl font-bold leading-[1.1] tracking-tight md:text-5xl">
               {t("projects_page.title")}
             </h1>
-            <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
+            <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
               {t("projects_page.subtitle")}
             </p>
           </div>
         </section>
 
         {/* ---- Filters bar ---- */}
-        <section className="sticky top-16 z-30 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <section className="sticky top-16 z-30 border-b border-border bg-background/95 backdrop-blur">
           <div className="mx-auto max-w-7xl space-y-4 px-4 py-4 sm:px-6">
             {/* Row 1: search + sort */}
             <div className="flex flex-wrap items-center gap-3">
@@ -245,40 +240,39 @@ function ProjectsPage() {
               {isFiltered && (
                 <button
                   onClick={clearAll}
-                  className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground hover:text-foreground"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
                 >
                   <X className="h-3 w-3" /> {t("projects_page.clear_filters")}
                 </button>
               )}
             </div>
 
-            {/* Row 2: category + status pills */}
+            {/* Row 2: category + status filters */}
             <div className="flex flex-wrap items-center gap-2">
               {categoryFilters.map((f) => (
                 <button
                   key={f.key}
                   onClick={() => updateParam("category", f.key)}
-                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition ${
+                  className={`inline-flex items-center gap-1.5 border-b-2 px-0.5 pb-1 text-xs font-medium transition ${
                     category === f.key
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border bg-card text-muted-foreground hover:text-foreground"
+                      ? "border-primary text-foreground"
+                      : "border-transparent text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <f.icon className="h-3 w-3" />
                   {f.label}
                 </button>
               ))}
 
-              <span className="mx-1 h-5 w-px bg-border" />
+              <span className="mx-1 h-4 w-px bg-border" />
 
               {statusFilters.map((f) => (
                 <button
                   key={f.key}
                   onClick={() => updateParam("status", f.key)}
-                  className={`rounded-full border px-3 py-1 text-xs transition ${
+                  className={`inline-flex items-center border-b-2 px-0.5 pb-1 text-xs font-medium transition ${
                     status === f.key
-                      ? "border-accent bg-accent text-accent-foreground"
-                      : "border-border bg-card text-muted-foreground hover:text-foreground"
+                      ? "border-primary text-foreground"
+                      : "border-transparent text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {f.label}
@@ -335,17 +329,17 @@ function ProjectsPage() {
             <Link
               to="/projects/$projectId"
               params={{ projectId: getProjectSlug(featured) }}
-              className="group block overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-1 hover:shadow-2xl"
+              className="group block overflow-hidden rounded-lg border border-border bg-card transition hover:border-foreground/20"
             >
               <div className="grid md:grid-cols-2">
                 <div className="relative aspect-[4/3] overflow-hidden bg-muted md:aspect-auto">
                   <img
                     src={featured.img}
                     alt={featured.title}
-                    className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                    className="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.02]"
                   />
                   <span
-                    className={`absolute left-4 top-4 rounded-md px-2.5 py-1 text-xs font-semibold backdrop-blur ${
+                    className={`absolute left-4 top-4 rounded-md px-2.5 py-1 text-xs font-semibold ${
                       featured.status === "Completed"
                         ? "bg-success/90 text-success-foreground"
                         : "bg-accent/90 text-accent-foreground"
@@ -394,43 +388,34 @@ function ProjectsPage() {
                   to="/projects/$projectId"
                   params={{ projectId: getProjectSlug(p) }}
                   key={p.title}
-                  className="group block overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-1 hover:shadow-xl"
+                  className="group block"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                     <img
                       src={p.img}
                       alt={p.title}
                       loading="lazy"
-                      className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                      className="h-full w-full object-cover transition duration-500 ease-out group-hover:scale-[1.03]"
                     />
-                    <span
-                      className={`absolute right-3 top-3 rounded-md px-2 py-0.5 text-xs font-medium backdrop-blur ${
-                        p.status === "Completed"
-                          ? "bg-success/85 text-success-foreground"
-                          : "bg-accent/85 text-accent-foreground"
-                      }`}
-                    >
-                      {p.status === "Completed" ? t("projects_page.filter_completed") : t("projects_page.filter_in_progress")}
-                    </span>
                   </div>
-                  <div className="p-5">
-                    <div className="text-xs uppercase tracking-wide text-primary">
+                  <div className="mt-4 border-b border-border pb-5">
+                    <div className="eyebrow">
                       {t(`projects_page.${p.category}`)}
                     </div>
-                    <h3 className="mt-1 text-lg font-semibold">{p.title}</h3>
-                    <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                    <h3 className="mt-1.5 text-lg font-semibold leading-snug">{p.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground line-clamp-2">
                       {p.blurb}
                     </p>
-                    <div className="mt-4 grid gap-1 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1.5">
+                    <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                      <span className="inline-flex items-center gap-1.5">
                         <MapPin className="h-3.5 w-3.5" /> {p.location}
-                      </div>
-                      <div className="flex items-center gap-1.5">
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
                         <Calendar className="h-3.5 w-3.5" /> {p.year}
-                      </div>
-                      <div className="flex items-center gap-1.5">
+                      </span>
+                      <span className="inline-flex items-center gap-1.5">
                         <Ruler className="h-3.5 w-3.5" /> {p.size}
-                      </div>
+                      </span>
                     </div>
                   </div>
                 </Link>
@@ -440,7 +425,7 @@ function ProjectsPage() {
         )}
 
         {/* ---- CTA ---- */}
-        <section className="border-t border-border bg-card/40">
+        <section className="border-t border-border bg-secondary/50">
           <div className="mx-auto max-w-5xl px-4 py-16 text-center sm:px-6">
             <h2 className="text-3xl font-bold">{t("projects_page.cta_title")}</h2>
             <p className="mt-3 text-muted-foreground">

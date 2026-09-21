@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import {
-  ArrowRight, Building2, Home, Factory, Hammer, ShieldCheck,
-  Award, Quote, CheckCircle2, Phone,
+  ArrowRight, Building2, Home, Factory, Hammer,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteHeader, SiteFooter } from "@/components/marketing/SiteHeader";
@@ -18,16 +17,8 @@ export const Route = createFileRoute("/")({
   component: Home_,
 });
 
-
-
-
-
-
-
-
-
 function Home_() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { data: content } = useSiteContent();
   // CMS content always takes priority over i18n fallbacks.
   // The i18n values are only used when the CMS has no value for a key.
@@ -93,73 +84,78 @@ function Home_() {
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
 
-      {/* Hero */}
+      {/* Hero — image, editorial text block, no badge pill */}
       <section className="relative overflow-hidden border-b border-border">
         <div className="absolute inset-0 -z-10">
           <img
             src={heroImage}
-            alt="Construction crew on a high-rise site at sunrise"
+            alt="Chantier de construction au lever du soleil"
             className="h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/40" />
         </div>
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-24 sm:px-6 md:py-32">
+        <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 md:py-36">
           <div className="max-w-2xl">
-            <img src="/logo.png" alt="Scer-L/Construct Sarl" className="h-24 w-24 mb-6 rounded-full" />
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
-              <ShieldCheck className="h-3.5 w-3.5 text-accent" /> {s("hero", "badge", t("hero.badge"))}
-            </div>
-            <h1 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl md:text-6xl">
+            <span className="eyebrow-rule" />
+            <span className="eyebrow">{s("hero", "badge", t("hero.badge"))}</span>
+            <h1 className="mt-5 text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl md:text-6xl">
               <span dangerouslySetInnerHTML={{ __html: s("hero", "title", t("hero.title")) }} />
             </h1>
-            <p className="mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
               {s("hero", "subtitle", t("hero.subtitle"))}
             </p>
-            <div className="mt-7 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-wrap items-center gap-4">
               <Link to="/contact" search={{ type: "quote" }}>
-                <Button size="lg">{s("hero", "cta_quote", t("hero.cta_quote"))} <ArrowRight className="ml-2 h-4 w-4" /></Button>
+                <Button size="lg">{s("hero", "cta_quote", t("hero.cta_quote"))} <ArrowRight className="ml-1 h-4 w-4" /></Button>
               </Link>
-              <Link to="/projects"><Button size="lg" variant="outline">{s("hero", "cta_projects", t("hero.cta_projects"))}</Button></Link>
+              <Link
+                to="/projects"
+                className="link-underline text-sm font-semibold text-foreground"
+              >
+                {s("hero", "cta_projects", t("hero.cta_projects"))}
+              </Link>
             </div>
-            <div className="mt-8 flex items-center gap-3 text-sm text-muted-foreground">
-              <Phone className="h-4 w-4 shrink-0 text-primary" /> <span className="truncate">{s("hero", "phone_label", t("hero.phone_label"))}</span> <span className="font-semibold text-foreground">{s("hero", "phone_number", t("hero.phone_number"))}</span>
+            <div className="mt-10 flex items-baseline gap-3 border-t border-border pt-5 text-sm">
+              <span className="text-muted-foreground">{s("hero", "phone_label", t("hero.phone_label"))}</span>
+              <span className="font-semibold tracking-tight text-foreground">{s("hero", "phone_number", t("hero.phone_number"))}</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="border-b border-border bg-card/40">
-        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-10 sm:grid-cols-4 sm:px-6">
-          {stats.map((s) => (
-            <div key={s.l} className="text-center sm:text-left">
-              <div className="text-3xl font-bold text-primary">{s.v}</div>
-              <div className="text-xs uppercase tracking-wide text-muted-foreground">{s.l}</div>
+      {/* Stats — editorial row with hairline separators */}
+      <section className="border-b border-border">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-px bg-border px-0 sm:grid-cols-4">
+          {stats.map((st) => (
+            <div key={st.l} className="bg-background px-6 py-8 sm:px-8">
+              <div className="text-3xl font-bold tracking-tight text-foreground">{st.v}</div>
+              <div className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">{st.l}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Services */}
+      {/* Services — open editorial columns, no cards */}
       <section className="border-b border-border">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-24">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div className="max-w-2xl">
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{s("services", "title", t("services_section.title"))}</h2>
-              <p className="mt-3 text-muted-foreground">{s("services", "subtitle", t("services_section.subtitle"))}</p>
+              <span className="eyebrow-rule" />
+              <span className="eyebrow">{t("nav.services")}</span>
+              <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">{s("services", "title", t("services_section.title"))}</h2>
+              <p className="mt-3 leading-relaxed text-muted-foreground">{s("services", "subtitle", t("services_section.subtitle"))}</p>
             </div>
-            <Link to="/services" className="text-sm font-medium text-primary hover:underline">{s("services", "view_all", t("services_section.view_all"))}</Link>
+            <Link to="/services" className="link-underline pb-1 text-sm font-semibold text-foreground">{s("services", "view_all", t("services_section.view_all"))}</Link>
           </div>
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
             {services.map((f) => (
-              <Link key={f.title} to="/services" className="group rounded-xl border border-border bg-card p-6 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
-                <div className="grid h-11 w-11 place-items-center rounded-md bg-primary/10 text-primary">
-                  <f.icon className="h-5 w-5" />
-                </div>
-                <div className="mt-4 font-semibold">{f.title}</div>
-                <div className="mt-1 text-sm text-muted-foreground">{f.desc}</div>
-                <div className="mt-4 inline-flex items-center text-sm font-medium text-primary opacity-0 transition group-hover:opacity-100">
-                  {t("services_section.learn_more")} <ArrowRight className="ml-1 h-3.5 w-3.5" />
+              <Link key={f.title} to="/services" className="group border-t-2 border-border pt-6 transition-colors hover:border-primary">
+                <f.icon className="h-5 w-5 text-primary" />
+                <div className="mt-4 font-semibold leading-snug">{f.title}</div>
+                <div className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.desc}</div>
+                <div className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary">
+                  <span className="link-underline">{t("services_section.learn_more")}</span>
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                 </div>
               </Link>
             ))}
@@ -167,47 +163,35 @@ function Home_() {
         </div>
       </section>
 
-      {/* Featured projects */}
-      <section className="border-b border-border bg-card/40">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+      {/* Featured projects — image-led editorial grid */}
+      <section className="border-b border-border bg-secondary/50">
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-24">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div className="max-w-2xl">
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{s("featured", "title", t("featured.title"))}</h2>
-              <p className="mt-3 text-muted-foreground">{s("featured", "subtitle", t("featured.subtitle"))}</p>
+              <span className="eyebrow-rule" />
+              <span className="eyebrow">{t("nav.projects")}</span>
+              <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">{s("featured", "title", t("featured.title"))}</h2>
+              <p className="mt-3 leading-relaxed text-muted-foreground">{s("featured", "subtitle", t("featured.subtitle"))}</p>
             </div>
-            <Link to="/projects" className="text-sm font-medium text-primary hover:underline">{s("featured", "view_all", t("featured.view_all"))}</Link>
+            <Link to="/projects" className="link-underline pb-1 text-sm font-semibold text-foreground">{s("featured", "view_all", t("featured.view_all"))}</Link>
           </div>
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {featured.map((p) => (
-              <Link key={p.title} to="/projects" className="group overflow-hidden rounded-2xl border border-border bg-card">
-                {/* Multiple images: carousel-style grid when more than one */}
-                {p.imgs && p.imgs.length > 1 ? (
-                  <div className="aspect-[4/3] overflow-hidden bg-muted">
-                    <div className="grid h-full w-full grid-cols-3 gap-0">
-                      {p.imgs.slice(0, 3).map((img, idx) => (
-                        <img
-                          key={idx}
-                          src={img}
-                          alt={`${p.title} ${idx + 1}`}
-                          loading="lazy"
-                          className="h-full w-full object-cover"
-                        />
-                      ))}
-                    </div>
+          <div className="mt-12 grid gap-x-8 gap-y-12 md:grid-cols-3">
+            {featured.map((p, i) => (
+              <Link key={p.title} to="/projects" className={`group block ${i === 1 ? "md:mt-10" : ""} ${i === 2 ? "md:mt-20" : ""}`}>
+                <div className="aspect-[4/5] overflow-hidden bg-muted">
+                  <img
+                    src={p.imgs?.[0] ?? featuredImgs[0]}
+                    alt={p.title}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition duration-500 ease-out group-hover:scale-[1.03]"
+                  />
+                </div>
+                <div className="mt-4 flex items-baseline justify-between gap-3 border-b border-border pb-4">
+                  <div>
+                    <div className="eyebrow">{p.tag}</div>
+                    <div className="mt-1.5 text-lg font-semibold leading-snug">{p.title}</div>
                   </div>
-                ) : (
-                  <div className="aspect-[4/3] overflow-hidden bg-muted">
-                    <img
-                      src={p.imgs?.[0] ?? featuredImgs[0]}
-                      alt={p.title}
-                      loading="lazy"
-                      className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                )}
-                <div className="p-5">
-                  <div className="text-xs uppercase tracking-wide text-primary">{p.tag}</div>
-                  <div className="mt-1 text-lg font-semibold">{p.title}</div>
+                  <ArrowRight className="h-4 w-4 shrink-0 translate-y-0.5 text-primary transition-transform group-hover:translate-x-1" />
                 </div>
               </Link>
             ))}
@@ -215,55 +199,57 @@ function Home_() {
         </div>
       </section>
 
-      {/* Why us */}
+      {/* Why us + testimonials — open quotes with hairlines */}
       <section className="border-b border-border">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-20 sm:px-6 md:grid-cols-2">
+        <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 md:grid-cols-2 md:py-24">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{s("why_us", "title", t("why_us.title"))}</h2>
-            <p className="mt-4 text-muted-foreground">
+            <span className="eyebrow-rule" />
+            <span className="eyebrow">{t("about.badge", "25+ ans")}</span>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">{s("why_us", "title", t("why_us.title"))}</h2>
+            <p className="mt-4 leading-relaxed text-muted-foreground">
               {s("why_us", "subtitle", t("why_us.subtitle"))}
             </p>
-            <ul className="mt-8 space-y-3">
+            <ul className="mt-8 space-y-3 border-t border-border pt-6">
               {whyPoints.map((p) => (
-                <li key={p} className="flex items-start gap-2 text-sm"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" /> <span>{p}</span></li>
+                <li key={p} className="flex items-start gap-3 text-sm leading-relaxed">
+                  <span aria-hidden className="mt-[0.55rem] h-1 w-1 shrink-0 rounded-full bg-primary" />
+                  <span>{p}</span>
+                </li>
               ))}
             </ul>
           </div>
-          <div className="grid gap-4">
+          <div className="space-y-8">
             {testimonials.map((item, i) => (
-              <figure key={i} className="rounded-2xl border border-border bg-card p-6">
-                <Quote className="h-5 w-5 text-primary" />
-                <blockquote className="mt-3 text-sm text-foreground">“{item.quote}”</blockquote>
-                <figcaption className="mt-3 text-xs text-muted-foreground">{item.author}</figcaption>
+              <figure key={i} className="border-l-2 border-primary pl-6">
+                <blockquote className="text-base leading-relaxed text-foreground">“{item.quote}”</blockquote>
+                <figcaption className="mt-3 text-xs uppercase tracking-widest text-muted-foreground">{item.author}</figcaption>
               </figure>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Certifications */}
-      <section className="border-b border-border bg-card/40">
-        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-          <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-muted-foreground">
+      {/* Certifications — quiet text row */}
+      <section className="border-b border-border bg-secondary/50">
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-muted-foreground">
             {certifications.map((c, i) => (
-              <div key={i} className="flex items-center gap-2">
-                {i % 2 === 0 ? <Award className="h-4 w-4 text-primary" /> : <ShieldCheck className="h-4 w-4 text-primary" />} {c}
-              </div>
+              <span key={i}>{c}</span>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
+      {/* CTA — solid gold band */}
       <section className="border-b border-border bg-primary text-primary-foreground">
         <div className="mx-auto grid max-w-7xl gap-6 px-4 py-16 sm:px-6 md:grid-cols-[2fr_1fr] md:items-center">
           <div>
-            <h2 className="text-3xl font-bold md:text-4xl">{s("cta", "title", t("cta.title"))}</h2>
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{s("cta", "title", t("cta.title"))}</h2>
             <p className="mt-3 opacity-90">{s("cta", "subtitle", t("cta.subtitle"))}</p>
           </div>
           <div className="flex flex-wrap gap-3 md:justify-end">
             <Link to="/contact" search={{ type: "quote" }}><Button size="lg" variant="secondary">{s("cta", "quote_btn", t("cta.quote_btn"))}</Button></Link>
-            <Link to="/contact"><Button size="lg" variant="outline" className="bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-primary">{s("cta", "hi_btn", t("cta.hi_btn"))}</Button></Link>
+            <Link to="/contact"><Button size="lg" variant="outline" className="border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-primary">{s("cta", "hi_btn", t("cta.hi_btn"))}</Button></Link>
           </div>
         </div>
       </section>

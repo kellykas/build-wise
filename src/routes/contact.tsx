@@ -95,42 +95,41 @@ function ContactPage() {
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
       <main className="flex-1">
-        <section className="border-b border-border bg-gradient-to-b from-primary/5 to-transparent">
-          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+        <section className="border-b border-border">
+          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20">
             <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">
-                <Clock className="h-3.5 w-3.5 text-accent" /> {t("contact_page.badge")}
-              </div>
-              <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">{t("contact_page.title")}</h1>
-              <p className="mt-4 text-lg text-muted-foreground">{t("contact_page.subtitle")}</p>
+              <span className="eyebrow-rule" />
+              <span className="eyebrow"><Clock className="mr-1.5 inline h-3.5 w-3.5 text-primary" /> {t("contact_page.badge")}</span>
+              <h1 className="mt-4 text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl">{t("contact_page.title")}</h1>
+              <p className="mt-5 text-base leading-relaxed text-muted-foreground sm:text-lg">{t("contact_page.subtitle")}</p>
             </div>
           </div>
         </section>
 
         <section className="mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_1.4fr]">
-          <div className="space-y-8">
+          <div className="space-y-10">
             <div>
               <h2 className="text-xl font-semibold">{t("contact_page.reach")}</h2>
-              <div className="mt-5 space-y-4 text-sm">
-                <div className="flex items-start gap-3"><Phone className="mt-0.5 h-4 w-4 text-primary" />
+              <ul className="mt-5 space-y-5 border-t border-border pt-5 text-sm">
+                <li className="flex items-start gap-3"><Phone className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   <div><div className="font-medium text-foreground">{phone}</div><div className="text-muted-foreground">{hours}</div></div>
-                </div>
-                <div className="flex items-start gap-3"><Mail className="mt-0.5 h-4 w-4 text-primary" />
+                </li>
+                <li className="flex items-start gap-3"><Mail className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   <div><div className="font-medium text-foreground">{email}</div><div className="text-muted-foreground">{t("contact_page.for_bids")}</div></div>
-                </div>
-                <div className="flex items-start gap-3"><MapPin className="mt-0.5 h-4 w-4 text-primary" />
+                </li>
+                <li className="flex items-start gap-3"><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                   <div><div className="font-medium text-foreground">{t("contact_page.head_office")}</div><div className="text-muted-foreground">{address}</div></div>
-                </div>
-              </div>
+                </li>
+              </ul>
             </div>
-            <div className="rounded-xl border border-border bg-card p-5">
+            <div className="border-t border-border pt-5">
               <div className="text-sm font-semibold">{t("contact_page.client_title")}</div>
-              <p className="mt-1 text-sm text-muted-foreground">{t("contact_page.client_desc")}</p>
-              <Link to="/auth"><Button variant="outline" size="sm" className="mt-3">{t("contact_page.open_portal")}</Button></Link>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t("contact_page.client_desc")}</p>
+              <Link to="/auth" className="link-underline mt-3 inline-block text-sm font-semibold text-foreground">{t("contact_page.open_portal")}</Link>
             </div>
-            <div className="rounded-xl border border-border bg-primary/5 p-5">
+            <div className="border-l-2 border-primary pl-5">
               <div className="text-sm font-semibold text-primary">{t("contact_page.next_title")}</div>
-              <ol className="mt-3 space-y-2 text-sm text-muted-foreground">
+              <ol className="mt-3 list-decimal space-y-2 pl-4 text-sm leading-relaxed text-muted-foreground">
                 <li>{t("contact_page.next_1")}</li>
                 <li>{t("contact_page.next_2")}</li>
                 <li>{t("contact_page.next_3")}</li>
@@ -138,7 +137,7 @@ function ContactPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+          <div className="rounded-lg border border-border bg-card p-6 md:p-8">
             <div className="mb-5 flex gap-2 rounded-lg bg-muted p-1 text-sm">
               <button type="button" onClick={() => setType("quote")} className={`flex-1 rounded-md px-3 py-2 font-medium transition ${type === "quote" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"}`}>{t("contact_page.tab_quote")}</button>
               <button type="button" onClick={() => setType("contact")} className={`flex-1 rounded-md px-3 py-2 font-medium transition ${type === "contact" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"}`}>{t("contact_page.tab_contact")}</button>
