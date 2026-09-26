@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { EditDialog, type Field } from "@/components/app/EditDialog";
 import { InviteClientDialog } from "@/components/app/InviteClientDialog";
 import { ResetPasswordDialog } from "@/components/app/ResetPasswordDialog";
+import { AssignProjectsDialog } from "@/components/app/AssignProjectsDialog";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth"
 
@@ -24,6 +25,7 @@ function ClientsPage() {
   const canResetPassword = isAdmin || hasRole("project_manager", "director");
   const [editing, setEditing] = useState<Client | null>(null);
   const [newOpen, setNewOpen] = useState(false);
+  const [assigning, setAssigning] = useState<Client | null>(null);
 
   // Fetch project-client assignments
   const { data: projectClients } = useQuery({
@@ -75,6 +77,16 @@ function ClientsPage() {
         </div>
       );
     }},
+    { key: "assign" as const, label: "", render: (row: Client) => (
+      <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
+        <button
+          className="whitespace-nowrap text-xs text-primary hover:underline"
+          onClick={() => setAssigning(row)}
+        >
+          {t("d.clients.assign_projects_link", "Assigner des projets")}
+        </button>
+      </div>
+    )},
     ...(canResetPassword ? [{
       key: "actions" as const,
       label: t("d.clients.actions"),
@@ -112,6 +124,7 @@ function ClientsPage() {
         fields={fields}
         row={editing as unknown as Record<string, unknown> | null}
       />
+      <AssignProjectsDialog client={assigning} onClose={() => setAssigning(null)} />
     </>
   );
 }
