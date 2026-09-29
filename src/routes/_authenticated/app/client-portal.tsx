@@ -53,17 +53,23 @@ function ClientPortalPage() {
     enabled: !!profile?.id,
     queryFn: async () => {
       if (hasRole("client") && !isAdmin) {
-        const { data: client } = await supabase.from("clients").select("id").eq("user_id", profile!.id).maybeSingle();
-        if (client) {
-          const { data } = await supabase.from("projects").select("id, name, progress, status, location, end_date, start_date, budget, description").eq("client_id", client.id).order("created_at", { ascending: false });
-          return (data ?? []) as Project[];
-        }
-        const { data: mp } = await supabase.from("project_members").select("project_id").eq("user_id", profile!.id);
-        if (mp && mp.length > 0) {
-          const { data } = await supabase.from("projects").select("id, name, progress, status, location, end_date, start_date, budget, description").in("id", mp.map((m) => m.project_id));
-          return (data ?? []) as Project[];
-        }
-        return [];
+        // A client can be linked to a project in two ways: as the project owner
+        // (projects.client_id) or as a member added via the "Agents attachés"
+        // dialog (project_members). Query both sources and merge — an early
+        // return on the first source used to hide member-linked projects.
+        const FIELDS = "id, name, progress, status, location, end_date, start_date, budget, description";
+        const [{ data: client }, { data: memberships }] = await Promise.all([
+          supabase.from("clients").select("id").eq("user_id", profile!.id).maybeSingle(),
+          supabase.from("project_members").select("project_id").eq("user_id", profile!.id),
+        ]);
+        const memberIds = (memberships ?? []).map((m) => m.project_id);
+        const [owned, shared] = await Promise.all([
+          client ? supabase.from("projects").select(FIELDS).eq("client_id", client.id).order("created_at", { ascending: false }) : null,
+          memberIds.length ? supabase.from("projects").select(FIELDS).in("id", memberIds).order("created_at", { ascending: false }) : null,
+        ]);
+        const merged = new Map<string, Project>();
+        [...(owned?.data ?? []), ...(shared?.data ?? [])].forEach((p) => merged.set(p.id, p as Project));
+        return Array.from(merged.values());
       }
       const { data, error } = await supabase.from("projects").select("id, name, progress, status, location, end_date, start_date, budget, description").order("created_at", { ascending: false });
       if (error) throw error;

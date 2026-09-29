@@ -215,7 +215,12 @@
       "tax_number": "Numéro fiscal",
       "notes": "Notes",
       "actions": "Actions",
-      "projects": "Projets"
+      "projects": "Projets",
+      "assign_projects": "Assigner des projets",
+      "assign_projects_link": "Assigner des projets",
+      "assign_projects_desc": "Les projets cochés apparaîtront dans le portail client de {{name}}.",
+      "projects_updated": "Projets mis à jour",
+      "no_available_projects": "Aucun projet disponible"
     },
     "projects": {
       "title": "Projets",

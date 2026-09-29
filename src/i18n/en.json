@@ -215,7 +215,12 @@
       "tax_number": "Tax number",
       "notes": "Notes",
       "actions": "Actions",
-      "projects": "Projects"
+      "projects": "Projects",
+      "assign_projects": "Assign projects",
+      "assign_projects_link": "Assign projects",
+      "assign_projects_desc": "Checked projects will appear in {{name}}'s client portal.",
+      "projects_updated": "Projects updated",
+      "no_available_projects": "No projects available"
     },
     "projects": {
       "title": "Projects",
