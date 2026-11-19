@@ -22,9 +22,9 @@ const steps = ["s1", "s2", "s3", "s4"] as const;
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Services de construction — Scer-L/Construct Sarl" },
+      { title: "Services de construction — HYCO SARLU" },
       { name: "description", content: "Construction commerciale, résidentielle, industrielle et rénovation. Conception-réalisation, gestion de projet et pré-construction." },
-      { property: "og:title", content: "Services de construction — Scer-L/Construct Sarl" },
+      { property: "og:title", content: "Services de construction — HYCO SARLU" },
       { property: "og:description", content: "Nos services de construction de A à Z : conception, pré-construction, travaux et réception." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

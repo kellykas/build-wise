@@ -483,7 +483,7 @@ function FooterTab({ content, upsert, companyId }: { content: Record<string, unk
   const raw = getContentValue(content, "cms", "footer", {}) as Partial<FooterData>;
   const [data, setData] = useState<FooterData>({
     description: (raw.description as string) || "Entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure.",
-    copyright: (raw.copyright as string) || "© 2024 Scer-L/Construct Sarl. Tous droits réservés.",
+    copyright: (raw.copyright as string) || "© 2024 HYCO SARLU. Tous droits réservés.",
     legal: {
       rccm: (raw.legal as any)?.rccm || "CD/KIS/RCCM/21.8-00068",
       tax_number: (raw.legal as any)?.tax_number || "A2213934W",

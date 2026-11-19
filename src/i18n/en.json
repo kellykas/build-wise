@@ -2,7 +2,7 @@
   "hero": {
     "badge": "Licensed · Bonded · Insured · OSHA Compliant",
     "title": "<1>Engagés pour construire</1> vos rêves.",
-    "subtitle": "Scer-L/Construct Sarl, a full-service general contractor delivering commercial, residential, industrial and infrastructure projects across the region. On time. On budget. Built to last.",
+    "subtitle": "HYCO SARLU, a full-service general contractor delivering commercial, residential, industrial and infrastructure projects across the region. On time. On budget. Built to last.",
     "cta_quote": "Request a free quote",
     "cta_projects": "View our projects",
     "phone_label": "Speak to a project manager today:",
@@ -54,7 +54,7 @@
     }
   },
   "why_us": {
-    "title": "Why owners choose Scer-L/Construct",
+    "title": "Why owners choose HYCO SARLU",
     "subtitle": "We're hands-on, transparent and predictable. The team that wins the work is the team that builds it, no hand-offs, no surprises.",
     "points": [
       "Self-perform crews for concrete, framing, finishes and MEP coordination",
@@ -92,7 +92,7 @@
     "hi_btn": "Just say hi"
   },
   "footer": {
-    "copyright": "© 2024 Scer-L/Construct Sarl. All rights reserved.",
+    "copyright": "© 2024 HYCO SARLU. All rights reserved.",
     "description": "Full-service general contractor delivering commercial, residential, industrial and infrastructure projects. Engagés pour construire vos rêves.",
     "company": "Company",
     "get_in_touch": "Get in touch",
@@ -114,7 +114,7 @@
   },
   "access_denied": "You do not have access to this page.",
   "app": {
-    "brand": "Scer-L/Construct",
+    "brand": "HYCO SARLU",
     "subtitle": "Sarl, Construction ERP",
     "search_placeholder": "Search projects, tasks, clients…",
     "settings": "Settings",
@@ -780,7 +780,7 @@
     }
   },
   "services_page": {
-    "meta_title": "Construction Services — Scer-L/Construct Sarl",
+    "meta_title": "Construction Services — HYCO SARLU",
     "meta_desc": "Commercial, residential, industrial and renovation construction services. Design-build, CM and pre-construction expertise.",
     "badge": "Licensed · Bonded · Insured",
     "title": "Construction services, end to end.",
@@ -854,7 +854,7 @@
     }
   },
   "projects_page": {
-    "meta_title": "Our Projects — Scer-L/Construct Sarl",
+    "meta_title": "Our Projects — HYCO SARLU",
     "meta_desc": "Featured construction projects: commercial, residential, industrial, infrastructure and heritage restoration.",
     "title": "Selected projects",
     "subtitle": "Explore our portfolio of delivered and in-progress builds. Use the filters below to narrow by category, status or name.",
@@ -916,7 +916,7 @@
     "gallery_title": "Photo gallery"
   },
   "contact_page": {
-    "meta_title": "Contact & Request a Quote — Scer-L/Construct Sarl",
+    "meta_title": "Contact & Request a Quote — HYCO SARLU",
     "meta_desc": "Get a free, no-obligation quote for your construction project. Our team responds within 24 hours.",
     "badge": "24-hour response · Free site visit",
     "title": "Let's build something exceptional.",
@@ -968,12 +968,12 @@
   "about": {
     "badge": "25+ years in business",
     "title": "A construction company built on trust, craft and discipline.",
-    "subtitle": "Scer-L/Construct Sarl is a full-service general contractor delivering commercial, residential, industrial and infrastructure projects across the region. We're family-founded, employee-owned, and proudly hands-on.",
+    "subtitle": "HYCO SARLU is a full-service general contractor delivering commercial, residential, industrial and infrastructure projects across the region. We're family-founded, employee-owned, and proudly hands-on.",
     "cta_work": "See our work",
     "cta_talk": "Talk to our team",
     "stat_years_value": "25 yrs",
     "story_title": "Our story",
-    "story_p1": "Founded in 1998 with a single pickup truck and a four-person framing crew, Scer-L/Construct has grown into a multi-disciplinary general contractor — but the values haven't changed.",
+    "story_p1": "Founded in 1998 with a single pickup truck and a four-person framing crew, HYCO SARLU has grown into a multi-disciplinary general contractor — but the values haven't changed.",
     "story_p2": "We still believe construction is a craft. We hire and train master tradespeople, run our own self-perform teams, and treat every site like it has our name on it — because it does.",
     "story_p3": "Today, our 600+ employees deliver projects ranging from custom homes to airports, with the same belief that built our first project: do it right, do it safely, and do it on time.",
     "values_title": "What we stand for",
@@ -1046,7 +1046,7 @@
   },
   "auth": {
     "welcome_back": "Welcome back",
-    "sign_in_desc": "Sign in to your Scer-L/Construct account.",
+    "sign_in_desc": "Sign in to your HYCO SARLU account.",
     "or": "or",
     "email": "Email",
     "password": "Password",
@@ -1055,7 +1055,7 @@
     "no_account": "Don't have an account?",
     "sign_up_link": "Sign up",
     "create_account": "Create account",
-    "sign_up_desc": "Sign up to access Scer-L/Construct.",
+    "sign_up_desc": "Sign up to access HYCO SARLU.",
     "creating": "Creating...",
     "sign_up": "Sign up",
     "has_account": "Already have an account?",

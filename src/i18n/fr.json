@@ -2,7 +2,7 @@
   "hero": {
     "badge": "Licencié · cautionné · assuré · conforme OSHA",
     "title": "<1>Engagés pour construire</1> vos rêves.",
-    "subtitle": "Scer-L/Construct Sarl, un entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure dans toute la région. À temps. Dans le budget. Conçu pour durer.",
+    "subtitle": "HYCO SARLU, un entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure dans toute la région. À temps. Dans le budget. Conçu pour durer.",
     "cta_quote": "Demander un devis gratuit",
     "cta_projects": "Voir nos projets",
     "phone_label": "Parlez à un chef de projet aujourd'hui :",
@@ -54,7 +54,7 @@
     }
   },
   "why_us": {
-    "title": "Pourquoi les propriétaires choisissent Scer-L/Construct",
+    "title": "Pourquoi les propriétaires choisissent HYCO SARLU",
     "subtitle": "Nous sommes directs, transparents et prévisibles. L'équipe qui remporte le travail est celle qui le construit, sans intermédiaires, sans surprises.",
     "points": [
       "Équipes d'exécution pour béton, charpente, finitions et coordination MEP",
@@ -92,7 +92,7 @@
     "hi_btn": "Juste dire bonjour"
   },
   "footer": {
-    "copyright": "© 2024 Scer-L/Construct Sarl. Tous droits réservés.",
+    "copyright": "© 2024 HYCO SARLU. Tous droits réservés.",
     "description": "Entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure. Engagés pour construire vos rêves.",
     "company": "Entreprise",
     "get_in_touch": "Nous contacter",
@@ -114,7 +114,7 @@
   },
   "access_denied": "Vous n'avez pas accès à cette page.",
   "app": {
-    "brand": "Scer-L/Construct",
+    "brand": "HYCO SARLU",
     "subtitle": "Sarl, ERP Construction",
     "search_placeholder": "Rechercher projets, tâches, clients…",
     "settings": "Paramètres",
@@ -780,7 +780,7 @@
     }
   },
   "services_page": {
-    "meta_title": "Services de construction — Scer-L/Construct Sarl",
+    "meta_title": "Services de construction — HYCO SARLU",
     "meta_desc": "Construction commerciale, résidentielle, industrielle et rénovation. Conception-réalisation, gestion de projet et pré-construction.",
     "badge": "Agréé · Cautionné · Assuré",
     "title": "Services de construction, de A à Z.",
@@ -854,7 +854,7 @@
     }
   },
   "projects_page": {
-    "meta_title": "Nos projets — Scer-L/Construct Sarl",
+    "meta_title": "Nos projets — HYCO SARLU",
     "meta_desc": "Projets de construction : commercial, résidentiel, industriel, infrastructures et restauration patrimoniale.",
     "title": "Projets sélectionnés",
     "subtitle": "Découvrez notre portefeuille de chantiers livrés et en cours. Utilisez les filtres pour affiner par catégorie, statut ou nom.",
@@ -916,7 +916,7 @@
     "gallery_title": "Galerie photos"
   },
   "contact_page": {
-    "meta_title": "Contact & demande de devis — Scer-L/Construct Sarl",
+    "meta_title": "Contact & demande de devis — HYCO SARLU",
     "meta_desc": "Obtenez un devis gratuit et sans engagement pour votre projet de construction. Réponse sous 24 heures.",
     "badge": "Réponse sous 24 h · Visite de site gratuite",
     "title": "Construisons quelque chose d'exceptionnel.",
@@ -968,12 +968,12 @@
   "about": {
     "badge": "Plus de 25 ans d'activité",
     "title": "Une entreprise de construction bâtie sur la confiance, le savoir-faire et la discipline.",
-    "subtitle": "Scer-L/Construct Sarl est un entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure dans toute la région. Fondée par une famille, détenue par les employés, et fièrement engagée sur le terrain.",
+    "subtitle": "HYCO SARLU est un entrepreneur général offrant des services complets pour des projets commerciaux, résidentiels, industriels et d'infrastructure dans toute la région. Fondée par une famille, détenue par les employés, et fièrement engagée sur le terrain.",
     "cta_work": "Voir nos réalisations",
     "cta_talk": "Parler à notre équipe",
     "stat_years_value": "25 ans",
     "story_title": "Notre histoire",
-    "story_p1": "Fondée en 1998 avec un seul camion et une équipe de quatre charpentiers, Scer-L/Construct s'est développée en un entrepreneur général pluridisciplinaire, mais les valeurs n'ont pas changé.",
+    "story_p1": "Fondée en 1998 avec un seul camion et une équipe de quatre charpentiers, HYCO SARLU s'est développée en un entrepreneur général pluridisciplinaire, mais les valeurs n'ont pas changé.",
     "story_p2": "Nous croyons toujours que la construction est un métier. Nous recrutons et formons des artisans qualifiés, gérons nos propres équipes d'exécution, et traitons chaque chantier comme s'il portait notre nom, parce qu'il le porte.",
     "story_p3": "Aujourd'hui, nos 600+ employés livrent des projets allant des maisons personnalisées aux aéroports, avec la même conviction qui a construit notre premier projet : bien faire, en sécurité, et à temps.",
     "values_title": "Nos valeurs",
@@ -1046,7 +1046,7 @@
   },
   "auth": {
     "welcome_back": "Bon retour",
-    "sign_in_desc": "Connectez-vous à votre compte Scer-L/Construct.",
+    "sign_in_desc": "Connectez-vous à votre compte HYCO SARLU.",
     "or": "ou",
     "email": "E-mail",
     "password": "Mot de passe",
@@ -1055,7 +1055,7 @@
     "no_account": "Vous n'avez pas de compte ?",
     "sign_up_link": "S'inscrire",
     "create_account": "Créer un compte",
-    "sign_up_desc": "Inscrivez-vous pour accéder à Scer-L/Construct.",
+    "sign_up_desc": "Inscrivez-vous pour accéder à HYCO SARLU.",
     "creating": "Création...",
     "sign_up": "S'inscrire",
     "has_account": "Vous avez déjà un compte ?",

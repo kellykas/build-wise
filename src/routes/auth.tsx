@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { Mail, Phone, MapPin, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
-  head: () => ({ meta: [{ title: "Connexion — Scer-L/Construct Sarl" }] }),
+  head: () => ({ meta: [{ title: "Connexion — HYCO SARLU" }] }),
   component: AuthPage,
 });
 
@@ -69,8 +69,8 @@ function AuthPage() {
       {/* Left panel - branding */}
       <div className="hidden bg-sidebar p-12 text-sidebar-foreground lg:flex lg:flex-col lg:justify-between">
         <Link to="/" className="flex items-center gap-3 font-semibold">
-          <img src="/logo.png" alt="Scer-L/Construct Sarl" className="h-10 w-10 rounded-full" />
-          <span className="text-lg">Scer-L/<span className="text-primary">Construct</span></span>
+          <img src="/logo.png" alt="HYCO SARLU" className="h-10 w-10 rounded-full" />
+          <span className="text-lg">HYCO <span className="text-primary">SARLU</span></span>
         </Link>
         <div>
           <h2 className="text-3xl font-bold">Gérez tous vos chantiers depuis une seule plateforme.</h2>
@@ -91,12 +91,12 @@ function AuthPage() {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <Link to="/" className="mb-6 inline-flex items-center gap-2 font-semibold lg:hidden">
-            <img src="/logo.png" alt="Scer-L/Construct Sarl" className="h-8 w-8 rounded-full" />
-            Scer-L/Construct
+            <img src="/logo.png" alt="HYCO SARLU" className="h-8 w-8 rounded-full" />
+            HYCO SARLU
           </Link>
 
           <h1 className="text-2xl font-bold">{t("auth.welcome_back", "Bon retour")}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{t("auth.sign_in_desc", "Connectez-vous à votre compte Scer-L/Construct.")}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t("auth.sign_in_desc", "Connectez-vous à votre compte HYCO SARLU.")}</p>
 
           <form onSubmit={handleSignIn} className="mt-6 space-y-4">
             <div>

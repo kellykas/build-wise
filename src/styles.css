@@ -51,7 +51,7 @@
 :root {
   --radius: 0.5rem;
 
-  /* Scer-L/Construct Sarl — black, gold, white */
+  /* HYCO SARLU — black, gold, white */
   --background: oklch(0.98 0.003 80);
   --foreground: oklch(0.15 0.01 80);
   --card: oklch(1 0 0);

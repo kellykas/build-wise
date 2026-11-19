@@ -21,9 +21,9 @@ export const Route = createFileRoute("/contact")({
   }),
   head: () => ({
     meta: [
-      { title: "Contact & demande de devis — Scer-L/Construct Sarl" },
+      { title: "Contact & demande de devis — HYCO SARLU" },
       { name: "description", content: "Obtenez un devis gratuit et sans engagement pour votre projet de construction. Notre équipe répond sous 24 heures." },
-      { property: "og:title", content: "Contact & demande de devis — Scer-L/Construct Sarl" },
+      { property: "og:title", content: "Contact & demande de devis — HYCO SARLU" },
       { property: "og:description", content: "Parlez-nous de votre projet de construction. Réponse sous 24 heures." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

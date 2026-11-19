@@ -32,9 +32,9 @@ const defaultLeadershipFr = [
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "À propos — Scer-L/Construct Sarl" },
+      { title: "À propos — HYCO SARLU" },
       { name: "description", content: "Découvrez l'équipe derrière plus de 500 projets livrés : notre histoire, nos valeurs, notre direction et notre engagement envers la sécurité et le savoir-faire." },
-      { property: "og:title", content: "À propos — Scer-L/Construct Sarl" },
+      { property: "og:title", content: "À propos — HYCO SARLU" },
       { property: "og:description", content: "Notre histoire, nos valeurs et notre équipe de direction." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -72,7 +72,7 @@ function AboutPage() {
                 {t("about.title", "A construction company built on trust, craft and discipline.")}
               </h1>
               <p className="mt-4 text-base text-muted-foreground sm:text-lg">
-                {t("about.subtitle", "Scer-L/Construct Sarl is a full-service general contractor delivering commercial, residential, industrial and infrastructure projects across the region. We're family-founded, employee-owned, and proudly hands-on.")}
+                {t("about.subtitle", "HYCO SARLU is a full-service general contractor delivering commercial, residential, industrial and infrastructure projects across the region. We're family-founded, employee-owned, and proudly hands-on.")}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link to="/projects"><Button size="lg">{t("about.cta_work", "See our work")} <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
@@ -99,7 +99,7 @@ function AboutPage() {
           <div className="grid gap-8 md:grid-cols-[1fr_2fr]">
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("about.story_title", "Our story")}</h2>
             <div className="space-y-4 text-muted-foreground">
-              <p>{t("about.story_p1", "Founded in 1998 with a single pickup truck and a four-person framing crew, Scer-L/Construct has grown into a multi-disciplinary general contractor — but the values haven't changed.")}</p>
+              <p>{t("about.story_p1", "Founded in 1998 with a single pickup truck and a four-person framing crew, HYCO SARLU has grown into a multi-disciplinary general contractor — but the values haven't changed.")}</p>
               <p>{t("about.story_p2", "We still believe construction is a craft. We hire and train master tradespeople, run our own self-perform teams, and treat every site like it has our name on it — because it does.")}</p>
               <p>{t("about.story_p3", "Today, our 600+ employees deliver projects ranging from custom homes to airports, with the same belief that built our first project: do it right, do it safely, and do it on time.")}</p>
             </div>

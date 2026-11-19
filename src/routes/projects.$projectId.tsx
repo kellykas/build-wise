@@ -68,7 +68,7 @@ export const Route = createFileRoute("/projects/$projectId")({
     siteContent: await fetchSiteContent(),
   }),
   head: () => ({
-    meta: [{ title: "Détail du projet — Scer-L/Construct Sarl" }],
+    meta: [{ title: "Détail du projet — HYCO SARLU" }],
   }),
   component: ProjectDetailPage,
 });
