@@ -148,7 +148,7 @@ export function SiteFooter() {
           <div className="text-sm font-semibold">{t("footer.get_in_touch")}</div>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> {phone}</li>
-            <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-primary" /> {email}</li>
+            <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-primary" /> <a href={`mailto:${email}`} className="hover:text-foreground">{email}</a></li>
             <li className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-primary" /> {address}</li>
           </ul>
         </div>
@@ -177,7 +177,7 @@ export function SiteFooter() {
               <div className="font-semibold text-foreground">Coordonnées</div>
               <ul className="mt-2 space-y-1">
                 <li>{phone}</li>
-                <li>{email}</li>
+                <li><a href={`mailto:${email}`} className="hover:text-foreground">{email}</a></li>
                 <li>{address}</li>
               </ul>
             </div>
