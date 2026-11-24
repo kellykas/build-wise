@@ -69,7 +69,7 @@ function AuthPage() {
       {/* Left panel - branding */}
       <div className="hidden bg-sidebar p-12 text-sidebar-foreground lg:flex lg:flex-col lg:justify-between">
         <Link to="/" className="flex items-center gap-3 font-semibold">
-          <img src="/logo.png" alt="HYCO SARLU" className="h-10 w-10 rounded-full" />
+          <img src="/logo.png" alt="HYCO SARLU" className="h-10 w-10" />
           <span className="text-lg">HYCO <span className="text-primary">SARLU</span></span>
         </Link>
         <div>
@@ -91,7 +91,7 @@ function AuthPage() {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <Link to="/" className="mb-6 inline-flex items-center gap-2 font-semibold lg:hidden">
-            <img src="/logo.png" alt="HYCO SARLU" className="h-8 w-8 rounded-full" />
+            <img src="/logo.png" alt="HYCO SARLU" className="h-8 w-8" />
             HYCO SARLU
           </Link>
 
