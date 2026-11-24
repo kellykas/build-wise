@@ -54,7 +54,7 @@ export function SiteHeader() {
               <div className="flex flex-col">
                 <div className="flex items-center justify-between border-b border-border px-6 py-4">
                   <Link to="/" className="flex items-center gap-2 font-semibold" onClick={() => setOpen(false)}>
-                    <img src="/logo.png" alt="HYCO SARLU" className="h-8 w-8" />
+                    <img src="/logo-transparent.png" alt="HYCO SARLU" className="h-8 w-8" />
                     <span className="text-sm">HYCO <span className="text-primary">SARLU</span></span>
                   </Link>
                   <SheetClose asChild>
@@ -128,7 +128,7 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-2 lg:grid-cols-4">
         <div>
           <div className="flex items-center gap-2 font-semibold">
-            <img src="/logo.png" alt="HYCO SARLU" className="h-8 w-8" />
+            <img src="/logo-transparent.png" alt="HYCO SARLU" className="h-8 w-8" />
             HYCO SARLU
           </div>
           <p className="mt-3 text-sm text-muted-foreground">
