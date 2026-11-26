@@ -229,7 +229,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <Sidebar collapsible="icon">
         <SidebarHeader>
           <div className="flex items-center gap-2 px-2 py-2">
-            <img src="/logo-transparent.png" alt="HYCO SARLU" className="h-8 w-8 shrink-0" />
+            <img src="/logo-transparent.png" alt="HYCO SARLU" className="h-8 w-8 shrink-0 rounded-md bg-white p-1" />
             <div className="min-w-0 group-data-[collapsible=icon]:hidden">
               <div className="truncate text-sm font-semibold text-sidebar-foreground">{t("app.brand")}</div>
               <div className="truncate text-xs text-sidebar-foreground/60">{t("app.subtitle")}</div>
